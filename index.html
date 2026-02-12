@@ -5,8 +5,287 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Michael Pynn</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Photo Carousel Background */
+        .carousel-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Hero Section */
+        .hero-modern {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 40px 60px;
+            position: relative;
+        }
+
+        .hero-modern h1 {
+            font-size: 72px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .tagline-modern {
+            font-size: 24px;
+            color: white;
+            font-weight: 400;
+            margin-bottom: 32px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .current-datetime {
+            font-size: 16px;
+            color: white;
+            font-weight: 500;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-4px);
+            border-color: white;
+        }
+
+        /* Dashboard Section */
+        .dashboard-section {
+            background: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        /* Today's Tasks Widget */
+        .today-tasks-widget {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .widget-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-count-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .widget-task-list {
+            list-style: none;
+        }
+
+        .widget-task-item {
+            display: flex;
+            align-items: start;
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            gap: 12px;
+        }
+
+        .widget-task-time {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+            min-width: 60px;
+        }
+
+        .widget-task-text {
+            flex: 1;
+            font-size: 14px;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .widget-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .widget-empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .view-all-link {
+            display: block;
+            text-align: center;
+            margin-top: 16px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .view-all-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card-modern {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #1a1a1a;
+            transition: all 0.3s;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .feature-card-modern:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card-modern h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-card-modern p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .loading-carousel {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-modern h1 {
+                font-size: 48px;
+            }
+
+            .tagline-modern {
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Photo Carousel Background -->
+    <div class="carousel-background">
+        <div class="carousel-overlay"></div>
+        <div id="carouselContainer"></div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-brand">Michael Pynn</a>
@@ -18,37 +297,221 @@
         </div>
     </nav>
 
-    <div class="hero">
+    <div class="hero-modern">
         <h1>Michael Pynn</h1>
-        <p class="tagline">Life and stuff</p>
+        <p class="tagline-modern">Life and stuff</p>
+        <div class="current-datetime" id="currentDateTime"></div>
+        
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/michael-pynn/" target="_blank" class="social-link" title="LinkedIn">
+                <span>in</span>
+            </a>
+            <a href="https://www.instagram.com/michael.pynn/" target="_blank" class="social-link" title="Instagram">
+                <span>📷</span>
+            </a>
+            <a href="https://twitter.com/MichaelPynn" target="_blank" class="social-link" title="Twitter">
+                <span>𝕏</span>
+            </a>
+            <a href="https://github.com/Pynnmichael-oss" target="_blank" class="social-link" title="GitHub">
+                <span>⚡</span>
+            </a>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="card-grid">
-            <a href="tasks.html" class="feature-card">
-                <div class="card-icon">✓</div>
-                <h3>Daily Tasks</h3>
-                <p>Track your daily goals and tasks</p>
-            </a>
-
-            <a href="photos.html" class="feature-card">
-                <div class="card-icon">📷</div>
-                <h3>Photos</h3>
-                <p>Your photo collection</p>
-            </a>
-
-            <div class="feature-card disabled">
-                <div class="card-icon">📅</div>
-                <h3>Calendar</h3>
-                <p>Coming soon</p>
+    <div class="dashboard-section">
+        <div class="dashboard-grid">
+            <!-- Today's Tasks Widget -->
+            <div class="today-tasks-widget">
+                <div class="widget-header">
+                    <span>Today's Tasks</span>
+                    <span class="task-count-badge" id="taskCountBadge">0</span>
+                </div>
+                <ul class="widget-task-list" id="widgetTaskList"></ul>
+                <a href="tasks.html" class="view-all-link">View All Tasks →</a>
             </div>
 
-            <div class="feature-card disabled">
-                <div class="card-icon">✍️</div>
-                <h3>Blog</h3>
-                <p>Coming soon</p>
+            <!-- Feature Cards -->
+            <div class="features-grid">
+                <a href="tasks.html" class="feature-card-modern">
+                    <div class="feature-icon">✓</div>
+                    <h3>Tasks & Goals</h3>
+                    <p>Manage your daily tasks and long-term goals</p>
+                </a>
+
+                <a href="photos.html" class="feature-card-modern">
+                    <div class="feature-icon">📷</div>
+                    <h3>Photo Albums</h3>
+                    <p>Organize your memories by location and event</p>
+                </a>
             </div>
         </div>
     </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
+            authDomain: "michael-new-website.firebaseapp.com",
+            projectId: "michael-new-website",
+            storageBucket: "michael-new-website.firebasestorage.app",
+            messagingSenderId: "149129540182",
+            appId: "1:149129540182:web:ea47a8eaa08181ecd6c1f7",
+            measurementId: "G-8R2FKQ3XMN"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Update date/time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000); // Update every minute
+
+        // Format time
+        function formatTime(timeString) {
+            if (!timeString) return '';
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        // Load today's incomplete tasks
+        const today = new Date().toISOString().split('T')[0];
+        const dailyTasksRef = db.collection('dailyTasks').doc(today);
+
+        dailyTasksRef.onSnapshot((doc) => {
+            const taskList = document.getElementById('widgetTaskList');
+            const taskBadge = document.getElementById('taskCountBadge');
+            
+            if (!doc.exists || !doc.data().tasks) {
+                taskList.innerHTML = `
+                    <div class="widget-empty">
+                        <div class="widget-empty-icon">✓</div>
+                        <div>No tasks for today</div>
+                    </div>
+                `;
+                taskBadge.textContent = '0';
+                return;
+            }
+
+            const tasks = doc.data().tasks;
+            const incompleteTasks = tasks.filter(t => !t.completed);
+            
+            taskBadge.textContent = incompleteTasks.length;
+
+            if (incompleteTasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="widget-empty">
+                        <div class="widget-empty-icon">🎉</div>
+                        <div>All tasks completed!</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by time
+            const sortedTasks = [...incompleteTasks].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+
+            taskList.innerHTML = '';
+            sortedTasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'widget-task-item';
+                li.innerHTML = `
+                    ${task.time ? `<div class="widget-task-time">${formatTime(task.time)}</div>` : ''}
+                    <div class="widget-task-text">${task.text}</div>
+                `;
+                taskList.appendChild(li);
+            });
+        });
+
+        // Photo Carousel
+        let carouselPhotos = [];
+        let currentPhotoIndex = 0;
+
+        async function loadPhotos() {
+            const carouselContainer = document.getElementById('carouselContainer');
+            carouselContainer.innerHTML = '<div class="loading-carousel">Loading photos...</div>';
+
+            try {
+                const albumsSnapshot = await db.collection('albums').get();
+                const photoPromises = [];
+
+                albumsSnapshot.forEach(albumDoc => {
+                    const promise = db.collection('albums').doc(albumDoc.id).collection('photos').get();
+                    photoPromises.push(promise);
+                });
+
+                const photosSnapshots = await Promise.all(photoPromises);
+                
+                photosSnapshots.forEach(snapshot => {
+                    snapshot.forEach(photoDoc => {
+                        carouselPhotos.push(photoDoc.data().url);
+                    });
+                });
+
+                // Shuffle photos
+                carouselPhotos = carouselPhotos.sort(() => Math.random() - 0.5);
+
+                if (carouselPhotos.length === 0) {
+                    carouselContainer.innerHTML = '<div class="loading-carousel">No photos yet. Upload some!</div>';
+                    return;
+                }
+
+                // Create carousel slides
+                carouselContainer.innerHTML = '';
+                carouselPhotos.forEach((url, index) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    if (index === 0) slide.classList.add('active');
+                    slide.innerHTML = `<img src="${url}" alt="Photo ${index + 1}">`;
+                    carouselContainer.appendChild(slide);
+                });
+
+                // Start carousel
+                startCarousel();
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                carouselContainer.innerHTML = '<div class="loading-carousel">Error loading photos</div>';
+            }
+        }
+
+        function startCarousel() {
+            if (carouselPhotos.length <= 1) return;
+
+            setInterval(() => {
+                const slides = document.querySelectorAll('.carousel-slide');
+                slides[currentPhotoIndex].classList.remove('active');
+                
+                currentPhotoIndex = (currentPhotoIndex + 1) % carouselPhotos.length;
+                
+                slides[currentPhotoIndex].classList.add('active');
+            }, 5000); // Change photo every 5 seconds
+        }
+
+        loadPhotos();
+    </script>
 </body>
 </html>
