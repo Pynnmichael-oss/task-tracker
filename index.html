@@ -6,173 +6,259 @@
     <title>Michael Pynn</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Photo Carousel Background */
-        .carousel-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
+        body {
+            background: #fafafa;
         }
 
-        .carousel-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 2s ease-in-out;
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
         }
 
-        .carousel-slide.active {
-            opacity: 1;
-        }
-
-        .carousel-slide-blur {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            filter: blur(40px);
-            transform: scale(1.1);
-        }
-
-        .carousel-slide-main {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        /* Section Base */
+        .scroll-section {
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px;
-        }
-
-        .carousel-slide-main img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-
-        .carousel-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        /* Hero Section */
-        .hero-modern {
-            min-height: 60vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 120px 40px 60px;
             position: relative;
         }
 
-        .hero-modern h1 {
+        /* Hero Section */
+        .hero-section {
+            background: white;
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .hero-section h1 {
             font-size: 72px;
             font-weight: 700;
-            color: white;
-            margin-bottom: 24px;
+            color: #1a1a1a;
+            margin-bottom: 16px;
             letter-spacing: -2px;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
-        .tagline-modern {
-            font-size: 24px;
-            color: white;
-            font-weight: 400;
-            margin-bottom: 32px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        .current-datetime {
-            font-size: 16px;
-            color: white;
-            font-weight: 500;
+        .hero-tagline {
+            font-size: 20px;
+            color: #666;
             margin-bottom: 40px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
-        /* Social Links */
-        .social-links {
+        .hero-divider {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 40px auto;
+        }
+
+        .social-links-hero {
             display: flex;
             gap: 24px;
-            margin-bottom: 40px;
+            justify-content: center;
+            margin-bottom: 60px;
         }
 
-        .social-link {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
+        .social-link-hero {
+            width: 48px;
+            height: 48px;
+            background: #f8f9fa;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #1a1a1a;
             text-decoration: none;
-            font-size: 24px;
+            font-size: 20px;
             transition: all 0.3s;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #f0f0f0;
         }
 
-        .social-link:hover {
-            background: rgba(255, 255, 255, 0.25);
+        .social-link-hero:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
             transform: translateY(-4px);
-            border-color: white;
+        }
+
+        .scroll-indicator {
+            margin-top: 60px;
+            color: #999;
+            font-size: 14px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Carousel Section */
+        .carousel-section {
+            background: #2a2a2a;
+            overflow: hidden;
+        }
+
+        .carousel-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .carousel-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .carousel-header h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .carousel-header p {
+            font-size: 18px;
+            color: #aaa;
+        }
+
+        .carousel-display {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide-modern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .carousel-slide-modern.active {
+            opacity: 1;
+        }
+
+        .carousel-slide-modern img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* About Section */
+        .about-section {
+            background: white;
+            padding: 120px 40px;
+        }
+
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .about-container h2 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            letter-spacing: -1px;
+        }
+
+        .about-container p {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .current-time-display {
+            margin-top: 40px;
+            padding: 24px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .current-time-display strong {
+            color: #667eea;
+            font-weight: 600;
         }
 
         /* Dashboard Section */
-        .dashboard-section {
-            background: white;
-            position: relative;
-            z-index: 1;
+        .dashboard-section-scroll {
+            background: #fafafa;
+            padding: 120px 40px;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 32px;
+        .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 40px;
         }
 
-        /* Today's Tasks Widget */
-        .today-tasks-widget {
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-heading {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+        }
+
+        .dashboard-grid-scroll {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .dashboard-card {
             background: white;
-            border-radius: 20px;
-            padding: 32px;
+            border-radius: 16px;
+            padding: 40px;
             border: 1px solid #f0f0f0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
         }
 
-        .widget-header {
+        .dashboard-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+        }
+
+        .card-title {
             font-size: 20px;
             font-weight: 600;
-            margin-bottom: 20px;
             color: #1a1a1a;
+            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .task-count-badge {
+        .card-badge {
             background: #667eea;
             color: white;
             padding: 4px 12px;
@@ -181,48 +267,37 @@
             font-weight: 600;
         }
 
-        .widget-task-list {
+        .task-list-mini {
             list-style: none;
         }
 
-        .widget-task-item {
-            display: flex;
-            align-items: start;
+        .task-item-mini {
             padding: 12px;
             background: #f8f9fa;
             margin-bottom: 8px;
             border-radius: 8px;
+            font-size: 14px;
+            color: #1a1a1a;
+            display: flex;
             gap: 12px;
         }
 
-        .widget-task-time {
-            font-size: 12px;
+        .task-time-mini {
             color: #667eea;
             font-weight: 600;
+            font-size: 12px;
             min-width: 60px;
         }
 
-        .widget-task-text {
-            flex: 1;
-            font-size: 14px;
-            color: #1a1a1a;
-            line-height: 1.5;
-        }
-
-        .widget-empty {
+        .empty-state-mini {
             text-align: center;
             padding: 40px 20px;
             color: #999;
+            font-size: 14px;
         }
 
-        .widget-empty-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .view-all-link {
-            display: block;
-            text-align: center;
+        .view-link {
+            display: inline-block;
             margin-top: 16px;
             color: #667eea;
             text-decoration: none;
@@ -230,147 +305,243 @@
             font-size: 14px;
         }
 
-        .view-all-link:hover {
+        .view-link:hover {
             text-decoration: underline;
         }
 
-        /* Features Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
+        /* Features Section */
+        .features-section {
+            background: white;
+            padding: 120px 40px;
         }
 
-        .feature-card-modern {
-            background: white;
-            padding: 32px;
-            border-radius: 20px;
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-grid-scroll {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .feature-card-scroll {
+            background: #fafafa;
+            padding: 48px 32px;
+            border-radius: 16px;
             text-align: center;
             text-decoration: none;
             color: #1a1a1a;
             transition: all 0.3s;
-            border: 1px solid #f0f0f0;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
         }
 
-        .feature-card-modern:hover {
+        .feature-card-scroll:hover {
+            background: white;
+            border-color: #667eea;
             transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
         }
 
-        .feature-icon {
-            font-size: 56px;
-            margin-bottom: 20px;
+        .feature-icon-scroll {
+            font-size: 48px;
+            margin-bottom: 24px;
         }
 
-        .feature-card-modern h3 {
+        .feature-card-scroll h3 {
             font-size: 20px;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
-        .feature-card-modern p {
+        .feature-card-scroll p {
             color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer-section {
+            background: #1a1a1a;
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .footer-section p {
+            color: #aaa;
             font-size: 14px;
         }
 
-        .loading-carousel {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .loading-message {
             color: white;
-            font-size: 24px;
+            font-size: 16px;
         }
 
         @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-modern h1 {
+            .hero-section h1 {
                 font-size: 48px;
             }
 
-            .tagline-modern {
-                font-size: 18px;
+            .carousel-header h2,
+            .about-container h2,
+            .section-heading {
+                font-size: 32px;
+            }
+
+            .dashboard-grid-scroll {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid-scroll {
+                grid-template-columns: 1fr;
+            }
+
+            .carousel-display {
+                height: 400px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Photo Carousel Background -->
-    <div class="carousel-background">
-        <div class="carousel-overlay"></div>
-        <div id="carouselContainer"></div>
-    </div>
-
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
-                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#photos">Photos</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
                 <li><a href="tasks.html">Tasks</a></li>
-                <li><a href="photos.html">Photos</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="hero-modern">
-        <h1>Michael Pynn</h1>
-        <p class="tagline-modern">Life and stuff</p>
-        <div class="current-datetime" id="currentDateTime"></div>
-        
-        <div class="social-links">
-            <a href="https://www.linkedin.com/in/michael-pynn-2988321b7/" target="_blank" class="social-link" title="LinkedIn">
-                <span>in</span>
-            </a>
-            <a href="https://www.instagram.com/michael.pynn/" target="_blank" class="social-link" title="Instagram">
-                <span>📷</span>
-            </a>
-            <a href="https://twitter.com/MichaelPynn" target="_blank" class="social-link" title="Twitter">
-                <span>𝕏</span>
-            </a>
-            <a href="https://github.com/Pynnmichael-oss" target="_blank" class="social-link" title="GitHub">
-                <span>⚡</span>
-            </a>
-        </div>
-    </div>
+    <!-- Hero Section -->
+    <section class="scroll-section hero-section" id="home">
+        <div>
+            <h1>Michael Pynn</h1>
+            <p class="hero-tagline">Life and stuff</p>
+            
+            <div class="hero-divider"></div>
+            
+            <div class="social-links-hero">
+                <a href="https://www.linkedin.com/in/michael-pynn/" target="_blank" class="social-link-hero" title="LinkedIn">
+                    <span>in</span>
+                </a>
+                <a href="https://www.instagram.com/michael.pynn/" target="_blank" class="social-link-hero" title="Instagram">
+                    <span>📷</span>
+                </a>
+                <a href="https://twitter.com/MichaelPynn" target="_blank" class="social-link-hero" title="Twitter">
+                    <span>𝕏</span>
+                </a>
+                <a href="https://github.com/Pynnmichael-oss" target="_blank" class="social-link-hero" title="GitHub">
+                    <span>⚡</span>
+                </a>
+            </div>
 
-    <div class="dashboard-section">
-        <div class="dashboard-grid">
-            <!-- Today's Tasks Widget -->
-            <div class="today-tasks-widget">
-                <div class="widget-header">
-                    <span>Today's Tasks</span>
-                    <span class="task-count-badge" id="taskCountBadge">0</span>
+            <div class="scroll-indicator">
+                <div>↓</div>
+                <div style="font-size: 12px; margin-top: 8px;">Scroll to explore</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carousel Section -->
+    <section class="scroll-section carousel-section" id="photos">
+        <div class="carousel-wrapper">
+            <div class="carousel-header">
+                <h2>Captured Moments</h2>
+                <p>A collection of places and memories</p>
+            </div>
+            <div class="carousel-display" id="carouselDisplay">
+                <div class="loading-message">Loading photos...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="scroll-section about-section">
+        <div class="about-container">
+            <div class="about-label">About</div>
+            <h2>Building things, tracking progress, and capturing life.</h2>
+            <p>I'm Michael, based in Tulsa, Oklahoma. This is my personal space where I organize my tasks, track my goals, and preserve memories through photos.</p>
+            <p>I built this site to stay productive and keep the things that matter most to me in one place.</p>
+            
+            <div class="current-time-display" id="currentTimeDisplay">
+                <strong>Right now:</strong> <span id="liveTime"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="scroll-section dashboard-section-scroll" id="dashboard">
+        <div class="dashboard-container">
+            <div class="section-title">Live Dashboard</div>
+            <h2 class="section-heading">What's happening today</h2>
+            
+            <div class="dashboard-grid-scroll">
+                <div class="dashboard-card">
+                    <div class="card-title">
+                        <span>Today's Tasks</span>
+                        <span class="card-badge" id="taskBadge">0</span>
+                    </div>
+                    <ul class="task-list-mini" id="taskListMini"></ul>
+                    <a href="tasks.html" class="view-link">View all tasks →</a>
                 </div>
-                <ul class="widget-task-list" id="widgetTaskList"></ul>
-                <a href="tasks.html" class="view-all-link">View All Tasks →</a>
-            </div>
 
-            <!-- Feature Cards -->
-            <div class="features-grid">
-                <a href="tasks.html" class="feature-card-modern">
-                    <div class="feature-icon">✓</div>
-                    <h3>Tasks & Goals</h3>
-                    <p>Manage your daily tasks and long-term goals</p>
+                <div class="dashboard-card">
+                    <div class="card-title">
+                        <span>Quick Access</span>
+                    </div>
+                    <p style="color: #666; margin-bottom: 24px;">Jump to what you need</p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <a href="tasks.html" style="padding: 12px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                            ✓ Tasks & Goals
+                        </a>
+                        <a href="photos.html" style="padding: 12px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                            📷 Photo Albums
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="scroll-section features-section">
+        <div class="features-container">
+            <div class="section-title">What I'm Building</div>
+            <h2 class="section-heading">Tools for productivity and memory</h2>
+            
+            <div class="features-grid-scroll">
+                <a href="tasks.html" class="feature-card-scroll">
+                    <div class="feature-icon-scroll">✓</div>
+                    <h3>Daily Tasks</h3>
+                    <p>Quick task management with time tracking and archiving</p>
                 </a>
 
-                <a href="photos.html" class="feature-card-modern">
-                    <div class="feature-icon">📷</div>
+                <a href="tasks.html" class="feature-card-scroll">
+                    <div class="feature-icon-scroll">🎯</div>
+                    <h3>Extended Goals</h3>
+                    <p>Long-term projects with priority levels and status tracking</p>
+                </a>
+
+                <a href="photos.html" class="feature-card-scroll">
+                    <div class="feature-icon-scroll">📷</div>
                     <h3>Photo Albums</h3>
-                    <p>Organize your memories by location and event</p>
+                    <p>Organized collections by location and event</p>
                 </a>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <p>Michael Pynn © 2026</p>
+        <p style="margin-top: 8px;">Built with Firebase and deployed on Netlify</p>
+    </footer>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -393,8 +564,8 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Update date/time
-        function updateDateTime() {
+        // Live Time
+        function updateLiveTime() {
             const now = new Date();
             const options = { 
                 weekday: 'long', 
@@ -402,12 +573,13 @@
                 month: 'long', 
                 day: 'numeric',
                 hour: 'numeric',
-                minute: '2-digit'
+                minute: '2-digit',
+                timeZone: 'America/Chicago'
             };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+            document.getElementById('liveTime').textContent = now.toLocaleDateString('en-US', options);
         }
-        updateDateTime();
-        setInterval(updateDateTime, 60000); // Update every minute
+        updateLiveTime();
+        setInterval(updateLiveTime, 60000);
 
         // Format time
         function formatTime(timeString) {
@@ -419,54 +591,42 @@
             return `${displayHour}:${minutes} ${ampm}`;
         }
 
-        // Load today's incomplete tasks
+        // Load today's tasks
         const today = new Date().toISOString().split('T')[0];
         const dailyTasksRef = db.collection('dailyTasks').doc(today);
 
         dailyTasksRef.onSnapshot((doc) => {
-            const taskList = document.getElementById('widgetTaskList');
-            const taskBadge = document.getElementById('taskCountBadge');
+            const taskList = document.getElementById('taskListMini');
+            const taskBadge = document.getElementById('taskBadge');
             
             if (!doc.exists || !doc.data().tasks) {
-                taskList.innerHTML = `
-                    <div class="widget-empty">
-                        <div class="widget-empty-icon">✓</div>
-                        <div>No tasks for today</div>
-                    </div>
-                `;
+                taskList.innerHTML = '<div class="empty-state-mini">No tasks for today</div>';
                 taskBadge.textContent = '0';
                 return;
             }
 
             const tasks = doc.data().tasks;
             const incompleteTasks = tasks.filter(t => !t.completed);
-            
             taskBadge.textContent = incompleteTasks.length;
 
             if (incompleteTasks.length === 0) {
-                taskList.innerHTML = `
-                    <div class="widget-empty">
-                        <div class="widget-empty-icon">🎉</div>
-                        <div>All tasks completed!</div>
-                    </div>
-                `;
+                taskList.innerHTML = '<div class="empty-state-mini">✓ All done!</div>';
                 return;
             }
 
-            // Sort by time
             const sortedTasks = [...incompleteTasks].sort((a, b) => {
                 if (!a.time) return 1;
                 if (!b.time) return -1;
                 return a.time.localeCompare(b.time);
-            });
+            }).slice(0, 4); // Show max 4 tasks
 
             taskList.innerHTML = '';
             sortedTasks.forEach(task => {
                 const li = document.createElement('li');
-                li.className = 'widget-task-item';
+                li.className = 'task-item-mini';
                 li.innerHTML = `
-                    ${task.time ? `<div class="widget-task-time">${formatTime(task.time)}</div>` : ''}
-                    <div class="widget-task-text">${task.text}</div>
+                    ${task.time ? `<span class="task-time-mini">${formatTime(task.time)}</span>` : ''}
+                    <span>${task.text}</span>
                 `;
                 taskList.appendChild(li);
             });
@@ -477,8 +637,7 @@
         let currentPhotoIndex = 0;
 
         async function loadPhotos() {
-            const carouselContainer = document.getElementById('carouselContainer');
-            carouselContainer.innerHTML = '<div class="loading-carousel">Loading photos...</div>';
+            const carouselDisplay = document.getElementById('carouselDisplay');
 
             try {
                 const albumsSnapshot = await db.collection('albums').get();
@@ -497,34 +656,26 @@
                     });
                 });
 
-                // Shuffle photos
                 carouselPhotos = carouselPhotos.sort(() => Math.random() - 0.5);
 
                 if (carouselPhotos.length === 0) {
-                    carouselContainer.innerHTML = '<div class="loading-carousel">No photos yet. Upload some!</div>';
+                    carouselDisplay.innerHTML = '<div class="loading-message">No photos yet. Upload some!</div>';
                     return;
                 }
 
-                // Create carousel slides
-                carouselContainer.innerHTML = '';
+                carouselDisplay.innerHTML = '';
                 carouselPhotos.forEach((url, index) => {
                     const slide = document.createElement('div');
-                    slide.className = 'carousel-slide';
+                    slide.className = 'carousel-slide-modern';
                     if (index === 0) slide.classList.add('active');
-                    slide.innerHTML = `
-                        <div class="carousel-slide-blur" style="background-image: url('${url}')"></div>
-                        <div class="carousel-slide-main">
-                            <img src="${url}" alt="Photo ${index + 1}">
-                        </div>
-                    `;
-                    carouselContainer.appendChild(slide);
+                    slide.innerHTML = `<img src="${url}" alt="Photo ${index + 1}">`;
+                    carouselDisplay.appendChild(slide);
                 });
 
-                // Start carousel
                 startCarousel();
             } catch (error) {
                 console.error('Error loading photos:', error);
-                carouselContainer.innerHTML = '<div class="loading-carousel">Error loading photos</div>';
+                carouselDisplay.innerHTML = '<div class="loading-message">Error loading photos</div>';
             }
         }
 
@@ -532,13 +683,11 @@
             if (carouselPhotos.length <= 1) return;
 
             setInterval(() => {
-                const slides = document.querySelectorAll('.carousel-slide');
+                const slides = document.querySelectorAll('.carousel-slide-modern');
                 slides[currentPhotoIndex].classList.remove('active');
-                
                 currentPhotoIndex = (currentPhotoIndex + 1) % carouselPhotos.length;
-                
                 slides[currentPhotoIndex].classList.add('active');
-            }, 5000); // Change photo every 5 seconds
+            }, 4000);
         }
 
         loadPhotos();
