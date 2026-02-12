@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks - Michael Pynn</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .task-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .task-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 32px;
+            margin-top: 32px;
+        }
+
+        /* Daily Tasks Sidebar */
+        .daily-section {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .daily-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .daily-input-section {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .daily-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .daily-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-daily-btn {
+            padding: 10px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .add-daily-btn:hover {
+            background: #5568d3;
+        }
+
+        .daily-list {
+            list-style: none;
+        }
+
+        .daily-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .daily-item:last-child {
+            border-bottom: none;
+        }
+
+        .daily-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .daily-text {
+            flex: 1;
+            font-size: 14px;
+            color: #1a1a1a;
+        }
+
+        .daily-item.completed .daily-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .delete-daily-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 18px;
+        }
+
+        .delete-daily-btn:hover {
+            color: #dc3545;
+        }
+
+        .daily-empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Extended Goals Section */
+        .goals-section {
+            min-height: 400px;
+        }
+
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .create-goal-btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .create-goal-btn:hover {
+            background: #5568d3;
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .goal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--priority-color);
+        }
+
+        .goal-card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .goal-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .goal-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-not-started {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .priority-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-low {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .goal-action-btn {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .goal-action-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .delete-goal-btn {
+            padding: 8px 16px;
+            border: 1px solid #dc3545;
+            background: white;
+            color: #dc3545;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .delete-goal-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .goals-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .sync-status {
+            text-align: center;
+            font-size: 12px;
+            color: #28a745;
+            margin-top: 16px;
+        }
+
+        .sync-status.syncing {
+            color: #ffc107;
+        }
+
+        @media (max-width: 1024px) {
+            .task-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .daily-section {
+                position: relative;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Michael Pynn</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="tasks.html" class="active">Tasks</a></li>
+                <li><a href="photos.html">Photos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="task-container">
+            <div class="page-header">
+                <h1>Tasks & Goals</h1>
+                <p class="date" id="currentDate"></p>
+            </div>
+
+            <div class="task-layout">
+                <!-- Daily Tasks Sidebar -->
+                <div class="daily-section">
+                    <div class="section-header">Today's Tasks</div>
+                    <div class="daily-card">
+                        <div class="daily-input-section">
+                            <input type="text" class="daily-input" id="dailyInput" placeholder="Add a quick task...">
+                            <button class="add-daily-btn" id="addDailyBtn">+</button>
+                        </div>
+                        <ul class="daily-list" id="dailyList"></ul>
+                        <div class="sync-status" id="dailySync">✓ Synced</div>
+                    </div>
+                </div>
+
+                <!-- Extended Goals Section -->
+                <div class="goals-section">
+                    <div class="goals-header">
+                        <div class="section-header">Extended Goals</div>
+                        <button class="create-goal-btn" id="createGoalBtn">+ New Goal</button>
+                    </div>
+                    <div class="goals-grid" id="goalsGrid"></div>
+                    <div class="sync-status" id="goalsSync">✓ Synced</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Goal Modal -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Create New Goal</div>
+            
+            <div class="form-group">
+                <label class="form-label">Goal Title</label>
+                <input type="text" class="form-input" id="goalTitleInput" placeholder="e.g., Launch new website">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="goalDescInput" placeholder="Add details about this goal..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-input" id="goalDueDateInput">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-select" id="goalPriorityInput">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="goalStatusInput">
+                    <option value="not-started" selected>Not Started</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" id="saveGoalBtn">Save Goal</button>
+            <button class="btn-secondary" id="cancelGoalBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
+            authDomain: "michael-new-website.firebaseapp.com",
+            projectId: "michael-new-website",
+            storageBucket: "michael-new-website.firebasestorage.app",
+            messagingSenderId: "149129540182",
+            appId: "1:149129540182:web:ea47a8eaa08181ecd6c1f7",
+            measurementId: "G-8R2FKQ3XMN"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Get elements
+        const dateElement = document.getElementById('currentDate');
+        const dailyInput = document.getElementById('dailyInput');
+        const addDailyBtn = document.getElementById('addDailyBtn');
+        const dailyList = document.getElementById('dailyList');
+        const dailySync = document.getElementById('dailySync');
+        const goalsGrid = document.getElementById('goalsGrid');
+        const goalsSync = document.getElementById('goalsSync');
+        const createGoalBtn = document.getElementById('createGoalBtn');
+        const goalModal = document.getElementById('goalModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const goalTitleInput = document.getElementById('goalTitleInput');
+        const goalDescInput = document.getElementById('goalDescInput');
+        const goalDueDateInput = document.getElementById('goalDueDateInput');
+        const goalPriorityInput = document.getElementById('goalPriorityInput');
+        const goalStatusInput = document.getElementById('goalStatusInput');
+        const saveGoalBtn = document.getElementById('saveGoalBtn');
+        const cancelGoalBtn = document.getElementById('cancelGoalBtn');
+
+        // Display current date
+        const today = new Date();
+        dateElement.textContent = today.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+
+        const todayId = today.toISOString().split('T')[0];
+
+        // References
+        const dailyTasksRef = db.collection('dailyTasks').doc(todayId);
+        const goalsRef = db.collection('goals');
+
+        // State
+        let editingGoalId = null;
+
+        // Daily Tasks Functions
+        function updateDailySync(status, message) {
+            dailySync.className = 'sync-status ' + status;
+            dailySync.textContent = message;
+        }
+
+        function renderDailyTasks(tasks) {
+            if (!tasks || tasks.length === 0) {
+                dailyList.innerHTML = '<div class="daily-empty">No tasks for today</div>';
+                return;
+            }
+
+            dailyList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.className = 'daily-item' + (task.completed ? ' completed' : '');
+                li.innerHTML = `
+                    <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''}>
+                    <span class="daily-text">${task.text}</span>
+                    <button class="delete-daily-btn">×</button>
+                `;
+
+                li.querySelector('.daily-checkbox').addEventListener('change', async () => {
+                    updateDailySync('syncing', 'Syncing...');
+                    task.completed = !task.completed;
+                    await dailyTasksRef.set({ tasks: tasks });
+                });
+
+                li.querySelector('.delete-daily-btn').addEventListener('click', async () => {
+                    updateDailySync('syncing', 'Syncing...');
+                    tasks.splice(index, 1);
+                    await dailyTasksRef.set({ tasks: tasks });
+                });
+
+                dailyList.appendChild(li);
+            });
+        }
+
+        async function addDailyTask() {
+            const text = dailyInput.value.trim();
+            if (!text) return;
+
+            updateDailySync('syncing', 'Adding...');
+
+            try {
+                const doc = await dailyTasksRef.get();
+                const currentTasks = doc.exists ? doc.data().tasks || [] : [];
+
+                currentTasks.push({
+                    text: text,
+                    completed: false,
+                    timestamp: new Date().toISOString()
+                });
+
+                await dailyTasksRef.set({ tasks: currentTasks });
+                dailyInput.value = '';
+            } catch (error) {
+                console.error('Error adding task:', error);
+            }
+        }
+
+        addDailyBtn.addEventListener('click', addDailyTask);
+        dailyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addDailyTask();
+        });
+
+        // Daily tasks listener
+        dailyTasksRef.onSnapshot((doc) => {
+            if (doc.exists) {
+                renderDailyTasks(doc.data().tasks || []);
+                updateDailySync('', '✓ Synced');
+            } else {
+                renderDailyTasks([]);
+                updateDailySync('', '✓ Ready');
+            }
+        });
+
+        // Goals Functions
+        function updateGoalsSync(status, message) {
+            goalsSync.className = 'sync-status ' + status;
+            goalsSync.textContent = message;
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                high: '#dc3545',
+                medium: '#ffc107',
+                low: '#17a2b8'
+            };
+            return colors[priority] || colors.medium;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'No due date';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderGoals(goals) {
+            if (goals.length === 0) {
+                goalsGrid.innerHTML = `
+                    <div class="goals-empty">
+                        <div class="empty-icon">🎯</div>
+                        <p>No goals yet. Create one to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            goalsGrid.innerHTML = '';
+            goals.forEach(goal => {
+                const card = document.createElement('div');
+                card.className = 'goal-card';
+                card.style.setProperty('--priority-color', getPriorityColor(goal.priority));
+
+                const statusClass = `status-${goal.status}`;
+                const priorityClass = `priority-${goal.priority}`;
+                const statusText = goal.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const priorityText = goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1);
+
+                card.innerHTML = `
+                    <div class="goal-header">
+                        <div style="flex: 1;">
+                            <div class="goal-title">${goal.title}</div>
+                            ${goal.description ? `<div class="goal-description">${goal.description}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <span class="priority-badge ${priorityClass}">${priorityText}</span>
+                        ${goal.dueDate ? `<div class="meta-item">📅 ${formatDate(goal.dueDate)}</div>` : ''}
+                    </div>
+                    <div class="goal-actions">
+                        <button class="goal-action-btn edit-btn">Edit</button>
+                        <button class="delete-goal-btn">Delete</button>
+                    </div>
+                `;
+
+                card.querySelector('.edit-btn').addEventListener('click', () => openEditGoal(goal));
+                card.querySelector('.delete-goal-btn').addEventListener('click', () => deleteGoal(goal.id));
+
+                goalsGrid.appendChild(card);
+            });
+        }
+
+        function openCreateGoal() {
+            editingGoalId = null;
+            modalTitle.textContent = 'Create New Goal';
+            goalTitleInput.value = '';
+            goalDescInput.value = '';
+            goalDueDateInput.value = '';
+            goalPriorityInput.value = 'medium';
+            goalStatusInput.value = 'not-started';
+            goalModal.classList.add('active');
+        }
+
+        function openEditGoal(goal) {
+            editingGoalId = goal.id;
+            modalTitle.textContent = 'Edit Goal';
+            goalTitleInput.value = goal.title;
+            goalDescInput.value = goal.description || '';
+            goalDueDateInput.value = goal.dueDate || '';
+            goalPriorityInput.value = goal.priority;
+            goalStatusInput.value = goal.status;
+            goalModal.classList.add('active');
+        }
+
+        async function saveGoal() {
+            const title = goalTitleInput.value.trim();
+            if (!title) {
+                alert('Please enter a goal title');
+                return;
+            }
+
+            updateGoalsSync('syncing', 'Saving...');
+
+            const goalData = {
+                title: title,
+                description: goalDescInput.value.trim(),
+                dueDate: goalDueDateInput.value,
+                priority: goalPriorityInput.value,
+                status: goalStatusInput.value,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                if (editingGoalId) {
+                    await goalsRef.doc(editingGoalId).update(goalData);
+                } else {
+                    goalData.createdAt = new Date().toISOString();
+                    await goalsRef.add(goalData);
+                }
+                goalModal.classList.remove('active');
+            } catch (error) {
+                console.error('Error saving goal:', error);
+            }
+        }
+
+        async function deleteGoal(goalId) {
+            if (!confirm('Delete this goal?')) return;
+
+            updateGoalsSync('syncing', 'Deleting...');
+
+            try {
+                await goalsRef.doc(goalId).delete();
+            } catch (error) {
+                console.error('Error deleting goal:', error);
+            }
+        }
+
+        createGoalBtn.addEventListener('click', openCreateGoal);
+        saveGoalBtn.addEventListener('click', saveGoal);
+        cancelGoalBtn.addEventListener('click', () => goalModal.classList.remove('active'));
+
+        // Goals listener
+        goalsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            const goals = [];
+            snapshot.forEach(doc => {
+                goals.push({ id: doc.id, ...doc.data() });
+            });
+            renderGoals(goals);
+            updateGoalsSync('', '✓ Synced');
+        });
+    </script>
+</body>
+</html>
