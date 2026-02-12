@@ -30,6 +30,24 @@
             font-weight: 600;
             margin-bottom: 16px;
             color: #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .archive-day-btn {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .archive-day-btn:hover {
+            background: #218838;
         }
 
         .daily-card {
@@ -37,12 +55,19 @@
             border-radius: 16px;
             padding: 24px;
             border: 1px solid #f0f0f0;
+            margin-bottom: 24px;
         }
 
         .daily-input-section {
             display: flex;
+            flex-direction: column;
             gap: 8px;
             margin-bottom: 20px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
         }
 
         .daily-input {
@@ -53,7 +78,16 @@
             font-size: 14px;
         }
 
-        .daily-input:focus {
+        .daily-time-input {
+            width: 100px;
+            padding: 10px 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .daily-input:focus,
+        .daily-time-input:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -96,6 +130,14 @@
             accent-color: #667eea;
         }
 
+        .task-time {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+            margin-right: 12px;
+            min-width: 60px;
+        }
+
         .daily-text {
             flex: 1;
             font-size: 14px;
@@ -104,6 +146,10 @@
 
         .daily-item.completed .daily-text {
             text-decoration: line-through;
+            color: #999;
+        }
+
+        .daily-item.completed .task-time {
             color: #999;
         }
 
@@ -125,6 +171,85 @@
             padding: 32px 16px;
             color: #999;
             font-size: 14px;
+        }
+
+        /* Past Tasks Section */
+        .past-tasks-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .past-tasks-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .past-days-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .past-day-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #f0f0f0;
+        }
+
+        .past-day-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .past-day-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .past-day-count {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .past-tasks-empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Past Tasks Modal */
+        .past-tasks-modal .modal-content {
+            max-width: 700px;
+        }
+
+        .past-task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .past-task-item.completed {
+            opacity: 0.6;
+        }
+
+        .past-task-item.completed .daily-text {
+            text-decoration: line-through;
+            color: #999;
         }
 
         /* Extended Goals Section */
@@ -460,14 +585,26 @@
             <div class="task-layout">
                 <!-- Daily Tasks Sidebar -->
                 <div class="daily-section">
-                    <div class="section-header">Today's Tasks</div>
+                    <div class="section-header">
+                        <span>Today's Tasks</span>
+                        <button class="archive-day-btn" id="archiveDayBtn">End Day</button>
+                    </div>
                     <div class="daily-card">
                         <div class="daily-input-section">
-                            <input type="text" class="daily-input" id="dailyInput" placeholder="Add a quick task...">
-                            <button class="add-daily-btn" id="addDailyBtn">+</button>
+                            <div class="input-row">
+                                <input type="text" class="daily-input" id="dailyInput" placeholder="Add a task...">
+                                <input type="time" class="daily-time-input" id="dailyTimeInput">
+                            </div>
+                            <button class="add-daily-btn" id="addDailyBtn">+ Add Task</button>
                         </div>
                         <ul class="daily-list" id="dailyList"></ul>
                         <div class="sync-status" id="dailySync">✓ Synced</div>
+                    </div>
+
+                    <!-- Past Tasks -->
+                    <div class="past-tasks-section">
+                        <div class="past-tasks-header">Past Tasks</div>
+                        <div class="past-days-list" id="pastDaysList"></div>
                     </div>
                 </div>
 
@@ -527,6 +664,15 @@
         </div>
     </div>
 
+    <!-- Past Tasks Modal -->
+    <div class="modal past-tasks-modal" id="pastTasksModal">
+        <div class="modal-content">
+            <div class="modal-header" id="pastTasksModalTitle">Past Tasks</div>
+            <div id="pastTasksModalContent"></div>
+            <button class="btn-secondary" id="closePastTasksBtn">Close</button>
+        </div>
+    </div>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -550,9 +696,12 @@
         // Get elements
         const dateElement = document.getElementById('currentDate');
         const dailyInput = document.getElementById('dailyInput');
+        const dailyTimeInput = document.getElementById('dailyTimeInput');
         const addDailyBtn = document.getElementById('addDailyBtn');
+        const archiveDayBtn = document.getElementById('archiveDayBtn');
         const dailyList = document.getElementById('dailyList');
         const dailySync = document.getElementById('dailySync');
+        const pastDaysList = document.getElementById('pastDaysList');
         const goalsGrid = document.getElementById('goalsGrid');
         const goalsSync = document.getElementById('goalsSync');
         const createGoalBtn = document.getElementById('createGoalBtn');
@@ -565,6 +714,10 @@
         const goalStatusInput = document.getElementById('goalStatusInput');
         const saveGoalBtn = document.getElementById('saveGoalBtn');
         const cancelGoalBtn = document.getElementById('cancelGoalBtn');
+        const pastTasksModal = document.getElementById('pastTasksModal');
+        const pastTasksModalTitle = document.getElementById('pastTasksModalTitle');
+        const pastTasksModalContent = document.getElementById('pastTasksModalContent');
+        const closePastTasksBtn = document.getElementById('closePastTasksBtn');
 
         // Display current date
         const today = new Date();
@@ -579,6 +732,7 @@
 
         // References
         const dailyTasksRef = db.collection('dailyTasks').doc(todayId);
+        const archivedTasksRef = db.collection('archivedTasks');
         const goalsRef = db.collection('goals');
 
         // State
@@ -590,18 +744,36 @@
             dailySync.textContent = message;
         }
 
+        function formatTime(timeString) {
+            if (!timeString) return '';
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
         function renderDailyTasks(tasks) {
             if (!tasks || tasks.length === 0) {
                 dailyList.innerHTML = '<div class="daily-empty">No tasks for today</div>';
                 return;
             }
 
+            // Sort by time
+            const sortedTasks = [...tasks].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+
             dailyList.innerHTML = '';
-            tasks.forEach((task, index) => {
+            sortedTasks.forEach((task, originalIndex) => {
+                const index = tasks.indexOf(task);
                 const li = document.createElement('li');
                 li.className = 'daily-item' + (task.completed ? ' completed' : '');
                 li.innerHTML = `
                     <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''}>
+                    ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
                     <span class="daily-text">${task.text}</span>
                     <button class="delete-daily-btn">×</button>
                 `;
@@ -634,20 +806,123 @@
 
                 currentTasks.push({
                     text: text,
+                    time: dailyTimeInput.value || null,
                     completed: false,
                     timestamp: new Date().toISOString()
                 });
 
                 await dailyTasksRef.set({ tasks: currentTasks });
                 dailyInput.value = '';
+                dailyTimeInput.value = '';
             } catch (error) {
                 console.error('Error adding task:', error);
             }
         }
 
+        async function archiveDay() {
+            const doc = await dailyTasksRef.get();
+            if (!doc.exists || !doc.data().tasks || doc.data().tasks.length === 0) {
+                alert('No tasks to archive for today!');
+                return;
+            }
+
+            if (!confirm('Archive today\'s tasks? This will move them to Past Tasks.')) {
+                return;
+            }
+
+            updateDailySync('syncing', 'Archiving...');
+
+            try {
+                const tasks = doc.data().tasks;
+                
+                // Save to archived collection
+                await archivedTasksRef.doc(todayId).set({
+                    date: todayId,
+                    tasks: tasks,
+                    archivedAt: new Date().toISOString()
+                });
+
+                // Clear today's tasks
+                await dailyTasksRef.delete();
+
+                updateDailySync('', '✓ Archived');
+            } catch (error) {
+                console.error('Error archiving:', error);
+                updateDailySync('error', 'Error archiving');
+            }
+        }
+
+        function renderPastDays(archivedDays) {
+            if (archivedDays.length === 0) {
+                pastDaysList.innerHTML = '<div class="past-tasks-empty">No past tasks yet</div>';
+                return;
+            }
+
+            pastDaysList.innerHTML = '';
+            archivedDays.forEach(day => {
+                const item = document.createElement('div');
+                item.className = 'past-day-item';
+                
+                const date = new Date(day.date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+
+                const completedCount = day.tasks.filter(t => t.completed).length;
+                const totalCount = day.tasks.length;
+
+                item.innerHTML = `
+                    <div class="past-day-date">${formattedDate}</div>
+                    <div class="past-day-count">${completedCount}/${totalCount} completed</div>
+                `;
+
+                item.addEventListener('click', () => viewPastDay(day));
+                pastDaysList.appendChild(item);
+            });
+        }
+
+        function viewPastDay(day) {
+            const date = new Date(day.date);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+
+            pastTasksModalTitle.textContent = formattedDate;
+
+            const sortedTasks = [...day.tasks].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+
+            let html = '';
+            sortedTasks.forEach(task => {
+                html += `
+                    <div class="past-task-item ${task.completed ? 'completed' : ''}">
+                        <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''} disabled>
+                        ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
+                        <span class="daily-text">${task.text}</span>
+                    </div>
+                `;
+            });
+
+            pastTasksModalContent.innerHTML = html;
+            pastTasksModal.classList.add('active');
+        }
+
         addDailyBtn.addEventListener('click', addDailyTask);
         dailyInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addDailyTask();
+        });
+        archiveDayBtn.addEventListener('click', archiveDay);
+        closePastTasksBtn.addEventListener('click', () => {
+            pastTasksModal.classList.remove('active');
         });
 
         // Daily tasks listener
@@ -659,6 +934,15 @@
                 renderDailyTasks([]);
                 updateDailySync('', '✓ Ready');
             }
+        });
+
+        // Past tasks listener
+        archivedTasksRef.orderBy('date', 'desc').limit(30).onSnapshot((snapshot) => {
+            const archivedDays = [];
+            snapshot.forEach(doc => {
+                archivedDays.push(doc.data());
+            });
+            renderPastDays(archivedDays);
         });
 
         // Goals Functions
