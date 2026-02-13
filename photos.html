@@ -338,6 +338,8 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="tasks.html">Tasks</a></li>
                 <li><a href="photos.html" class="active">Photos</a></li>
+                <li><a href="calendar.html">Calendar</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
     </nav>
@@ -363,7 +365,7 @@
                         <div>
                             <button class="back-btn" id="backBtn">← Back to Albums</button>
                         </div>
-                        <button class="upload-btn" id="uploadPhotoBtn">+ Add Photos</button>
+                        <button class="upload-btn admin-only" id="uploadPhotoBtn">+ Add Photos</button>
                         <input type="file" id="fileInput" accept="image/*" multiple>
                     </div>
                     <h1 id="albumTitle"></h1>
@@ -409,28 +411,18 @@
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="auth.js"></script>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
-            authDomain: "michael-new-website.firebaseapp.com",
-            projectId: "michael-new-website",
-            storageBucket: "michael-new-website.firebasestorage.app",
-            messagingSenderId: "149129540182",
-            appId: "1:149129540182:web:ea47a8eaa08181ecd6c1f7",
-            measurementId: "G-8R2FKQ3XMN"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Firebase is initialized in auth.js
+        // Use global db and storage from auth.js
+        
         db.settings({
             ignoreUndefinedProperties: true
         });
-        const storage = firebase.storage();
 
         // Get elements
         const albumsView = document.getElementById('albumsView');
@@ -478,6 +470,11 @@
 
         // Create album
         createAlbumBtn.addEventListener('click', async () => {
+            if (!isAdmin()) {
+                alert('You must be signed in as admin to create albums.');
+                return;
+            }
+            
             const name = albumNameInput.value.trim();
             if (!name || !selectedCoverFile) {
                 alert('Please provide album name and cover photo');
@@ -522,17 +519,19 @@
         function renderAlbums(albums) {
             albumGrid.innerHTML = '';
 
-            // Create album card
-            const createCard = document.createElement('div');
-            createCard.className = 'create-album-card';
-            createCard.innerHTML = `
-                <div class="create-icon">+</div>
-                <div style="font-weight: 600; color: #667eea;">Create Album</div>
-            `;
-            createCard.addEventListener('click', () => {
-                createAlbumModal.classList.add('active');
-            });
-            albumGrid.appendChild(createCard);
+            // Create album card (admin only)
+            if (isAdmin()) {
+                const createCard = document.createElement('div');
+                createCard.className = 'create-album-card';
+                createCard.innerHTML = `
+                    <div class="create-icon">+</div>
+                    <div style="font-weight: 600; color: #667eea;">Create Album</div>
+                `;
+                createCard.addEventListener('click', () => {
+                    createAlbumModal.classList.add('active');
+                });
+                albumGrid.appendChild(createCard);
+            }
 
             // Album cards
             albums.forEach(album => {
@@ -570,6 +569,12 @@
         uploadPhotoBtn.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', async (e) => {
+            if (!isAdmin()) {
+                alert('You must be signed in as admin to upload photos.');
+                fileInput.value = '';
+                return;
+            }
+            
             const files = e.target.files;
             if (files.length === 0 || !currentAlbumId) return;
 
@@ -636,7 +641,7 @@
                 item.innerHTML = `
                     <img src="${photo.url}" alt="Photo">
                     <div class="photo-overlay">
-                        <button class="delete-photo-btn" data-id="${photo.id}">Delete</button>
+                        <button class="delete-photo-btn admin-only" data-id="${photo.id}">Delete</button>
                     </div>
                 `;
 
@@ -645,15 +650,23 @@
                     imageModal.classList.add('active');
                 });
 
-                item.querySelector('.delete-photo-btn').addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    if (confirm('Delete this photo?')) {
-                        try {
-                            const storageRef = storage.ref(photo.fileName);
-                            await storageRef.delete();
-                            await db.collection('albums').doc(currentAlbumId).collection('photos').doc(photo.id).delete();
+                const deleteBtn = item.querySelector('.delete-photo-btn');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        
+                        if (!isAdmin()) {
+                            alert('You must be signed in as admin to delete photos.');
+                            return;
+                        }
+                        
+                        if (confirm('Delete this photo?')) {
+                            try {
+                                const storageRef = storage.ref(photo.fileName);
+                                await storageRef.delete();
+                                await db.collection('albums').doc(currentAlbumId).collection('photos').doc(photo.id).delete();
 
-                            // Update count
+                                // Update count
                             const albumDoc = await albumsRef.doc(currentAlbumId).get();
                             await albumsRef.doc(currentAlbumId).update({
                                 photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1)
@@ -662,7 +675,8 @@
                             console.error('Error deleting photo:', error);
                         }
                     }
-                });
+                    });
+                }
 
                 photoGrid.appendChild(item);
             });
