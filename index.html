@@ -129,27 +129,40 @@
             position: relative;
             width: 100%;
             height: 600px;
+            overflow: hidden;
+        }
+
+        .carousel-track {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 24px;
+            animation: scroll-left 30s linear infinite;
         }
 
-        .carousel-slide-modern {
-            position: absolute;
+        .carousel-item {
+            min-width: calc(33.333% - 16px);
+            height: 600px;
+            flex-shrink: 0;
+        }
+
+        .carousel-item img {
             width: 100%;
             height: 100%;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
 
-        .carousel-slide-modern.active {
-            opacity: 1;
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
         }
 
-        .carousel-slide-modern img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .carousel-track:hover {
+            animation-play-state: paused;
         }
 
         /* About Section */
@@ -402,6 +415,17 @@
             .carousel-display {
                 height: 400px;
             }
+
+            .carousel-item {
+                min-width: calc(50% - 12px);
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .carousel-item {
+                min-width: calc(100% - 24px);
+            }
         }
     </style>
 </head>
@@ -634,7 +658,6 @@
 
         // Photo Carousel
         let carouselPhotos = [];
-        let currentPhotoIndex = 0;
 
         async function loadPhotos() {
             const carouselDisplay = document.getElementById('carouselDisplay');
@@ -663,31 +686,27 @@
                     return;
                 }
 
-                carouselDisplay.innerHTML = '';
-                carouselPhotos.forEach((url, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'carousel-slide-modern';
-                    if (index === 0) slide.classList.add('active');
-                    slide.innerHTML = `<img src="${url}" alt="Photo ${index + 1}">`;
-                    carouselDisplay.appendChild(slide);
+                // Duplicate photos for infinite scroll effect
+                const duplicatedPhotos = [...carouselPhotos, ...carouselPhotos];
+
+                // Create carousel track
+                const track = document.createElement('div');
+                track.className = 'carousel-track';
+
+                duplicatedPhotos.forEach((url, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'carousel-item';
+                    item.innerHTML = `<img src="${url}" alt="Photo ${index + 1}">`;
+                    track.appendChild(item);
                 });
 
-                startCarousel();
+                carouselDisplay.innerHTML = '';
+                carouselDisplay.appendChild(track);
+
             } catch (error) {
                 console.error('Error loading photos:', error);
                 carouselDisplay.innerHTML = '<div class="loading-message">Error loading photos</div>';
             }
-        }
-
-        function startCarousel() {
-            if (carouselPhotos.length <= 1) return;
-
-            setInterval(() => {
-                const slides = document.querySelectorAll('.carousel-slide-modern');
-                slides[currentPhotoIndex].classList.remove('active');
-                currentPhotoIndex = (currentPhotoIndex + 1) % carouselPhotos.length;
-                slides[currentPhotoIndex].classList.add('active');
-            }, 4000);
         }
 
         loadPhotos();
