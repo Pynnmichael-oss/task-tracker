@@ -438,6 +438,7 @@
                 <li><a href="#photos">Photos</a></li>
                 <li><a href="#dashboard">Dashboard</a></li>
                 <li><a href="tasks.html">Tasks</a></li>
+                <li><a href="calendar.html">Calendar</a></li>
             </ul>
         </div>
     </nav>
@@ -517,15 +518,32 @@
 
                 <div class="dashboard-card">
                     <div class="card-title">
+                        <span>Today's Events</span>
+                        <span class="card-badge" id="eventBadge">0</span>
+                    </div>
+                    <div id="calendarAuth">
+                        <button id="authorizeBtn" style="padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
+                            Connect Google Calendar
+                        </button>
+                    </div>
+                    <ul class="task-list-mini" id="eventListMini" style="display: none;"></ul>
+                    <a href="calendar.html" class="view-link" style="display: none;" id="viewCalendarLink">View full calendar →</a>
+                </div>
+
+                <div class="dashboard-card" style="grid-column: 1 / -1;">
+                    <div class="card-title">
                         <span>Quick Access</span>
                     </div>
                     <p style="color: #666; margin-bottom: 24px;">Jump to what you need</p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <a href="tasks.html" style="padding: 12px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a href="tasks.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
                             ✓ Tasks & Goals
                         </a>
-                        <a href="photos.html" style="padding: 12px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                        <a href="photos.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
                             📷 Photo Albums
+                        </a>
+                        <a href="calendar.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                            📅 Calendar
                         </a>
                     </div>
                 </div>
@@ -710,6 +728,127 @@
         }
 
         loadPhotos();
+
+        // Google Calendar API Integration
+        const CLIENT_ID = '149129540182-2ftots8nd0nhusl5vrr429eff013tc5a.apps.googleusercontent.com';
+        const API_KEY = 'AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+
+        let tokenClient;
+        let gapiInited = false;
+        let gisInited = false;
+
+        // Load Google API
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
+
+        async function initializeGapiClient() {
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: [DISCOVERY_DOC],
+            });
+            gapiInited = true;
+        }
+
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: '',
+            });
+            gisInited = true;
+        }
+
+        // Handle authorization
+        document.getElementById('authorizeBtn').addEventListener('click', () => {
+            tokenClient.callback = async (resp) => {
+                if (resp.error !== undefined) {
+                    throw (resp);
+                }
+                document.getElementById('calendarAuth').style.display = 'none';
+                document.getElementById('eventListMini').style.display = 'block';
+                document.getElementById('viewCalendarLink').style.display = 'inline-block';
+                await listTodayEvents();
+            };
+
+            if (gapi.client.getToken() === null) {
+                tokenClient.requestAccessToken({prompt: 'consent'});
+            } else {
+                tokenClient.requestAccessToken({prompt: ''});
+            }
+        });
+
+        // Format event time
+        function formatEventTime(dateTime) {
+            const date = new Date(dateTime);
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHour = hours % 12 || 12;
+            const displayMinutes = minutes.toString().padStart(2, '0');
+            return `${displayHour}:${displayMinutes} ${ampm}`;
+        }
+
+        // List today's events
+        async function listTodayEvents() {
+            const eventList = document.getElementById('eventListMini');
+            const eventBadge = document.getElementById('eventBadge');
+
+            try {
+                const todayStart = new Date();
+                todayStart.setHours(0, 0, 0, 0);
+                const todayEnd = new Date();
+                todayEnd.setHours(23, 59, 59, 999);
+
+                const response = await gapi.client.calendar.events.list({
+                    'calendarId': 'primary',
+                    'timeMin': todayStart.toISOString(),
+                    'timeMax': todayEnd.toISOString(),
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime',
+                });
+
+                const events = response.result.items;
+                eventBadge.textContent = events.length;
+
+                if (events.length === 0) {
+                    eventList.innerHTML = '<div class="empty-state-mini">No events today</div>';
+                    return;
+                }
+
+                eventList.innerHTML = '';
+                events.forEach(event => {
+                    const start = event.start.dateTime || event.start.date;
+                    const isAllDay = !event.start.dateTime;
+                    
+                    const li = document.createElement('li');
+                    li.className = 'task-item-mini';
+                    li.innerHTML = `
+                        ${!isAllDay ? `<span class="task-time-mini">${formatEventTime(start)}</span>` : '<span class="task-time-mini">All Day</span>'}
+                        <span>${event.summary || 'Untitled Event'}</span>
+                    `;
+                    eventList.appendChild(li);
+                });
+            } catch (err) {
+                console.error('Error fetching events:', err);
+                eventList.innerHTML = '<div class="empty-state-mini">Error loading events</div>';
+            }
+        }
+
+        // Check if already authorized
+        if (gapi && gapi.client && gapi.client.getToken()) {
+            document.getElementById('calendarAuth').style.display = 'none';
+            document.getElementById('eventListMini').style.display = 'block';
+            document.getElementById('viewCalendarLink').style.display = 'inline-block';
+            listTodayEvents();
+        }
     </script>
+
+    <!-- Google API Scripts -->
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
 </body>
 </html>
