@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar - Michael Pynn</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .calendar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .calendar-header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .month-nav-btn {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1a1a1a;
+            transition: all 0.2s;
+        }
+
+        .month-nav-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .current-month {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .auth-section {
+            text-align: center;
+            padding: 80px 40px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .auth-btn {
+            padding: 16px 32px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 24px;
+        }
+
+        .auth-btn:hover {
+            background: #5568d3;
+        }
+
+        .calendar-grid {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 40px;
+        }
+
+        .calendar-days-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+            padding: 12px 0;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-day.today {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .calendar-day.has-events::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #667eea;
+            border-radius: 50%;
+        }
+
+        .calendar-day.today.has-events::after {
+            background: white;
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .day-events {
+            margin-top: 4px;
+            font-size: 10px;
+            color: #666;
+        }
+
+        .calendar-day.today .day-events {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .events-list-section {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .section-title-cal {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .event-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .event-item.all-day {
+            border-left-color: #28a745;
+        }
+
+        .event-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .event-time {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .event-date {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .sync-status-cal {
+            text-align: center;
+            font-size: 12px;
+            color: #28a745;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-header-section {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .day-events {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Michael Pynn</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="tasks.html">Tasks</a></li>
+                <li><a href="photos.html">Photos</a></li>
+                <li><a href="calendar.html" class="active">Calendar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="calendar-container">
+            <div class="page-header">
+                <h1>Calendar</h1>
+                <p>Your schedule and upcoming events</p>
+            </div>
+
+            <!-- Auth Section -->
+            <div class="auth-section" id="authSection">
+                <h2>Connect Your Google Calendar</h2>
+                <p style="color: #666; margin-top: 8px;">Sign in to view and manage your events</p>
+                <button class="auth-btn" id="authorizeBtn">Sign in with Google</button>
+            </div>
+
+            <!-- Calendar View -->
+            <div id="calendarView" style="display: none;">
+                <div class="calendar-header-section">
+                    <div class="current-month" id="currentMonth"></div>
+                    <div class="calendar-controls">
+                        <button class="month-nav-btn" id="prevMonthBtn">← Previous</button>
+                        <button class="month-nav-btn" id="todayBtn">Today</button>
+                        <button class="month-nav-btn" id="nextMonthBtn">Next →</button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="calendar-days-header">
+                        <div class="day-header">Sun</div>
+                        <div class="day-header">Mon</div>
+                        <div class="day-header">Tue</div>
+                        <div class="day-header">Wed</div>
+                        <div class="day-header">Thu</div>
+                        <div class="day-header">Fri</div>
+                        <div class="day-header">Sat</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays"></div>
+                </div>
+
+                <div class="events-list-section">
+                    <div class="section-title-cal">Upcoming Events</div>
+                    <div id="eventsList"></div>
+                    <div class="sync-status-cal">✓ Synced with Google Calendar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+
+    <script>
+        const CLIENT_ID = '149129540182-2ftots8nd0nhusl5vrr429eff013tc5a.apps.googleusercontent.com';
+        const API_KEY = 'AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+
+        let tokenClient;
+        let currentDate = new Date();
+        let allEvents = [];
+
+        // Initialize Google API
+        gapi.load('client', async () => {
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: [DISCOVERY_DOC],
+            });
+        });
+
+        // Initialize OAuth
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: CLIENT_ID,
+            scope: SCOPES,
+            callback: async (response) => {
+                if (response.error !== undefined) {
+                    throw (response);
+                }
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('calendarView').style.display = 'block';
+                await loadCalendar();
+            },
+        });
+
+        // Auth button
+        document.getElementById('authorizeBtn').addEventListener('click', () => {
+            tokenClient.requestAccessToken({prompt: 'consent'});
+        });
+
+        // Navigation
+        document.getElementById('prevMonthBtn').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextMonthBtn').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        document.getElementById('todayBtn').addEventListener('click', () => {
+            currentDate = new Date();
+            renderCalendar();
+        });
+
+        // Format date/time
+        function formatEventTime(dateTime) {
+            const date = new Date(dateTime);
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHour = hours % 12 || 12;
+            const displayMinutes = minutes.toString().padStart(2, '0');
+            return `${displayHour}:${displayMinutes} ${ampm}`;
+        }
+
+        function formatEventDate(dateTime) {
+            const date = new Date(dateTime);
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'short', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Load events
+        async function loadCalendar() {
+            try {
+                const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                
+                const response = await gapi.client.calendar.events.list({
+                    'calendarId': 'primary',
+                    'timeMin': startOfMonth.toISOString(),
+                    'timeMax': endOfMonth.toISOString(),
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime',
+                });
+
+                allEvents = response.result.items || [];
+                renderCalendar();
+                renderEventsList();
+            } catch (err) {
+                console.error('Error loading calendar:', err);
+            }
+        }
+
+        // Render calendar grid
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            document.getElementById('currentMonth').textContent = 
+                new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+            const calendarDays = document.getElementById('calendarDays');
+            calendarDays.innerHTML = '';
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day other-month';
+                dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
+                calendarDays.appendChild(dayDiv);
+            }
+
+            // Current month days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayDate = new Date(year, month, day);
+                dayDate.setHours(0, 0, 0, 0);
+                
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                
+                if (dayDate.getTime() === today.getTime()) {
+                    dayDiv.classList.add('today');
+                }
+
+                const dayEvents = allEvents.filter(event => {
+                    const eventDate = new Date(event.start.dateTime || event.start.date);
+                    eventDate.setHours(0, 0, 0, 0);
+                    return eventDate.getTime() === dayDate.getTime();
+                });
+
+                if (dayEvents.length > 0) {
+                    dayDiv.classList.add('has-events');
+                }
+
+                dayDiv.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    ${dayEvents.length > 0 ? `<div class="day-events">${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}</div>` : ''}
+                `;
+
+                calendarDays.appendChild(dayDiv);
+            }
+
+            // Next month days
+            const totalCells = calendarDays.children.length;
+            const remainingCells = 35 - totalCells;
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day other-month';
+                dayDiv.innerHTML = `<div class="day-number">${day}</div>`;
+                calendarDays.appendChild(dayDiv);
+            }
+        }
+
+        // Render events list
+        function renderEventsList() {
+            const eventsList = document.getElementById('eventsList');
+            
+            const upcomingEvents = allEvents.filter(event => {
+                const eventDate = new Date(event.start.dateTime || event.start.date);
+                return eventDate >= new Date();
+            }).slice(0, 10);
+
+            if (upcomingEvents.length === 0) {
+                eventsList.innerHTML = '<div class="no-events">No upcoming events</div>';
+                return;
+            }
+
+            eventsList.innerHTML = '';
+            upcomingEvents.forEach(event => {
+                const start = event.start.dateTime || event.start.date;
+                const isAllDay = !event.start.dateTime;
+                
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'event-item' + (isAllDay ? ' all-day' : '');
+                eventDiv.innerHTML = `
+                    <div class="event-title">${event.summary || 'Untitled Event'}</div>
+                    <div class="event-time">${isAllDay ? 'All Day' : formatEventTime(start)}</div>
+                    <div class="event-date">${formatEventDate(start)}</div>
+                `;
+                eventsList.appendChild(eventDiv);
+            });
+        }
+    </script>
+</body>
+</html>

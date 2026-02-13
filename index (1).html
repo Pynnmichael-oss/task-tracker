@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michael Pynn</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #fafafa;
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Section Base */
+        .scroll-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: white;
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .hero-section h1 {
+            font-size: 72px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+
+        .hero-tagline {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .hero-divider {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 40px auto;
+        }
+
+        .social-links-hero {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .social-link-hero {
+            width: 48px;
+            height: 48px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a1a;
+            text-decoration: none;
+            font-size: 20px;
+            transition: all 0.3s;
+            border: 2px solid #f0f0f0;
+        }
+
+        .social-link-hero:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-4px);
+        }
+
+        .scroll-indicator {
+            margin-top: 60px;
+            color: #999;
+            font-size: 14px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Carousel Section */
+        .carousel-section {
+            background: #2a2a2a;
+            overflow: hidden;
+        }
+
+        .carousel-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .carousel-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .carousel-header h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .carousel-header p {
+            font-size: 18px;
+            color: #aaa;
+        }
+
+        .carousel-display {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 24px;
+            animation: scroll-left 30s linear infinite;
+        }
+
+        .carousel-item {
+            min-width: calc(33.333% - 16px);
+            height: 600px;
+            flex-shrink: 0;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .carousel-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* About Section */
+        .about-section {
+            background: white;
+            padding: 120px 40px;
+        }
+
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .about-container h2 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 32px;
+            line-height: 1.3;
+            letter-spacing: -1px;
+        }
+
+        .about-container p {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .current-time-display {
+            margin-top: 40px;
+            padding: 24px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .current-time-display strong {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Dashboard Section */
+        .dashboard-section-scroll {
+            background: #fafafa;
+            padding: 120px 40px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .section-heading {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+        }
+
+        .dashboard-grid-scroll {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .task-list-mini {
+            list-style: none;
+        }
+
+        .task-item-mini {
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1a1a1a;
+            display: flex;
+            gap: 12px;
+        }
+
+        .task-time-mini {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 12px;
+            min-width: 60px;
+        }
+
+        .empty-state-mini {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .view-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Features Section */
+        .features-section {
+            background: white;
+            padding: 120px 40px;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-grid-scroll {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .feature-card-scroll {
+            background: #fafafa;
+            padding: 48px 32px;
+            border-radius: 16px;
+            text-align: center;
+            text-decoration: none;
+            color: #1a1a1a;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .feature-card-scroll:hover {
+            background: white;
+            border-color: #667eea;
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .feature-icon-scroll {
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+
+        .feature-card-scroll h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .feature-card-scroll p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer-section {
+            background: #1a1a1a;
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .footer-section p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .loading-message {
+            color: white;
+            font-size: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-section h1 {
+                font-size: 48px;
+            }
+
+            .carousel-header h2,
+            .about-container h2,
+            .section-heading {
+                font-size: 32px;
+            }
+
+            .dashboard-grid-scroll {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid-scroll {
+                grid-template-columns: 1fr;
+            }
+
+            .carousel-display {
+                height: 400px;
+            }
+
+            .carousel-item {
+                min-width: calc(50% - 12px);
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .carousel-item {
+                min-width: calc(100% - 24px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Michael Pynn</a>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#photos">Photos</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="tasks.html">Tasks</a></li>
+                <li><a href="calendar.html">Calendar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="scroll-section hero-section" id="home">
+        <div>
+            <h1>Michael Pynn</h1>
+            <p class="hero-tagline">Life and stuff</p>
+            
+            <div class="hero-divider"></div>
+            
+            <div class="social-links-hero">
+                <a href="https://www.linkedin.com/in/michael-pynn/" target="_blank" class="social-link-hero" title="LinkedIn">
+                    <span>in</span>
+                </a>
+                <a href="https://www.instagram.com/michael.pynn/" target="_blank" class="social-link-hero" title="Instagram">
+                    <span>📷</span>
+                </a>
+                <a href="https://twitter.com/MichaelPynn" target="_blank" class="social-link-hero" title="Twitter">
+                    <span>𝕏</span>
+                </a>
+                <a href="https://github.com/Pynnmichael-oss" target="_blank" class="social-link-hero" title="GitHub">
+                    <span>⚡</span>
+                </a>
+            </div>
+
+            <div class="scroll-indicator">
+                <div>↓</div>
+                <div style="font-size: 12px; margin-top: 8px;">Scroll to explore</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carousel Section -->
+    <section class="scroll-section carousel-section" id="photos">
+        <div class="carousel-wrapper">
+            <div class="carousel-header">
+                <h2>Captured Moments</h2>
+                <p>A collection of places and memories</p>
+            </div>
+            <div class="carousel-display" id="carouselDisplay">
+                <div class="loading-message">Loading photos...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="scroll-section about-section">
+        <div class="about-container">
+            <div class="about-label">About</div>
+            <h2>Building things, tracking progress, and capturing life.</h2>
+            <p>I'm Michael, based in Tulsa, Oklahoma. This is my personal space where I organize my tasks, track my goals, and preserve memories through photos.</p>
+            <p>I built this site to stay productive and keep the things that matter most to me in one place.</p>
+            
+            <div class="current-time-display" id="currentTimeDisplay">
+                <strong>Right now:</strong> <span id="liveTime"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="scroll-section dashboard-section-scroll" id="dashboard">
+        <div class="dashboard-container">
+            <div class="section-title">Live Dashboard</div>
+            <h2 class="section-heading">What's happening today</h2>
+            
+            <div class="dashboard-grid-scroll">
+                <div class="dashboard-card">
+                    <div class="card-title">
+                        <span>Today's Tasks</span>
+                        <span class="card-badge" id="taskBadge">0</span>
+                    </div>
+                    <ul class="task-list-mini" id="taskListMini"></ul>
+                    <a href="tasks.html" class="view-link">View all tasks →</a>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-title">
+                        <span>Today's Events</span>
+                        <span class="card-badge" id="eventBadge">0</span>
+                    </div>
+                    <div id="calendarAuth">
+                        <button id="authorizeBtn" style="padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
+                            Connect Google Calendar
+                        </button>
+                    </div>
+                    <ul class="task-list-mini" id="eventListMini" style="display: none;"></ul>
+                    <a href="calendar.html" class="view-link" style="display: none;" id="viewCalendarLink">View full calendar →</a>
+                </div>
+
+                <div class="dashboard-card" style="grid-column: 1 / -1;">
+                    <div class="card-title">
+                        <span>Quick Access</span>
+                    </div>
+                    <p style="color: #666; margin-bottom: 24px;">Jump to what you need</p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a href="tasks.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                            ✓ Tasks & Goals
+                        </a>
+                        <a href="photos.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                            📷 Photo Albums
+                        </a>
+                        <a href="calendar.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
+                            📅 Calendar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="scroll-section features-section">
+        <div class="features-container">
+            <div class="section-title">What I'm Building</div>
+            <h2 class="section-heading">Tools for productivity and memory</h2>
+            
+            <div class="features-grid-scroll">
+                <a href="tasks.html" class="feature-card-scroll">
+                    <div class="feature-icon-scroll">✓</div>
+                    <h3>Daily Tasks</h3>
+                    <p>Quick task management with time tracking and archiving</p>
+                </a>
+
+                <a href="tasks.html" class="feature-card-scroll">
+                    <div class="feature-icon-scroll">🎯</div>
+                    <h3>Extended Goals</h3>
+                    <p>Long-term projects with priority levels and status tracking</p>
+                </a>
+
+                <a href="photos.html" class="feature-card-scroll">
+                    <div class="feature-icon-scroll">📷</div>
+                    <h3>Photo Albums</h3>
+                    <p>Organized collections by location and event</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <p>Michael Pynn © 2026</p>
+        <p style="margin-top: 8px;">Built with Firebase and deployed on Netlify</p>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
+            authDomain: "michael-new-website.firebaseapp.com",
+            projectId: "michael-new-website",
+            storageBucket: "michael-new-website.firebasestorage.app",
+            messagingSenderId: "149129540182",
+            appId: "1:149129540182:web:ea47a8eaa08181ecd6c1f7",
+            measurementId: "G-8R2FKQ3XMN"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Live Time
+        function updateLiveTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                timeZone: 'America/Chicago'
+            };
+            document.getElementById('liveTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateLiveTime();
+        setInterval(updateLiveTime, 60000);
+
+        // Format time
+        function formatTime(timeString) {
+            if (!timeString) return '';
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        // Load today's tasks
+        const today = new Date().toISOString().split('T')[0];
+        const dailyTasksRef = db.collection('dailyTasks').doc(today);
+
+        dailyTasksRef.onSnapshot((doc) => {
+            const taskList = document.getElementById('taskListMini');
+            const taskBadge = document.getElementById('taskBadge');
+            
+            if (!doc.exists || !doc.data().tasks) {
+                taskList.innerHTML = '<div class="empty-state-mini">No tasks for today</div>';
+                taskBadge.textContent = '0';
+                return;
+            }
+
+            const tasks = doc.data().tasks;
+            const incompleteTasks = tasks.filter(t => !t.completed);
+            taskBadge.textContent = incompleteTasks.length;
+
+            if (incompleteTasks.length === 0) {
+                taskList.innerHTML = '<div class="empty-state-mini">✓ All done!</div>';
+                return;
+            }
+
+            const sortedTasks = [...incompleteTasks].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            }).slice(0, 4); // Show max 4 tasks
+
+            taskList.innerHTML = '';
+            sortedTasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item-mini';
+                li.innerHTML = `
+                    ${task.time ? `<span class="task-time-mini">${formatTime(task.time)}</span>` : ''}
+                    <span>${task.text}</span>
+                `;
+                taskList.appendChild(li);
+            });
+        });
+
+        // Photo Carousel
+        let carouselPhotos = [];
+
+        async function loadPhotos() {
+            const carouselDisplay = document.getElementById('carouselDisplay');
+
+            try {
+                const albumsSnapshot = await db.collection('albums').get();
+                const photoPromises = [];
+
+                albumsSnapshot.forEach(albumDoc => {
+                    const promise = db.collection('albums').doc(albumDoc.id).collection('photos').get();
+                    photoPromises.push(promise);
+                });
+
+                const photosSnapshots = await Promise.all(photoPromises);
+                
+                photosSnapshots.forEach(snapshot => {
+                    snapshot.forEach(photoDoc => {
+                        carouselPhotos.push(photoDoc.data().url);
+                    });
+                });
+
+                carouselPhotos = carouselPhotos.sort(() => Math.random() - 0.5);
+
+                if (carouselPhotos.length === 0) {
+                    carouselDisplay.innerHTML = '<div class="loading-message">No photos yet. Upload some!</div>';
+                    return;
+                }
+
+                // Duplicate photos for infinite scroll effect
+                const duplicatedPhotos = [...carouselPhotos, ...carouselPhotos];
+
+                // Create carousel track
+                const track = document.createElement('div');
+                track.className = 'carousel-track';
+
+                duplicatedPhotos.forEach((url, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'carousel-item';
+                    item.innerHTML = `<img src="${url}" alt="Photo ${index + 1}">`;
+                    track.appendChild(item);
+                });
+
+                carouselDisplay.innerHTML = '';
+                carouselDisplay.appendChild(track);
+
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                carouselDisplay.innerHTML = '<div class="loading-message">Error loading photos</div>';
+            }
+        }
+
+        loadPhotos();
+
+        // Google Calendar API Integration
+        const CLIENT_ID = '149129540182-2ftots8nd0nhusl5vrr429eff013tc5a.apps.googleusercontent.com';
+        const API_KEY = 'AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+
+        let tokenClient;
+        let gapiInited = false;
+        let gisInited = false;
+
+        // Load Google API
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
+
+        async function initializeGapiClient() {
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: [DISCOVERY_DOC],
+            });
+            gapiInited = true;
+        }
+
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: '',
+            });
+            gisInited = true;
+        }
+
+        // Handle authorization
+        document.getElementById('authorizeBtn').addEventListener('click', () => {
+            tokenClient.callback = async (resp) => {
+                if (resp.error !== undefined) {
+                    throw (resp);
+                }
+                document.getElementById('calendarAuth').style.display = 'none';
+                document.getElementById('eventListMini').style.display = 'block';
+                document.getElementById('viewCalendarLink').style.display = 'inline-block';
+                await listTodayEvents();
+            };
+
+            if (gapi.client.getToken() === null) {
+                tokenClient.requestAccessToken({prompt: 'consent'});
+            } else {
+                tokenClient.requestAccessToken({prompt: ''});
+            }
+        });
+
+        // Format event time
+        function formatEventTime(dateTime) {
+            const date = new Date(dateTime);
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHour = hours % 12 || 12;
+            const displayMinutes = minutes.toString().padStart(2, '0');
+            return `${displayHour}:${displayMinutes} ${ampm}`;
+        }
+
+        // List today's events
+        async function listTodayEvents() {
+            const eventList = document.getElementById('eventListMini');
+            const eventBadge = document.getElementById('eventBadge');
+
+            try {
+                const todayStart = new Date();
+                todayStart.setHours(0, 0, 0, 0);
+                const todayEnd = new Date();
+                todayEnd.setHours(23, 59, 59, 999);
+
+                const response = await gapi.client.calendar.events.list({
+                    'calendarId': 'primary',
+                    'timeMin': todayStart.toISOString(),
+                    'timeMax': todayEnd.toISOString(),
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime',
+                });
+
+                const events = response.result.items;
+                eventBadge.textContent = events.length;
+
+                if (events.length === 0) {
+                    eventList.innerHTML = '<div class="empty-state-mini">No events today</div>';
+                    return;
+                }
+
+                eventList.innerHTML = '';
+                events.forEach(event => {
+                    const start = event.start.dateTime || event.start.date;
+                    const isAllDay = !event.start.dateTime;
+                    
+                    const li = document.createElement('li');
+                    li.className = 'task-item-mini';
+                    li.innerHTML = `
+                        ${!isAllDay ? `<span class="task-time-mini">${formatEventTime(start)}</span>` : '<span class="task-time-mini">All Day</span>'}
+                        <span>${event.summary || 'Untitled Event'}</span>
+                    `;
+                    eventList.appendChild(li);
+                });
+            } catch (err) {
+                console.error('Error fetching events:', err);
+                eventList.innerHTML = '<div class="empty-state-mini">Error loading events</div>';
+            }
+        }
+
+        // Check if already authorized
+        if (gapi && gapi.client && gapi.client.getToken()) {
+            document.getElementById('calendarAuth').style.display = 'none';
+            document.getElementById('eventListMini').style.display = 'block';
+            document.getElementById('viewCalendarLink').style.display = 'inline-block';
+            listTodayEvents();
+        }
+    </script>
+
+    <!-- Google API Scripts -->
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+</body>
+</html>
