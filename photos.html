@@ -336,9 +336,9 @@
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="tasks.html">Tasks</a></li>
                 <li><a href="photos.html" class="active">Photos</a></li>
-                <li><a href="calendar.html">Calendar</a></li>
+                <li><a href="tasks.html" class="admin-only-inline">Tasks</a></li>
+                <li><a href="calendar.html" class="admin-only-inline">Calendar</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
@@ -417,12 +417,19 @@
     <script src="auth.js"></script>
 
     <script>
-        // Firebase is initialized in auth.js
-        // Use global db and storage from auth.js
-        
-        db.settings({
-            ignoreUndefinedProperties: true
-        });
+        // Wait for auth.js to initialize Firebase
+        window.addEventListener('load', function() {
+            // Firebase is initialized in auth.js
+            // Use global db and storage from auth.js
+            
+            if (typeof db === 'undefined' || typeof storage === 'undefined') {
+                console.error('Firebase not initialized');
+                return;
+            }
+            
+            db.settings({
+                ignoreUndefinedProperties: true
+            });
 
         // Get elements
         const albumsView = document.getElementById('albumsView');
@@ -701,6 +708,8 @@
             });
             renderAlbums(albums);
         });
+        
+        }); // End window.addEventListener('load')
     </script>
 </body>
 </html>
