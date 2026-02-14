@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .setup-container {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .setup-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .setup-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .profile-picture-upload {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .profile-picture-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-picture-preview:hover {
+            border-color: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .profile-picture-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-picture-placeholder {
+            font-size: 64px;
+            color: #ccc;
+        }
+
+        .upload-btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .upload-btn:hover {
+            background: #5568d3;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #5568d3;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-header">
+            <h1>Complete Your Profile</h1>
+            <p>Let's get you set up! Add a profile picture and some info.</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="profile-picture-upload">
+            <div class="profile-picture-preview" id="profilePicturePreview" onclick="document.getElementById('profilePictureInput').click()">
+                <div class="profile-picture-placeholder" id="picturePlaceholder">📷</div>
+                <img id="picturePreviewImg" style="display: none;">
+            </div>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+            <button class="upload-btn" onclick="document.getElementById('profilePictureInput').click()">
+                Choose Profile Picture <span class="required">*</span>
+            </button>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Display Name <span class="required">*</span></label>
+            <input type="text" id="displayNameInput" class="form-input" placeholder="How should we call you?" maxlength="50">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Bio (Optional)</label>
+            <textarea id="bioInput" class="form-textarea" placeholder="Tell us a little about yourself..." maxlength="300"></textarea>
+        </div>
+
+        <button class="submit-btn" id="submitBtn">Complete Profile</button>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        let selectedFile = null;
+
+        // Check if user is logged in
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Check if profile already exists
+            const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
+            if (profileDoc.exists) {
+                window.location.href = 'index.html';
+            }
+
+            // Pre-fill display name from Google account
+            if (user.displayName) {
+                document.getElementById('displayNameInput').value = user.displayName;
+            }
+        });
+
+        // Handle profile picture selection
+        document.getElementById('profilePictureInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('picturePlaceholder').style.display = 'none';
+                    const img = document.getElementById('picturePreviewImg');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const errorMessage = document.getElementById('errorMessage');
+            const displayName = document.getElementById('displayNameInput').value.trim();
+            const bio = document.getElementById('bioInput').value.trim();
+
+            // Validation
+            if (!selectedFile) {
+                errorMessage.textContent = 'Please upload a profile picture';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (!displayName) {
+                errorMessage.textContent = 'Please enter a display name';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = 'Creating Profile...';
+
+            try {
+                const user = auth.currentUser;
+                
+                // Upload profile picture
+                const fileName = `profile-pictures/${user.uid}/${Date.now()}_${selectedFile.name}`;
+                const storageRef = storage.ref(fileName);
+                await storageRef.put(selectedFile);
+                const photoURL = await storageRef.getDownloadURL();
+
+                // Create user profile
+                await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
+                    displayName: displayName,
+                    bio: bio || '',
+                    photoURL: photoURL,
+                    email: user.email,
+                    createdAt: new Date().toISOString()
+                });
+
+                // Redirect to home
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error creating profile:', error);
+                errorMessage.textContent = 'Error creating profile. Please try again.';
+                errorMessage.style.display = 'block';
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = 'Complete Profile';
+            }
+        });
+    </script>
+</body>
+</html>
