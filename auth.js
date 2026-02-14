@@ -18,26 +18,57 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// Authorized admin email
+// Admin email
 const ADMIN_EMAIL = 'mpynn15@gmail.com';
 
 // Current user state
 let currentUser = null;
+let userProfile = null;
 let isAdmin = false;
 
 // Auth state listener
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged(async (user) => {
     currentUser = user;
-    isAdmin = user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
     
-    updateUIForAuthState();
+    if (user) {
+        isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+        
+        // Load user profile
+        try {
+            const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
+            
+            if (profileDoc.exists) {
+                userProfile = profileDoc.data();
+                updateUIForAuthState();
+            } else {
+                // No profile - redirect to setup unless already on setup page
+                if (!window.location.pathname.includes('profile-setup.html')) {
+                    window.location.href = 'profile-setup.html';
+                }
+            }
+        } catch (error) {
+            console.error('Error loading profile:', error);
+        }
+    } else {
+        userProfile = null;
+        updateUIForAuthState();
+    }
 });
 
 // Sign in with Google
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
-        await auth.signInWithPopup(provider);
+        const result = await auth.signInWithPopup(provider);
+        const user = result.user;
+        
+        // Check if profile exists
+        const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
+        
+        if (!profileDoc.exists) {
+            // New user - redirect to profile setup
+            window.location.href = 'profile-setup.html';
+        }
     } catch (error) {
         console.error('Sign in error:', error);
         alert('Sign in failed. Please try again.');
@@ -48,6 +79,7 @@ async function signInWithGoogle() {
 async function signOut() {
     try {
         await auth.signOut();
+        window.location.href = 'index.html';
     } catch (error) {
         console.error('Sign out error:', error);
     }
@@ -58,9 +90,18 @@ function updateUIForAuthState() {
     // Update auth button
     const authBtn = document.getElementById('authButton');
     if (authBtn) {
-        if (currentUser) {
+        if (currentUser && userProfile) {
             authBtn.innerHTML = `
-                <span style="margin-right: 8px;">👋 ${currentUser.displayName || currentUser.email}</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="profile.html?user=${currentUser.uid}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a;">
+                        <img src="${userProfile.photoURL}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #667eea;">
+                        <span style="font-weight: 600;">${userProfile.displayName}</span>
+                    </a>
+                    <button onclick="signOut()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Sign Out</button>
+                </div>
+            `;
+        } else if (currentUser && !userProfile) {
+            authBtn.innerHTML = `
                 <button onclick="signOut()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Sign Out</button>
             `;
         } else {
@@ -69,6 +110,17 @@ function updateUIForAuthState() {
             `;
         }
     }
+
+    // Show/hide logged-in content
+    const loggedInContent = document.querySelectorAll('.logged-in-only');
+    loggedInContent.forEach(el => {
+        el.style.display = currentUser && userProfile ? 'block' : 'none';
+    });
+
+    const loggedInInline = document.querySelectorAll('.logged-in-only-inline');
+    loggedInInline.forEach(el => {
+        el.style.display = currentUser && userProfile ? 'inline-block' : 'none';
+    });
 
     // Show/hide admin controls
     const adminControls = document.querySelectorAll('.admin-only');
@@ -79,11 +131,6 @@ function updateUIForAuthState() {
     const adminInline = document.querySelectorAll('.admin-only-inline');
     adminInline.forEach(control => {
         control.style.display = isAdmin ? 'inline-block' : 'none';
-    });
-
-    const adminFlex = document.querySelectorAll('.admin-only-flex');
-    adminFlex.forEach(control => {
-        control.style.display = isAdmin ? 'flex' : 'none';
     });
 }
 
@@ -96,12 +143,25 @@ function requireAdmin(callback) {
     return callback();
 }
 
+// Get current user ID
+function getCurrentUserId() {
+    return currentUser ? currentUser.uid : null;
+}
+
+// Get user profile
+function getUserProfile() {
+    return userProfile;
+}
+
 // Export for use in other scripts
 window.auth = auth;
 window.db = db;
 window.storage = storage;
 window.currentUser = () => currentUser;
+window.userProfile = () => userProfile;
 window.isAdmin = () => isAdmin;
 window.signInWithGoogle = signInWithGoogle;
 window.signOut = signOut;
 window.requireAdmin = requireAdmin;
+window.getCurrentUserId = getCurrentUserId;
+window.getUserProfile = getUserProfile;
