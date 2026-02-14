@@ -3,427 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tasks - Michael Pynn</title>
+    <title>Photos - Michael Pynn</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .task-container {
-            max-width: 1400px;
+        .photo-container {
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        .task-layout {
+        /* Album Grid */
+        .album-grid {
             display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 32px;
-            margin-top: 32px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
         }
 
-        /* Daily Tasks Sidebar */
-        .daily-section {
-            position: sticky;
-            top: 100px;
-            height: fit-content;
-        }
-
-        .section-header {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #1a1a1a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .archive-day-btn {
-            padding: 6px 12px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .archive-day-btn:hover {
-            background: #218838;
-        }
-
-        .daily-card {
+        .album-card {
             background: white;
             border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #f0f0f0;
-            margin-bottom: 24px;
-        }
-
-        .daily-input-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .daily-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 2px solid #f0f0f0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .daily-time-input {
-            width: 100px;
-            padding: 10px 12px;
-            border: 2px solid #f0f0f0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .daily-input:focus,
-        .daily-time-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .add-daily-btn {
-            padding: 10px 16px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .add-daily-btn:hover {
-            background: #5568d3;
-        }
-
-        .daily-list {
-            list-style: none;
-        }
-
-        .daily-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-        .daily-item:last-child {
-            border-bottom: none;
-        }
-
-        .daily-checkbox {
-            width: 18px;
-            height: 18px;
-            margin-right: 12px;
-            cursor: pointer;
-            accent-color: #667eea;
-        }
-
-        .task-time {
-            font-size: 12px;
-            color: #667eea;
-            font-weight: 600;
-            margin-right: 12px;
-            min-width: 60px;
-        }
-
-        .daily-text {
-            flex: 1;
-            font-size: 14px;
-            color: #1a1a1a;
-        }
-
-        .daily-item.completed .daily-text {
-            text-decoration: line-through;
-            color: #999;
-        }
-
-        .daily-item.completed .task-time {
-            color: #999;
-        }
-
-        .delete-daily-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            padding: 4px 8px;
-            font-size: 18px;
-        }
-
-        .delete-daily-btn:hover {
-            color: #dc3545;
-        }
-
-        .daily-empty {
-            text-align: center;
-            padding: 32px 16px;
-            color: #999;
-            font-size: 14px;
-        }
-
-        /* Past Tasks Section */
-        .past-tasks-section {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #f0f0f0;
-        }
-
-        .past-tasks-header {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #1a1a1a;
-        }
-
-        .past-days-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .past-day-item {
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid #f0f0f0;
-        }
-
-        .past-day-item:hover {
-            background: #e9ecef;
-            border-color: #667eea;
-        }
-
-        .past-day-date {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 4px;
-        }
-
-        .past-day-count {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .past-tasks-empty {
-            text-align: center;
-            padding: 32px 16px;
-            color: #999;
-            font-size: 14px;
-        }
-
-        /* Past Tasks Modal */
-        .past-tasks-modal .modal-content {
-            max-width: 700px;
-        }
-
-        .past-task-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: #f8f9fa;
-            margin-bottom: 8px;
-            border-radius: 8px;
-        }
-
-        .past-task-item.completed {
-            opacity: 0.6;
-        }
-
-        .past-task-item.completed .daily-text {
-            text-decoration: line-through;
-            color: #999;
-        }
-
-        /* Extended Goals Section */
-        .goals-section {
-            min-height: 400px;
-        }
-
-        .goals-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .create-goal-btn {
-            padding: 12px 24px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .create-goal-btn:hover {
-            background: #5568d3;
-        }
-
-        .goals-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .goal-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid #f0f0f0;
-            transition: all 0.3s;
-            position: relative;
             overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #f0f0f0;
         }
 
-        .goal-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--priority-color);
+        .album-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
         }
 
-        .goal-card:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            transform: translateY(-2px);
+        .album-cover {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
         }
 
-        .goal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 16px;
+        .album-info {
+            padding: 20px;
         }
 
-        .goal-title {
+        .album-name {
             font-size: 18px;
             font-weight: 600;
-            color: #1a1a1a;
             margin-bottom: 8px;
+            color: #1a1a1a;
         }
 
-        .goal-description {
+        .album-count {
             font-size: 14px;
             color: #666;
-            margin-bottom: 16px;
-            line-height: 1.5;
         }
 
-        .goal-meta {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-not-started {
-            background: #f0f0f0;
-            color: #666;
-        }
-
-        .status-in-progress {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-completed {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .priority-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .priority-high {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .priority-medium {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .priority-low {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .goal-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .goal-action-btn {
-            padding: 8px 16px;
-            border: 1px solid #e0e0e0;
+        /* Create Album Card */
+        .create-album-card {
             background: white;
-            border-radius: 6px;
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            border: 2px dashed #667eea;
         }
 
-        .goal-action-btn:hover {
+        .create-album-card:hover {
             background: #f8f9fa;
+            border-color: #5568d3;
         }
 
-        .delete-goal-btn {
-            padding: 8px 16px;
-            border: 1px solid #dc3545;
-            background: white;
-            color: #dc3545;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .delete-goal-btn:hover {
-            background: #dc3545;
-            color: white;
+        .create-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #667eea;
         }
 
         /* Modal */
@@ -448,10 +100,8 @@
             background: white;
             border-radius: 20px;
             padding: 40px;
-            max-width: 600px;
+            max-width: 500px;
             width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
         }
 
         .modal-header {
@@ -467,32 +117,43 @@
         .form-label {
             display: block;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 8px;
             color: #1a1a1a;
         }
 
-        .form-input,
-        .form-textarea,
-        .form-select {
+        .form-input {
             width: 100%;
             padding: 12px;
             border: 2px solid #f0f0f0;
             border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
+            font-size: 16px;
         }
 
-        .form-textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus,
-        .form-select:focus {
+        .form-input:focus {
             outline: none;
             border-color: #667eea;
+        }
+
+        .cover-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cover-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .cover-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 16px;
+            border-radius: 8px;
         }
 
         .btn-primary {
@@ -529,9 +190,9 @@
             background: #e0e0e0;
         }
 
-        .goals-empty {
+        .empty-state {
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
             color: #999;
         }
 
@@ -540,26 +201,132 @@
             margin-bottom: 20px;
         }
 
-        .sync-status {
-            text-align: center;
+        /* Album View */
+        .album-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .back-btn {
+            background: white;
+            border: 1px solid #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            aspect-ratio: 1;
+            cursor: pointer;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.03);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .photo-item:hover .photo-overlay {
+            transform: translateY(0);
+        }
+
+        .delete-photo-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 12px;
-            color: #28a745;
-            margin-top: 16px;
         }
 
-        .sync-status.syncing {
-            color: #ffc107;
+        .upload-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        @media (max-width: 1024px) {
-            .task-layout {
-                grid-template-columns: 1fr;
-            }
+        .upload-btn:hover {
+            background: #5568d3;
+        }
 
-            .daily-section {
-                position: relative;
-                top: 0;
-            }
+        #fileInput {
+            display: none;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+        }
+
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -569,8 +336,8 @@
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="photos.html">Photos</a></li>
-                <li><a href="tasks.html" class="active admin-only-inline">Tasks</a></li>
+                <li><a href="photos.html" class="active">Photos</a></li>
+                <li><a href="tasks.html" class="admin-only-inline">Tasks</a></li>
                 <li><a href="calendar.html" class="admin-only-inline">Calendar</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
             </ul>
@@ -578,509 +345,361 @@
     </nav>
 
     <div class="container">
-        <div class="task-container">
-            <div class="page-header">
-                <h1>Tasks & Goals</h1>
-                <p class="date" id="currentDate"></p>
-            </div>
-
-            <div class="task-layout">
-                <!-- Daily Tasks Sidebar -->
-                <div class="daily-section">
-                    <div class="section-header">
-                        <span>Today's Tasks</span>
-                        <button class="archive-day-btn" id="archiveDayBtn">End Day</button>
-                    </div>
-                    <div class="daily-card">
-                        <div class="daily-input-section">
-                            <div class="input-row">
-                                <input type="text" class="daily-input" id="dailyInput" placeholder="Add a task...">
-                                <input type="time" class="daily-time-input" id="dailyTimeInput">
-                            </div>
-                            <button class="add-daily-btn" id="addDailyBtn">+ Add Task</button>
-                        </div>
-                        <ul class="daily-list" id="dailyList"></ul>
-                        <div class="sync-status" id="dailySync">✓ Synced</div>
-                    </div>
-
-                    <!-- Past Tasks -->
-                    <div class="past-tasks-section">
-                        <div class="past-tasks-header">Past Tasks</div>
-                        <div class="past-days-list" id="pastDaysList"></div>
-                    </div>
+        <div class="photo-container">
+            <!-- Albums View -->
+            <div id="albumsView">
+                <div class="page-header">
+                    <h1>Photo Albums</h1>
+                    <p class="date">Organize your memories</p>
                 </div>
 
-                <!-- Extended Goals Section -->
-                <div class="goals-section">
-                    <div class="goals-header">
-                        <div class="section-header">Extended Goals</div>
-                        <button class="create-goal-btn" id="createGoalBtn">+ New Goal</button>
+                <div class="content-card">
+                    <div class="album-grid" id="albumGrid"></div>
+                </div>
+            </div>
+
+            <!-- Album Detail View -->
+            <div id="albumDetailView" style="display: none;">
+                <div class="page-header">
+                    <div class="album-header">
+                        <div>
+                            <button class="back-btn" id="backBtn">← Back to Albums</button>
+                        </div>
+                        <button class="upload-btn admin-only" id="uploadPhotoBtn">+ Add Photos</button>
+                        <input type="file" id="fileInput" accept="image/*" multiple>
                     </div>
-                    <div class="goals-grid" id="goalsGrid"></div>
-                    <div class="sync-status" id="goalsSync">✓ Synced</div>
+                    <h1 id="albumTitle"></h1>
+                    <p class="date" id="albumPhotoCount"></p>
+                </div>
+
+                <div class="content-card">
+                    <div class="photo-grid" id="photoGrid"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Create/Edit Goal Modal -->
-    <div class="modal" id="goalModal">
+    <!-- Create Album Modal -->
+    <div class="modal" id="createAlbumModal">
         <div class="modal-content">
-            <div class="modal-header" id="modalTitle">Create New Goal</div>
+            <div class="modal-header">Create New Album</div>
             
             <div class="form-group">
-                <label class="form-label">Goal Title</label>
-                <input type="text" class="form-input" id="goalTitleInput" placeholder="e.g., Launch new website">
+                <label class="form-label">Album Name</label>
+                <input type="text" class="form-input" id="albumNameInput" placeholder="e.g., Colorado Trip">
             </div>
 
             <div class="form-group">
-                <label class="form-label">Description</label>
-                <textarea class="form-textarea" id="goalDescInput" placeholder="Add details about this goal..."></textarea>
+                <label class="form-label">Cover Photo</label>
+                <div class="cover-upload-area" id="coverUploadArea">
+                    <div>📷 Click to select cover photo</div>
+                    <input type="file" id="coverInput" accept="image/*" style="display: none;">
+                    <img id="coverPreview" class="cover-preview" style="display: none;">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Due Date</label>
-                <input type="date" class="form-input" id="goalDueDateInput">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Priority</label>
-                <select class="form-select" id="goalPriorityInput">
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Status</label>
-                <select class="form-select" id="goalStatusInput">
-                    <option value="not-started" selected>Not Started</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-
-            <button class="btn-primary" id="saveGoalBtn">Save Goal</button>
-            <button class="btn-secondary" id="cancelGoalBtn">Cancel</button>
+            <button class="btn-primary" id="createAlbumBtn">Create Album</button>
+            <button class="btn-secondary" id="cancelBtn">Cancel</button>
         </div>
     </div>
 
-    <!-- Past Tasks Modal -->
-    <div class="modal past-tasks-modal" id="pastTasksModal">
-        <div class="modal-content">
-            <div class="modal-header" id="pastTasksModalTitle">Past Tasks</div>
-            <div id="pastTasksModalContent"></div>
-            <button class="btn-secondary" id="closePastTasksBtn">Close</button>
-        </div>
+    <!-- Image View Modal -->
+    <div class="image-modal" id="imageModal">
+        <span class="modal-close" id="imageModalClose">&times;</span>
+        <img id="modalImage" src="" alt="Full size photo">
     </div>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
     <script>
         // Firebase is initialized in auth.js
+        // Use global db and storage from auth.js
+        
+        db.settings({
+            ignoreUndefinedProperties: true
+        });
 
         // Get elements
-        const dateElement = document.getElementById('currentDate');
-        const dailyInput = document.getElementById('dailyInput');
-        const dailyTimeInput = document.getElementById('dailyTimeInput');
-        const addDailyBtn = document.getElementById('addDailyBtn');
-        const archiveDayBtn = document.getElementById('archiveDayBtn');
-        const dailyList = document.getElementById('dailyList');
-        const dailySync = document.getElementById('dailySync');
-        const pastDaysList = document.getElementById('pastDaysList');
-        const goalsGrid = document.getElementById('goalsGrid');
-        const goalsSync = document.getElementById('goalsSync');
-        const createGoalBtn = document.getElementById('createGoalBtn');
-        const goalModal = document.getElementById('goalModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const goalTitleInput = document.getElementById('goalTitleInput');
-        const goalDescInput = document.getElementById('goalDescInput');
-        const goalDueDateInput = document.getElementById('goalDueDateInput');
-        const goalPriorityInput = document.getElementById('goalPriorityInput');
-        const goalStatusInput = document.getElementById('goalStatusInput');
-        const saveGoalBtn = document.getElementById('saveGoalBtn');
-        const cancelGoalBtn = document.getElementById('cancelGoalBtn');
-        const pastTasksModal = document.getElementById('pastTasksModal');
-        const pastTasksModalTitle = document.getElementById('pastTasksModalTitle');
-        const pastTasksModalContent = document.getElementById('pastTasksModalContent');
-        const closePastTasksBtn = document.getElementById('closePastTasksBtn');
-
-        // Display current date
-        const today = new Date();
-        dateElement.textContent = today.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
-
-        const todayId = today.toISOString().split('T')[0];
-
-        // References
-        const dailyTasksRef = db.collection('dailyTasks').doc(todayId);
-        const archivedTasksRef = db.collection('archivedTasks');
-        const goalsRef = db.collection('goals');
+        const albumsView = document.getElementById('albumsView');
+        const albumDetailView = document.getElementById('albumDetailView');
+        const albumGrid = document.getElementById('albumGrid');
+        const photoGrid = document.getElementById('photoGrid');
+        const createAlbumModal = document.getElementById('createAlbumModal');
+        const albumNameInput = document.getElementById('albumNameInput');
+        const coverInput = document.getElementById('coverInput');
+        const coverUploadArea = document.getElementById('coverUploadArea');
+        const coverPreview = document.getElementById('coverPreview');
+        const createAlbumBtn = document.getElementById('createAlbumBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const backBtn = document.getElementById('backBtn');
+        const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
+        const fileInput = document.getElementById('fileInput');
+        const albumTitle = document.getElementById('albumTitle');
+        const albumPhotoCount = document.getElementById('albumPhotoCount');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const imageModalClose = document.getElementById('imageModalClose');
 
         // State
-        let editingGoalId = null;
+        let currentAlbumId = null;
+        let selectedCoverFile = null;
 
-        // Daily Tasks Functions
-        function updateDailySync(status, message) {
-            dailySync.className = 'sync-status ' + status;
-            dailySync.textContent = message;
-        }
+        // References
+        const albumsRef = db.collection('albums');
 
-        function formatTime(timeString) {
-            if (!timeString) return '';
-            const [hours, minutes] = timeString.split(':');
-            const hour = parseInt(hours);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const displayHour = hour % 12 || 12;
-            return `${displayHour}:${minutes} ${ampm}`;
-        }
+        // Cover photo upload
+        coverUploadArea.addEventListener('click', () => coverInput.click());
+        
+        coverInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedCoverFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    coverPreview.src = e.target.result;
+                    coverPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-        function renderDailyTasks(tasks) {
-            if (!tasks || tasks.length === 0) {
-                dailyList.innerHTML = '<div class="daily-empty">No tasks for today</div>';
+        // Create album
+        createAlbumBtn.addEventListener('click', async () => {
+            if (!isAdmin()) {
+                alert('You must be signed in as admin to create albums.');
                 return;
             }
-
-            // Sort by time
-            const sortedTasks = [...tasks].sort((a, b) => {
-                if (!a.time) return 1;
-                if (!b.time) return -1;
-                return a.time.localeCompare(b.time);
-            });
-
-            dailyList.innerHTML = '';
-            sortedTasks.forEach((task, originalIndex) => {
-                const index = tasks.indexOf(task);
-                const li = document.createElement('li');
-                li.className = 'daily-item' + (task.completed ? ' completed' : '');
-                li.innerHTML = `
-                    <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''}>
-                    ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
-                    <span class="daily-text">${task.text}</span>
-                    <button class="delete-daily-btn">×</button>
-                `;
-
-                li.querySelector('.daily-checkbox').addEventListener('change', async () => {
-                    updateDailySync('syncing', 'Syncing...');
-                    task.completed = !task.completed;
-                    await dailyTasksRef.set({ tasks: tasks });
-                });
-
-                li.querySelector('.delete-daily-btn').addEventListener('click', async () => {
-                    updateDailySync('syncing', 'Syncing...');
-                    tasks.splice(index, 1);
-                    await dailyTasksRef.set({ tasks: tasks });
-                });
-
-                dailyList.appendChild(li);
-            });
-        }
-
-        async function addDailyTask() {
-            const text = dailyInput.value.trim();
-            if (!text) return;
-
-            updateDailySync('syncing', 'Adding...');
+            
+            const name = albumNameInput.value.trim();
+            if (!name || !selectedCoverFile) {
+                alert('Please provide album name and cover photo');
+                return;
+            }
 
             try {
-                const doc = await dailyTasksRef.get();
-                const currentTasks = doc.exists ? doc.data().tasks || [] : [];
+                // Upload cover photo
+                const coverFileName = `covers/${Date.now()}_${selectedCoverFile.name}`;
+                const coverRef = storage.ref(coverFileName);
+                await coverRef.put(selectedCoverFile);
+                const coverUrl = await coverRef.getDownloadURL();
 
-                currentTasks.push({
-                    text: text,
-                    time: dailyTimeInput.value || null,
-                    completed: false,
-                    timestamp: new Date().toISOString()
+                // Create album document
+                await albumsRef.add({
+                    name: name,
+                    coverUrl: coverUrl,
+                    coverFileName: coverFileName,
+                    photoCount: 0,
+                    createdAt: new Date().toISOString()
                 });
 
-                await dailyTasksRef.set({ tasks: currentTasks });
-                dailyInput.value = '';
-                dailyTimeInput.value = '';
+                // Reset and close
+                albumNameInput.value = '';
+                coverPreview.style.display = 'none';
+                selectedCoverFile = null;
+                createAlbumModal.classList.remove('active');
             } catch (error) {
-                console.error('Error adding task:', error);
+                console.error('Error creating album:', error);
+                alert('Error creating album');
             }
-        }
+        });
 
-        async function archiveDay() {
-            const doc = await dailyTasksRef.get();
-            if (!doc.exists || !doc.data().tasks || doc.data().tasks.length === 0) {
-                alert('No tasks to archive for today!');
-                return;
-            }
+        cancelBtn.addEventListener('click', () => {
+            createAlbumModal.classList.remove('active');
+            albumNameInput.value = '';
+            coverPreview.style.display = 'none';
+            selectedCoverFile = null;
+        });
 
-            if (!confirm('Archive today\'s tasks? This will move them to Past Tasks.')) {
-                return;
-            }
+        // Render albums
+        function renderAlbums(albums) {
+            albumGrid.innerHTML = '';
 
-            updateDailySync('syncing', 'Archiving...');
-
-            try {
-                const tasks = doc.data().tasks;
-                
-                // Save to archived collection
-                await archivedTasksRef.doc(todayId).set({
-                    date: todayId,
-                    tasks: tasks,
-                    archivedAt: new Date().toISOString()
+            // Create album card (admin only)
+            if (isAdmin()) {
+                const createCard = document.createElement('div');
+                createCard.className = 'create-album-card';
+                createCard.innerHTML = `
+                    <div class="create-icon">+</div>
+                    <div style="font-weight: 600; color: #667eea;">Create Album</div>
+                `;
+                createCard.addEventListener('click', () => {
+                    createAlbumModal.classList.add('active');
                 });
-
-                // Clear today's tasks
-                await dailyTasksRef.delete();
-
-                updateDailySync('', '✓ Archived');
-            } catch (error) {
-                console.error('Error archiving:', error);
-                updateDailySync('error', 'Error archiving');
-            }
-        }
-
-        function renderPastDays(archivedDays) {
-            if (archivedDays.length === 0) {
-                pastDaysList.innerHTML = '<div class="past-tasks-empty">No past tasks yet</div>';
-                return;
+                albumGrid.appendChild(createCard);
             }
 
-            pastDaysList.innerHTML = '';
-            archivedDays.forEach(day => {
-                const item = document.createElement('div');
-                item.className = 'past-day-item';
-                
-                const date = new Date(day.date);
-                const formattedDate = date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                });
-
-                const completedCount = day.tasks.filter(t => t.completed).length;
-                const totalCount = day.tasks.length;
-
-                item.innerHTML = `
-                    <div class="past-day-date">${formattedDate}</div>
-                    <div class="past-day-count">${completedCount}/${totalCount} completed</div>
-                `;
-
-                item.addEventListener('click', () => viewPastDay(day));
-                pastDaysList.appendChild(item);
-            });
-        }
-
-        function viewPastDay(day) {
-            const date = new Date(day.date);
-            const formattedDate = date.toLocaleDateString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-            });
-
-            pastTasksModalTitle.textContent = formattedDate;
-
-            const sortedTasks = [...day.tasks].sort((a, b) => {
-                if (!a.time) return 1;
-                if (!b.time) return -1;
-                return a.time.localeCompare(b.time);
-            });
-
-            let html = '';
-            sortedTasks.forEach(task => {
-                html += `
-                    <div class="past-task-item ${task.completed ? 'completed' : ''}">
-                        <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''} disabled>
-                        ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
-                        <span class="daily-text">${task.text}</span>
-                    </div>
-                `;
-            });
-
-            pastTasksModalContent.innerHTML = html;
-            pastTasksModal.classList.add('active');
-        }
-
-        addDailyBtn.addEventListener('click', addDailyTask);
-        dailyInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addDailyTask();
-        });
-        archiveDayBtn.addEventListener('click', archiveDay);
-        closePastTasksBtn.addEventListener('click', () => {
-            pastTasksModal.classList.remove('active');
-        });
-
-        // Daily tasks listener
-        dailyTasksRef.onSnapshot((doc) => {
-            if (doc.exists) {
-                renderDailyTasks(doc.data().tasks || []);
-                updateDailySync('', '✓ Synced');
-            } else {
-                renderDailyTasks([]);
-                updateDailySync('', '✓ Ready');
-            }
-        });
-
-        // Past tasks listener
-        archivedTasksRef.orderBy('date', 'desc').limit(30).onSnapshot((snapshot) => {
-            const archivedDays = [];
-            snapshot.forEach(doc => {
-                archivedDays.push(doc.data());
-            });
-            renderPastDays(archivedDays);
-        });
-
-        // Goals Functions
-        function updateGoalsSync(status, message) {
-            goalsSync.className = 'sync-status ' + status;
-            goalsSync.textContent = message;
-        }
-
-        function getPriorityColor(priority) {
-            const colors = {
-                high: '#dc3545',
-                medium: '#ffc107',
-                low: '#17a2b8'
-            };
-            return colors[priority] || colors.medium;
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'No due date';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        }
-
-        function renderGoals(goals) {
-            if (goals.length === 0) {
-                goalsGrid.innerHTML = `
-                    <div class="goals-empty">
-                        <div class="empty-icon">🎯</div>
-                        <p>No goals yet. Create one to get started!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            goalsGrid.innerHTML = '';
-            goals.forEach(goal => {
+            // Album cards
+            albums.forEach(album => {
                 const card = document.createElement('div');
-                card.className = 'goal-card';
-                card.style.setProperty('--priority-color', getPriorityColor(goal.priority));
-
-                const statusClass = `status-${goal.status}`;
-                const priorityClass = `priority-${goal.priority}`;
-                const statusText = goal.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-                const priorityText = goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1);
-
+                card.className = 'album-card';
                 card.innerHTML = `
-                    <div class="goal-header">
-                        <div style="flex: 1;">
-                            <div class="goal-title">${goal.title}</div>
-                            ${goal.description ? `<div class="goal-description">${goal.description}</div>` : ''}
-                        </div>
-                    </div>
-                    <div class="goal-meta">
-                        <span class="status-badge ${statusClass}">${statusText}</span>
-                        <span class="priority-badge ${priorityClass}">${priorityText}</span>
-                        ${goal.dueDate ? `<div class="meta-item">📅 ${formatDate(goal.dueDate)}</div>` : ''}
-                    </div>
-                    <div class="goal-actions">
-                        <button class="goal-action-btn edit-btn">Edit</button>
-                        <button class="delete-goal-btn">Delete</button>
+                    <img src="${album.coverUrl}" alt="${album.name}" class="album-cover">
+                    <div class="album-info">
+                        <div class="album-name">${album.name}</div>
+                        <div class="album-count">${album.photoCount || 0} photos</div>
                     </div>
                 `;
-
-                card.querySelector('.edit-btn').addEventListener('click', () => openEditGoal(goal));
-                card.querySelector('.delete-goal-btn').addEventListener('click', () => deleteGoal(goal.id));
-
-                goalsGrid.appendChild(card);
+                card.addEventListener('click', () => openAlbum(album.id, album.name));
+                albumGrid.appendChild(card);
             });
         }
 
-        function openCreateGoal() {
-            editingGoalId = null;
-            modalTitle.textContent = 'Create New Goal';
-            goalTitleInput.value = '';
-            goalDescInput.value = '';
-            goalDueDateInput.value = '';
-            goalPriorityInput.value = 'medium';
-            goalStatusInput.value = 'not-started';
-            goalModal.classList.add('active');
+        // Open album
+        function openAlbum(albumId, albumName) {
+            currentAlbumId = albumId;
+            albumTitle.textContent = albumName;
+            albumsView.style.display = 'none';
+            albumDetailView.style.display = 'block';
+            loadAlbumPhotos(albumId);
         }
 
-        function openEditGoal(goal) {
-            editingGoalId = goal.id;
-            modalTitle.textContent = 'Edit Goal';
-            goalTitleInput.value = goal.title;
-            goalDescInput.value = goal.description || '';
-            goalDueDateInput.value = goal.dueDate || '';
-            goalPriorityInput.value = goal.priority;
-            goalStatusInput.value = goal.status;
-            goalModal.classList.add('active');
+        // Back to albums
+        backBtn.addEventListener('click', () => {
+            currentAlbumId = null;
+            albumsView.style.display = 'block';
+            albumDetailView.style.display = 'none';
+        });
+
+        // Upload photos to album
+        uploadPhotoBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', async (e) => {
+            if (!isAdmin()) {
+                alert('You must be signed in as admin to upload photos.');
+                fileInput.value = '';
+                return;
+            }
+            
+            const files = e.target.files;
+            if (files.length === 0 || !currentAlbumId) return;
+
+            for (let file of files) {
+                if (!file.type.startsWith('image/')) continue;
+
+                const fileName = `albums/${currentAlbumId}/${Date.now()}_${file.name}`;
+                const storageRef = storage.ref(fileName);
+
+                try {
+                    await storageRef.put(file);
+                    const url = await storageRef.getDownloadURL();
+
+                    await db.collection('albums').doc(currentAlbumId).collection('photos').add({
+                        url: url,
+                        fileName: fileName,
+                        uploadedAt: new Date().toISOString()
+                    });
+
+                    // Update photo count
+                    const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                    await albumsRef.doc(currentAlbumId).update({
+                        photoCount: (albumDoc.data().photoCount || 0) + 1
+                    });
+                } catch (error) {
+                    console.error('Error uploading photo:', error);
+                }
+            }
+
+            fileInput.value = '';
+        });
+
+        // Load album photos
+        function loadAlbumPhotos(albumId) {
+            db.collection('albums').doc(albumId).collection('photos')
+                .orderBy('uploadedAt', 'desc')
+                .onSnapshot((snapshot) => {
+                    const photos = [];
+                    snapshot.forEach(doc => {
+                        photos.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderPhotos(photos);
+                    albumPhotoCount.textContent = `${photos.length} photos`;
+                });
         }
 
-        async function saveGoal() {
-            const title = goalTitleInput.value.trim();
-            if (!title) {
-                alert('Please enter a goal title');
+        // Render photos
+        function renderPhotos(photos) {
+            if (photos.length === 0) {
+                photoGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📷</div>
+                        <p>No photos yet. Click "Add Photos" to upload!</p>
+                    </div>
+                `;
                 return;
             }
 
-            updateGoalsSync('syncing', 'Saving...');
+            photoGrid.innerHTML = '';
 
-            const goalData = {
-                title: title,
-                description: goalDescInput.value.trim(),
-                dueDate: goalDueDateInput.value,
-                priority: goalPriorityInput.value,
-                status: goalStatusInput.value,
-                updatedAt: new Date().toISOString()
-            };
+            photos.forEach(photo => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.innerHTML = `
+                    <img src="${photo.url}" alt="Photo">
+                    <div class="photo-overlay">
+                        <button class="delete-photo-btn admin-only" data-id="${photo.id}">Delete</button>
+                    </div>
+                `;
 
-            try {
-                if (editingGoalId) {
-                    await goalsRef.doc(editingGoalId).update(goalData);
-                } else {
-                    goalData.createdAt = new Date().toISOString();
-                    await goalsRef.add(goalData);
+                item.querySelector('img').addEventListener('click', () => {
+                    modalImage.src = photo.url;
+                    imageModal.classList.add('active');
+                });
+
+                const deleteBtn = item.querySelector('.delete-photo-btn');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        
+                        if (!isAdmin()) {
+                            alert('You must be signed in as admin to delete photos.');
+                            return;
+                        }
+                        
+                        if (confirm('Delete this photo?')) {
+                            try {
+                                const storageRef = storage.ref(photo.fileName);
+                                await storageRef.delete();
+                                await db.collection('albums').doc(currentAlbumId).collection('photos').doc(photo.id).delete();
+
+                                // Update count
+                            const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                            await albumsRef.doc(currentAlbumId).update({
+                                photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1)
+                            });
+                        } catch (error) {
+                            console.error('Error deleting photo:', error);
+                        }
+                    }
+                    });
                 }
-                goalModal.classList.remove('active');
-            } catch (error) {
-                console.error('Error saving goal:', error);
-            }
-        }
 
-        async function deleteGoal(goalId) {
-            if (!confirm('Delete this goal?')) return;
-
-            updateGoalsSync('syncing', 'Deleting...');
-
-            try {
-                await goalsRef.doc(goalId).delete();
-            } catch (error) {
-                console.error('Error deleting goal:', error);
-            }
-        }
-
-        createGoalBtn.addEventListener('click', openCreateGoal);
-        saveGoalBtn.addEventListener('click', saveGoal);
-        cancelGoalBtn.addEventListener('click', () => goalModal.classList.remove('active'));
-
-        // Goals listener
-        goalsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-            const goals = [];
-            snapshot.forEach(doc => {
-                goals.push({ id: doc.id, ...doc.data() });
+                photoGrid.appendChild(item);
             });
-            renderGoals(goals);
-            updateGoalsSync('', '✓ Synced');
+        }
+
+        // Close image modal
+        imageModalClose.addEventListener('click', () => {
+            imageModal.classList.remove('active');
+        });
+
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.classList.remove('active');
+            }
+        });
+
+        // Listen to albums
+        albumsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            const albums = [];
+            snapshot.forEach(doc => {
+                albums.push({ id: doc.id, ...doc.data() });
+            });
+            renderAlbums(albums);
         });
     </script>
 </body>
