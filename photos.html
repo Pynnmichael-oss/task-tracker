@@ -336,9 +336,10 @@
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
+                <li><a href="feed.html" class="logged-in-only-inline">Feed</a></li>
                 <li><a href="photos.html" class="active">Photos</a></li>
-                <li><a href="tasks.html" class="admin-only-inline">Tasks</a></li>
-                <li><a href="calendar.html" class="admin-only-inline">Calendar</a></li>
+                <li><a href="tasks.html" class="logged-in-only-inline">Tasks</a></li>
+                <li><a href="calendar.html" class="logged-in-only-inline">Calendar</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
@@ -420,7 +421,6 @@
         // Wait for auth.js to initialize Firebase
         window.addEventListener('load', function() {
             // Firebase is initialized in auth.js
-            // Use global db and storage from auth.js
             
             if (typeof db === 'undefined' || typeof storage === 'undefined') {
                 console.error('Firebase not initialized');
@@ -431,7 +431,13 @@
                 ignoreUndefinedProperties: true
             });
 
-        // Get elements
+        // Get user ID from URL or use current user
+        const urlParams = new URLSearchParams(window.location.search);
+        let viewingUserId = urlParams.get('user');
+        let viewingAlbumId = urlParams.get('album');
+        let isOwnProfile = false;
+
+        // Elements
         const albumsView = document.getElementById('albumsView');
         const albumDetailView = document.getElementById('albumDetailView');
         const albumGrid = document.getElementById('albumGrid');
@@ -455,9 +461,89 @@
         // State
         let currentAlbumId = null;
         let selectedCoverFile = null;
+        let albumsRef = null;
 
-        // References
-        const albumsRef = db.collection('albums');
+        // Wait for auth to determine user
+        auth.onAuthStateChanged((user) => {
+            if (!viewingUserId && user) {
+                // No user specified - show current user's albums
+                viewingUserId = user.uid;
+                isOwnProfile = true;
+            } else if (user && viewingUserId === user.uid) {
+                isOwnProfile = true;
+            }
+
+            if (!viewingUserId) {
+                // No user - show message to sign in or browse
+                albumGrid.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: #999;">Sign in to view your albums or browse other users</div>';
+                return;
+            }
+
+            // Set up user-specific reference
+            albumsRef = db.collection('users').doc(viewingUserId).collection('albums');
+
+            // If album specified in URL, go directly to album view
+            if (viewingAlbumId) {
+                loadAlbumPhotos(viewingAlbumId);
+            } else {
+                // Load albums view
+                initializePage();
+            }
+        });
+
+        // Initialize page
+        function initializePage() {
+            albumsView.style.display = 'block';
+            albumDetailView.style.display = 'none';
+            
+            // Load albums
+            loadAlbums();
+        }
+
+        // Load albums
+        function loadAlbums() {
+            albumsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+                const albums = [];
+                snapshot.forEach(doc => {
+                    albums.push({ id: doc.id, ...doc.data() });
+                });
+                renderAlbums(albums);
+            });
+        }
+
+        // Render albums
+        function renderAlbums(albums) {
+            albumGrid.innerHTML = '';
+
+            // Create album card (only for own profile)
+            if (isOwnProfile) {
+                const createCard = document.createElement('div');
+                createCard.className = 'create-album-card';
+                createCard.innerHTML = `
+                    <div class="create-icon">+</div>
+                    <div style="font-weight: 600; color: #667eea;">Create Album</div>
+                `;
+                createCard.addEventListener('click', () => {
+                    createAlbumModal.classList.add('active');
+                });
+                albumGrid.appendChild(createCard);
+            }
+
+            // Album cards
+            albums.forEach(album => {
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                card.innerHTML = `
+                    <img src="${album.coverUrl}" alt="${album.name}" class="album-cover">
+                    <div class="album-info">
+                        <div class="album-name">${album.name}</div>
+                        <div class="photo-count">${album.photoCount || 0} photos</div>
+                    </div>
+                `;
+                card.addEventListener('click', () => loadAlbumPhotos(album.id));
+                albumGrid.appendChild(card);
+            });
+        }
 
         // Cover photo upload
         coverUploadArea.addEventListener('click', () => coverInput.click());
@@ -477,8 +563,8 @@
 
         // Create album
         createAlbumBtn.addEventListener('click', async () => {
-            if (!isAdmin()) {
-                alert('You must be signed in as admin to create albums.');
+            if (!isOwnProfile) {
+                alert('You can only create albums in your own profile.');
                 return;
             }
             
@@ -489,8 +575,9 @@
             }
 
             try {
+                const user = auth.currentUser;
                 // Upload cover photo
-                const coverFileName = `covers/${Date.now()}_${selectedCoverFile.name}`;
+                const coverFileName = `users/${user.uid}/covers/${Date.now()}_${selectedCoverFile.name}`;
                 const coverRef = storage.ref(coverFileName);
                 await coverRef.put(selectedCoverFile);
                 const coverUrl = await coverRef.getDownloadURL();
@@ -570,14 +657,22 @@
             currentAlbumId = null;
             albumsView.style.display = 'block';
             albumDetailView.style.display = 'none';
+            // Update URL
+            window.history.pushState({}, '', `photos.html${viewingUserId !== getCurrentUserId() ? '?user=' + viewingUserId : ''}`);
         });
 
         // Upload photos to album
-        uploadPhotoBtn.addEventListener('click', () => fileInput.click());
+        uploadPhotoBtn.addEventListener('click', () => {
+            if (!isOwnProfile) {
+                alert('You can only upload to your own albums.');
+                return;
+            }
+            fileInput.click();
+        });
 
         fileInput.addEventListener('change', async (e) => {
-            if (!isAdmin()) {
-                alert('You must be signed in as admin to upload photos.');
+            if (!isOwnProfile) {
+                alert('You can only upload to your own albums.');
                 fileInput.value = '';
                 return;
             }
@@ -585,21 +680,26 @@
             const files = e.target.files;
             if (files.length === 0 || !currentAlbumId) return;
 
+            const user = auth.currentUser;
+            let uploadedPhotos = [];
+
             for (let file of files) {
                 if (!file.type.startsWith('image/')) continue;
 
-                const fileName = `albums/${currentAlbumId}/${Date.now()}_${file.name}`;
+                const fileName = `users/${user.uid}/albums/${currentAlbumId}/${Date.now()}_${file.name}`;
                 const storageRef = storage.ref(fileName);
 
                 try {
                     await storageRef.put(file);
                     const url = await storageRef.getDownloadURL();
 
-                    await db.collection('albums').doc(currentAlbumId).collection('photos').add({
+                    await albumsRef.doc(currentAlbumId).collection('photos').add({
                         url: url,
                         fileName: fileName,
                         uploadedAt: new Date().toISOString()
                     });
+
+                    uploadedPhotos.push({ url, fileName });
 
                     // Update photo count
                     const albumDoc = await albumsRef.doc(currentAlbumId).get();
@@ -612,20 +712,82 @@
             }
 
             fileInput.value = '';
+
+            // Ask if user wants to share to feed
+            if (uploadedPhotos.length > 0) {
+                const share = confirm(`Upload complete! Share ${uploadedPhotos.length} photo(s) to feed?`);
+                if (share) {
+                    await sharePhotosToFeed(currentAlbumId, uploadedPhotos);
+                }
+            }
         });
 
-        // Load album photos
-        function loadAlbumPhotos(albumId) {
-            db.collection('albums').doc(albumId).collection('photos')
-                .orderBy('uploadedAt', 'desc')
-                .onSnapshot((snapshot) => {
-                    const photos = [];
-                    snapshot.forEach(doc => {
-                        photos.push({ id: doc.id, ...doc.data() });
+        // Share photos to feed
+        async function sharePhotosToFeed(albumId, photos) {
+            try {
+                const user = auth.currentUser;
+                const userProfile = getUserProfile();
+                const albumDoc = await albumsRef.doc(albumId).get();
+                const albumName = albumDoc.data().name;
+
+                for (const photo of photos) {
+                    await db.collection('feed').add({
+                        userId: user.uid,
+                        userName: userProfile.displayName,
+                        userPhotoURL: userProfile.photoURL,
+                        albumName: albumName,
+                        photoURL: photo.url,
+                        caption: '', // Can add caption later
+                        timestamp: new Date().toISOString()
                     });
-                    renderPhotos(photos);
-                    albumPhotoCount.textContent = `${photos.length} photos`;
-                });
+                }
+
+                alert('Shared to feed!');
+            } catch (error) {
+                console.error('Error sharing to feed:', error);
+                alert('Error sharing to feed');
+            }
+        }
+
+        // Load album photos
+        async function loadAlbumPhotos(albumId) {
+            currentAlbumId = albumId;
+            albumsView.style.display = 'none';
+            albumDetailView.style.display = 'block';
+
+            // Show/hide upload button based on ownership
+            if (uploadPhotoBtn) {
+                uploadPhotoBtn.style.display = isOwnProfile ? 'block' : 'none';
+            }
+
+            try {
+                const albumDoc = await albumsRef.doc(albumId).get();
+                if (!albumDoc.exists) {
+                    alert('Album not found');
+                    return;
+                }
+
+                const album = albumDoc.data();
+                albumTitle.textContent = album.name;
+
+                // Update URL
+                window.history.pushState({}, '', `photos.html?user=${viewingUserId}&album=${albumId}`);
+
+                // Listen to photos
+                albumsRef.doc(albumId).collection('photos')
+                    .orderBy('uploadedAt', 'desc')
+                    .onSnapshot((snapshot) => {
+                        const photos = [];
+                        snapshot.forEach(doc => {
+                            photos.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        albumPhotoCount.textContent = `${photos.length} photo${photos.length !== 1 ? 's' : ''}`;
+                        renderPhotos(photos);
+                    });
+            } catch (error) {
+                console.error('Error loading album:', error);
+            }
         }
 
         // Render photos
@@ -648,7 +810,7 @@
                 item.innerHTML = `
                     <img src="${photo.url}" alt="Photo">
                     <div class="photo-overlay">
-                        <button class="delete-photo-btn admin-only" data-id="${photo.id}">Delete</button>
+                        ${isOwnProfile ? `<button class="delete-photo-btn" data-id="${photo.id}">Delete</button>` : ''}
                     </div>
                 `;
 
@@ -658,30 +820,25 @@
                 });
 
                 const deleteBtn = item.querySelector('.delete-photo-btn');
-                if (deleteBtn) {
+                if (deleteBtn && isOwnProfile) {
                     deleteBtn.addEventListener('click', async (e) => {
                         e.stopPropagation();
-                        
-                        if (!isAdmin()) {
-                            alert('You must be signed in as admin to delete photos.');
-                            return;
-                        }
                         
                         if (confirm('Delete this photo?')) {
                             try {
                                 const storageRef = storage.ref(photo.fileName);
                                 await storageRef.delete();
-                                await db.collection('albums').doc(currentAlbumId).collection('photos').doc(photo.id).delete();
+                                await albumsRef.doc(currentAlbumId).collection('photos').doc(photo.id).delete();
 
                                 // Update count
-                            const albumDoc = await albumsRef.doc(currentAlbumId).get();
-                            await albumsRef.doc(currentAlbumId).update({
-                                photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1)
-                            });
-                        } catch (error) {
-                            console.error('Error deleting photo:', error);
+                                const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                                await albumsRef.doc(currentAlbumId).update({
+                                    photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1)
+                                });
+                            } catch (error) {
+                                console.error('Error deleting photo:', error);
+                            }
                         }
-                    }
                     });
                 }
 
@@ -698,15 +855,6 @@
             if (e.target === imageModal) {
                 imageModal.classList.remove('active');
             }
-        });
-
-        // Listen to albums
-        albumsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-            const albums = [];
-            snapshot.forEach(doc => {
-                albums.push({ id: doc.id, ...doc.data() });
-            });
-            renderAlbums(albums);
         });
         
         }); // End window.addEventListener('load')
