@@ -3,544 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Michael Pynn</title>
+    <title>Tasks - Michael Pynn</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            background: #fafafa;
-        }
-
-        /* Intro Screen */
-        .intro-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: opacity 1s ease-out;
-        }
-
-        .intro-screen.fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .intro-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            animation: introZoom 4s ease-out forwards;
-        }
-
-        .intro-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.4), rgba(118, 75, 162, 0.4));
-            z-index: 1;
-        }
-
-        .intro-text {
-            position: relative;
-            z-index: 2;
-            color: white;
-            text-align: center;
-        }
-
-        .intro-text h1 {
-            font-size: 72px;
-            font-weight: 700;
-            letter-spacing: -2px;
-            margin-bottom: 16px;
-            animation: fadeInUp 1s ease-out 0.5s both;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-
-        .intro-text p {
-            font-size: 24px;
-            font-weight: 400;
-            animation: fadeInUp 1s ease-out 0.8s both;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        @keyframes introZoom {
-            0% {
-                transform: scale(1);
-                filter: blur(0px);
-            }
-            100% {
-                transform: scale(1.1);
-                filter: blur(8px);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Hide main content until intro is done */
-        body.intro-active {
-            overflow: hidden;
-        }
-
-        body.intro-active .navbar,
-        body.intro-active .hero-section,
-        body.intro-active .carousel-section,
-        body.intro-active .about-section,
-        body.intro-active .dashboard-section-scroll,
-        body.intro-active .features-section,
-        body.intro-active .footer-section {
-            opacity: 0;
-        }
-
-        /* Smooth Scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Section Base */
-        .scroll-section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            background: white;
-            text-align: center;
-            padding: 80px 40px;
-        }
-
-        .hero-section h1 {
-            font-size: 72px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 16px;
-            letter-spacing: -2px;
-        }
-
-        .hero-tagline {
-            font-size: 20px;
-            color: #666;
-            margin-bottom: 40px;
-        }
-
-        .hero-divider {
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            margin: 40px auto;
-        }
-
-        .social-links-hero {
-            display: flex;
-            gap: 24px;
-            justify-content: center;
-            margin-bottom: 60px;
-        }
-
-        .social-link-hero {
-            width: 48px;
-            height: 48px;
-            background: #f8f9fa;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1a1a1a;
-            text-decoration: none;
-            font-size: 20px;
-            transition: all 0.3s;
-            border: 2px solid #f0f0f0;
-        }
-
-        .social-link-hero:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-            transform: translateY(-4px);
-        }
-
-        .scroll-indicator {
-            margin-top: 60px;
-            color: #999;
-            font-size: 14px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        /* Carousel Section */
-        .carousel-section {
-            background: #2a2a2a;
-            overflow: hidden;
-        }
-
-        .carousel-wrapper {
-            width: 100%;
+        .task-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 80px 40px;
         }
 
-        .carousel-header {
-            text-align: center;
-            color: white;
-            margin-bottom: 60px;
-        }
-
-        .carousel-header h2 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            letter-spacing: -1px;
-        }
-
-        .carousel-header p {
-            font-size: 18px;
-            color: #aaa;
-        }
-
-        .carousel-display {
-            position: relative;
-            width: 100%;
-            height: 600px;
-            overflow: hidden;
-        }
-
-        .carousel-track {
-            display: flex;
-            gap: 24px;
-            animation: scroll-left 30s linear infinite;
-        }
-
-        .carousel-item {
-            min-width: calc(33.333% - 16px);
-            height: 600px;
-            flex-shrink: 0;
-        }
-
-        .carousel-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-        }
-
-        @keyframes scroll-left {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .carousel-track:hover {
-            animation-play-state: paused;
-        }
-
-        /* About Section */
-        .about-section {
-            background: white;
-            padding: 120px 40px;
-        }
-
-        .about-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .about-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #667eea;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 24px;
-        }
-
-        .about-container h2 {
-            font-size: 42px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 32px;
-            line-height: 1.3;
-            letter-spacing: -1px;
-        }
-
-        .about-container p {
-            font-size: 18px;
-            color: #666;
-            line-height: 1.8;
-            margin-bottom: 24px;
-        }
-
-        .current-time-display {
-            margin-top: 40px;
-            padding: 24px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border-left: 4px solid #667eea;
-        }
-
-        .current-time-display strong {
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        /* Dashboard Section */
-        .dashboard-section-scroll {
-            background: #fafafa;
-            padding: 120px 40px;
-        }
-
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #667eea;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 16px;
-        }
-
-        .section-heading {
-            font-size: 42px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 60px;
-            letter-spacing: -1px;
-        }
-
-        .dashboard-grid-scroll {
+        .task-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 400px 1fr;
             gap: 32px;
+            margin-top: 32px;
         }
 
-        .dashboard-card {
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            border: 1px solid #f0f0f0;
-            transition: all 0.3s;
+        /* Daily Tasks Sidebar */
+        .daily-section {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
         }
 
-        .dashboard-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transform: translateY(-4px);
-        }
-
-        .card-title {
+        .section-header {
             font-size: 20px;
             font-weight: 600;
+            margin-bottom: 16px;
             color: #1a1a1a;
-            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .card-badge {
+        .archive-day-btn {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .archive-day-btn:hover {
+            background: #218838;
+        }
+
+        .daily-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 24px;
+        }
+
+        .daily-input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .daily-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .daily-time-input {
+            width: 100px;
+            padding: 10px 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .daily-input:focus,
+        .daily-time-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-daily-btn {
+            padding: 10px 16px;
             background: #667eea;
             color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-size: 14px;
             font-weight: 600;
         }
 
-        .task-list-mini {
+        .add-daily-btn:hover {
+            background: #5568d3;
+        }
+
+        .daily-list {
             list-style: none;
         }
 
-        .task-item-mini {
-            padding: 12px;
-            background: #f8f9fa;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            font-size: 14px;
-            color: #1a1a1a;
+        .daily-item {
             display: flex;
-            gap: 12px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
         }
 
-        .task-time-mini {
+        .daily-item:last-child {
+            border-bottom: none;
+        }
+
+        .daily-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .task-time {
+            font-size: 12px;
             color: #667eea;
             font-weight: 600;
-            font-size: 12px;
+            margin-right: 12px;
             min-width: 60px;
         }
 
-        .empty-state-mini {
+        .daily-text {
+            flex: 1;
+            font-size: 14px;
+            color: #1a1a1a;
+        }
+
+        .daily-item.completed .daily-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .daily-item.completed .task-time {
+            color: #999;
+        }
+
+        .delete-daily-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 18px;
+        }
+
+        .delete-daily-btn:hover {
+            color: #dc3545;
+        }
+
+        .daily-empty {
             text-align: center;
-            padding: 40px 20px;
+            padding: 32px 16px;
             color: #999;
             font-size: 14px;
         }
 
-        .view-link {
-            display: inline-block;
-            margin-top: 16px;
-            color: #667eea;
-            text-decoration: none;
+        /* Past Tasks Section */
+        .past-tasks-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .past-tasks-header {
+            font-size: 18px;
             font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .past-days-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .past-day-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #f0f0f0;
+        }
+
+        .past-day-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .past-day-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .past-day-count {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .past-tasks-empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: #999;
             font-size: 14px;
         }
 
-        .view-link:hover {
-            text-decoration: underline;
+        /* Past Tasks Modal */
+        .past-tasks-modal .modal-content {
+            max-width: 700px;
         }
 
-        /* Features Section */
-        .features-section {
-            background: white;
-            padding: 120px 40px;
+        .past-task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
         }
 
-        .features-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .past-task-item.completed {
+            opacity: 0.6;
         }
 
-        .features-grid-scroll {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
-            margin-top: 60px;
+        .past-task-item.completed .daily-text {
+            text-decoration: line-through;
+            color: #999;
         }
 
-        .feature-card-scroll {
-            background: #fafafa;
-            padding: 48px 32px;
-            border-radius: 16px;
-            text-align: center;
-            text-decoration: none;
-            color: #1a1a1a;
-            transition: all 0.3s;
-            border: 2px solid transparent;
+        /* Extended Goals Section */
+        .goals-section {
+            min-height: 400px;
         }
 
-        .feature-card-scroll:hover {
-            background: white;
-            border-color: #667eea;
-            transform: translateY(-8px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
-        }
-
-        .feature-icon-scroll {
-            font-size: 48px;
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 24px;
         }
 
-        .feature-card-scroll h3 {
-            font-size: 20px;
+        .create-goal-btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 12px;
         }
 
-        .feature-card-scroll p {
+        .create-goal-btn:hover {
+            background: #5568d3;
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .goal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--priority-color);
+        }
+
+        .goal-card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .goal-description {
+            font-size: 14px;
             color: #666;
-            font-size: 14px;
-            line-height: 1.6;
+            margin-bottom: 16px;
+            line-height: 1.5;
         }
 
-        /* Footer */
-        .footer-section {
-            background: #1a1a1a;
+        .goal-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-not-started {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .priority-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-low {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .goal-action-btn {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .goal-action-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .delete-goal-btn {
+            padding: 8px 16px;
+            border: 1px solid #dc3545;
+            background: white;
+            color: #dc3545;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .delete-goal-btn:hover {
+            background: #dc3545;
             color: white;
-            padding: 60px 40px;
-            text-align: center;
         }
 
-        .footer-section p {
-            color: #aaa;
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
             font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
         }
 
-        .loading-message {
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-primary {
+            background: #667eea;
             color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .goals-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .sync-status {
+            text-align: center;
+            font-size: 12px;
+            color: #28a745;
+            margin-top: 16px;
+        }
+
+        .sync-status.syncing {
+            color: #ffc107;
         }
 
         @media (max-width: 1024px) {
-            .hero-section h1 {
-                font-size: 48px;
-            }
-
-            .carousel-header h2,
-            .about-container h2,
-            .section-heading {
-                font-size: 32px;
-            }
-
-            .dashboard-grid-scroll {
+            .task-layout {
                 grid-template-columns: 1fr;
             }
 
-            .features-grid-scroll {
-                grid-template-columns: 1fr;
-            }
-
-            .carousel-display {
-                height: 400px;
-            }
-
-            .carousel-item {
-                min-width: calc(50% - 12px);
-                height: 400px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .carousel-item {
-                min-width: calc(100% - 24px);
+            .daily-section {
+                position: relative;
+                top: 0;
             }
         }
     </style>
 </head>
-<body class="intro-active">
-    <!-- Intro Screen -->
-    <div class="intro-screen" id="introScreen">
-        <img id="introImage" class="intro-image" src="" alt="Intro photo">
-        <div class="intro-overlay"></div>
-        <div class="intro-text">
-            <h1>Michael Pynn</h1>
-            <p>Life and stuff</p>
-        </div>
-    </div>
-
+<body>
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="nav-brand">Michael Pynn</a>
@@ -548,218 +571,171 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html" class="logged-in-only-inline">Feed</a></li>
                 <li><a href="photos.html">Photos</a></li>
-                <li><a href="tasks.html" class="logged-in-only-inline">Tasks</a></li>
+                <li><a href="tasks.html" class="active logged-in-only-inline">Tasks</a></li>
                 <li><a href="calendar.html" class="logged-in-only-inline">Calendar</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="scroll-section hero-section" id="home">
-        <div>
-            <h1>Michael Pynn</h1>
-            <p class="hero-tagline">Life and stuff</p>
-            
-            <div class="hero-divider"></div>
-            
-            <div class="social-links-hero">
-                <a href="https://www.linkedin.com/in/michael-pynn/" target="_blank" class="social-link-hero" title="LinkedIn">
-                    <span>in</span>
-                </a>
-                <a href="https://www.instagram.com/michael.pynn/" target="_blank" class="social-link-hero" title="Instagram">
-                    <span>📷</span>
-                </a>
-                <a href="https://twitter.com/MichaelPynn" target="_blank" class="social-link-hero" title="Twitter">
-                    <span>𝕏</span>
-                </a>
-                <a href="https://github.com/Pynnmichael-oss" target="_blank" class="social-link-hero" title="GitHub">
-                    <span>⚡</span>
-                </a>
+    <div class="container">
+        <div class="task-container">
+            <div class="page-header">
+                <h1>Tasks & Goals</h1>
+                <p class="date" id="currentDate"></p>
             </div>
 
-            <div class="scroll-indicator">
-                <div>↓</div>
-                <div style="font-size: 12px; margin-top: 8px;">Scroll to explore</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Carousel Section -->
-    <section class="scroll-section carousel-section" id="photos">
-        <div class="carousel-wrapper">
-            <div class="carousel-header">
-                <h2>Captured Moments</h2>
-                <p>A collection of places and memories</p>
-            </div>
-            <div class="carousel-display" id="carouselDisplay">
-                <div class="loading-message">Loading photos...</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="scroll-section about-section">
-        <div class="about-container">
-            <div class="about-label">About</div>
-            <h2>Building things, tracking progress, and capturing life.</h2>
-            <p>I'm Michael, based in Tulsa, Oklahoma. This is my personal space where I organize my tasks, track my goals, and preserve memories through photos.</p>
-            <p>I built this site to stay productive and keep the things that matter most to me in one place.</p>
-            
-            <div class="current-time-display" id="currentTimeDisplay">
-                <strong>Right now:</strong> <span id="liveTime"></span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Dashboard Section -->
-    <section class="scroll-section dashboard-section-scroll" id="dashboard">
-        <div class="dashboard-container">
-            <div class="section-title">What's Happening</div>
-            <h2 class="section-heading">Today at a glance</h2>
-            
-            <div class="dashboard-grid-scroll">
-                <div class="dashboard-card">
-                    <div class="card-title">
+            <div class="task-layout">
+                <!-- Daily Tasks Sidebar -->
+                <div class="daily-section">
+                    <div class="section-header">
                         <span>Today's Tasks</span>
-                        <span class="card-badge" id="taskBadge">0</span>
+                        <button class="archive-day-btn" id="archiveDayBtn">End Day</button>
                     </div>
-                    <ul class="task-list-mini" id="taskListMini"></ul>
-                    <a href="tasks.html" class="view-link">View all tasks →</a>
+                    <div class="daily-card">
+                        <div class="daily-input-section">
+                            <div class="input-row">
+                                <input type="text" class="daily-input" id="dailyInput" placeholder="Add a task...">
+                                <input type="time" class="daily-time-input" id="dailyTimeInput">
+                            </div>
+                            <button class="add-daily-btn" id="addDailyBtn">+ Add Task</button>
+                        </div>
+                        <ul class="daily-list" id="dailyList"></ul>
+                        <div class="sync-status" id="dailySync">✓ Synced</div>
+                    </div>
+
+                    <!-- Past Tasks -->
+                    <div class="past-tasks-section">
+                        <div class="past-tasks-header">Past Tasks</div>
+                        <div class="past-days-list" id="pastDaysList"></div>
+                    </div>
                 </div>
 
-                <!-- Calendar events - only show when logged in -->
-                <div class="dashboard-card admin-only">
-                    <div class="card-title">
-                        <span>Today's Events</span>
-                        <span class="card-badge" id="eventBadge">0</span>
+                <!-- Extended Goals Section -->
+                <div class="goals-section">
+                    <div class="goals-header">
+                        <div class="section-header">Extended Goals</div>
+                        <button class="create-goal-btn" id="createGoalBtn">+ New Goal</button>
                     </div>
-                    <div id="calendarAuth">
-                        <button id="authorizeBtn" style="padding: 12px 24px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">
-                            Connect Google Calendar
-                        </button>
-                    </div>
-                    <ul class="task-list-mini" id="eventListMini" style="display: none;"></ul>
-                    <a href="calendar.html" class="view-link" style="display: none;" id="viewCalendarLink">View full calendar →</a>
+                    <div class="goals-grid" id="goalsGrid"></div>
+                    <div class="sync-status" id="goalsSync">✓ Synced</div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Features Section - only show when logged in -->
-    <section class="scroll-section features-section admin-only">
-        <div class="features-container">
-            <div class="section-title">What I'm Building</div>
-            <h2 class="section-heading">Tools for productivity and memory</h2>
+    <!-- Create/Edit Goal Modal -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Create New Goal</div>
             
-            <div class="features-grid-scroll">
-                <a href="tasks.html" class="feature-card-scroll">
-                    <div class="feature-icon-scroll">✓</div>
-                    <h3>Daily Tasks</h3>
-                    <p>Quick task management with time tracking and archiving</p>
-                </a>
-
-                <a href="tasks.html" class="feature-card-scroll">
-                    <div class="feature-icon-scroll">🎯</div>
-                    <h3>Extended Goals</h3>
-                    <p>Long-term projects with priority levels and status tracking</p>
-                </a>
-
-                <a href="photos.html" class="feature-card-scroll">
-                    <div class="feature-icon-scroll">📷</div>
-                    <h3>Photo Albums</h3>
-                    <p>Organized collections by location and event</p>
-                </a>
+            <div class="form-group">
+                <label class="form-label">Goal Title</label>
+                <input type="text" class="form-input" id="goalTitleInput" placeholder="e.g., Launch new website">
             </div>
-        </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="footer-section">
-        <p>Michael Pynn © 2026</p>
-        <p style="margin-top: 8px;">Built with Firebase and deployed on Netlify</p>
-    </footer>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="goalDescInput" placeholder="Add details about this goal..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-input" id="goalDueDateInput">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-select" id="goalPriorityInput">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="goalStatusInput">
+                    <option value="not-started" selected>Not Started</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" id="saveGoalBtn">Save Goal</button>
+            <button class="btn-secondary" id="cancelGoalBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Past Tasks Modal -->
+    <div class="modal past-tasks-modal" id="pastTasksModal">
+        <div class="modal-content">
+            <div class="modal-header" id="pastTasksModalTitle">Past Tasks</div>
+            <div id="pastTasksModalContent"></div>
+            <button class="btn-secondary" id="closePastTasksBtn">Close</button>
+        </div>
+    </div>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
     <script>
         // Firebase is initialized in auth.js
 
-        // Intro Animation
-        async function loadIntroPhoto() {
-            try {
-                const albumsSnapshot = await db.collection('albums').get();
-                const photoPromises = [];
+        // Get elements
+        const dateElement = document.getElementById('currentDate');
+        const dailyInput = document.getElementById('dailyInput');
+        const dailyTimeInput = document.getElementById('dailyTimeInput');
+        const addDailyBtn = document.getElementById('addDailyBtn');
+        const archiveDayBtn = document.getElementById('archiveDayBtn');
+        const dailyList = document.getElementById('dailyList');
+        const dailySync = document.getElementById('dailySync');
+        const pastDaysList = document.getElementById('pastDaysList');
+        const goalsGrid = document.getElementById('goalsGrid');
+        const goalsSync = document.getElementById('goalsSync');
+        const createGoalBtn = document.getElementById('createGoalBtn');
+        const goalModal = document.getElementById('goalModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const goalTitleInput = document.getElementById('goalTitleInput');
+        const goalDescInput = document.getElementById('goalDescInput');
+        const goalDueDateInput = document.getElementById('goalDueDateInput');
+        const goalPriorityInput = document.getElementById('goalPriorityInput');
+        const goalStatusInput = document.getElementById('goalStatusInput');
+        const saveGoalBtn = document.getElementById('saveGoalBtn');
+        const cancelGoalBtn = document.getElementById('cancelGoalBtn');
+        const pastTasksModal = document.getElementById('pastTasksModal');
+        const pastTasksModalTitle = document.getElementById('pastTasksModalTitle');
+        const pastTasksModalContent = document.getElementById('pastTasksModalContent');
+        const closePastTasksBtn = document.getElementById('closePastTasksBtn');
 
-                albumsSnapshot.forEach(albumDoc => {
-                    const promise = db.collection('albums').doc(albumDoc.id).collection('photos').get();
-                    photoPromises.push(promise);
-                });
+        // Display current date
+        const today = new Date();
+        dateElement.textContent = today.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
 
-                const photosSnapshots = await Promise.all(photoPromises);
-                const allPhotos = [];
-                
-                photosSnapshots.forEach(snapshot => {
-                    snapshot.forEach(photoDoc => {
-                        allPhotos.push(photoDoc.data().url);
-                    });
-                });
+        const todayId = today.toISOString().split('T')[0];
 
-                if (allPhotos.length > 0) {
-                    // Pick random photo
-                    const randomPhoto = allPhotos[Math.floor(Math.random() * allPhotos.length)];
-                    document.getElementById('introImage').src = randomPhoto;
-                } else {
-                    // No photos, use gradient background
-                    document.getElementById('introImage').style.display = 'none';
-                }
+        // References
+        const dailyTasksRef = db.collection('dailyTasks').doc(todayId);
+        const archivedTasksRef = db.collection('archivedTasks');
+        const goalsRef = db.collection('goals');
 
-                // Start fade out after 3.5 seconds
-                setTimeout(() => {
-                    const introScreen = document.getElementById('introScreen');
-                    introScreen.classList.add('fade-out');
-                    
-                    // Remove intro-active class from body after fade completes
-                    setTimeout(() => {
-                        document.body.classList.remove('intro-active');
-                        introScreen.remove();
-                    }, 1000);
-                }, 3500);
+        // State
+        let editingGoalId = null;
 
-            } catch (error) {
-                console.error('Error loading intro photo:', error);
-                // Skip intro on error
-                document.getElementById('introScreen').remove();
-                document.body.classList.remove('intro-active');
-            }
+        // Daily Tasks Functions
+        function updateDailySync(status, message) {
+            dailySync.className = 'sync-status ' + status;
+            dailySync.textContent = message;
         }
 
-        // Load intro on page load
-        window.addEventListener('load', loadIntroPhoto);
-
-        // Live Time
-        function updateLiveTime() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                timeZone: 'America/Chicago'
-            };
-            document.getElementById('liveTime').textContent = now.toLocaleDateString('en-US', options);
-        }
-        updateLiveTime();
-        setInterval(updateLiveTime, 60000);
-
-        // Format time
         function formatTime(timeString) {
             if (!timeString) return '';
             const [hours, minutes] = timeString.split(':');
@@ -769,222 +745,344 @@
             return `${displayHour}:${minutes} ${ampm}`;
         }
 
-        // Load today's tasks
-        const today = new Date().toISOString().split('T')[0];
-        const dailyTasksRef = db.collection('dailyTasks').doc(today);
-
-        dailyTasksRef.onSnapshot((doc) => {
-            const taskList = document.getElementById('taskListMini');
-            const taskBadge = document.getElementById('taskBadge');
-            
-            if (!doc.exists || !doc.data().tasks) {
-                taskList.innerHTML = '<div class="empty-state-mini">No tasks for today</div>';
-                taskBadge.textContent = '0';
+        function renderDailyTasks(tasks) {
+            if (!tasks || tasks.length === 0) {
+                dailyList.innerHTML = '<div class="daily-empty">No tasks for today</div>';
                 return;
             }
 
-            const tasks = doc.data().tasks;
-            const incompleteTasks = tasks.filter(t => !t.completed);
-            taskBadge.textContent = incompleteTasks.length;
-
-            if (incompleteTasks.length === 0) {
-                taskList.innerHTML = '<div class="empty-state-mini">✓ All done!</div>';
-                return;
-            }
-
-            const sortedTasks = [...incompleteTasks].sort((a, b) => {
+            // Sort by time
+            const sortedTasks = [...tasks].sort((a, b) => {
                 if (!a.time) return 1;
                 if (!b.time) return -1;
                 return a.time.localeCompare(b.time);
-            }).slice(0, 4); // Show max 4 tasks
-
-            taskList.innerHTML = '';
-            sortedTasks.forEach(task => {
-                const li = document.createElement('li');
-                li.className = 'task-item-mini';
-                li.innerHTML = `
-                    ${task.time ? `<span class="task-time-mini">${formatTime(task.time)}</span>` : ''}
-                    <span>${task.text}</span>
-                `;
-                taskList.appendChild(li);
             });
-        });
 
-        // Photo Carousel
-        let carouselPhotos = [];
+            dailyList.innerHTML = '';
+            sortedTasks.forEach((task, originalIndex) => {
+                const index = tasks.indexOf(task);
+                const li = document.createElement('li');
+                li.className = 'daily-item' + (task.completed ? ' completed' : '');
+                li.innerHTML = `
+                    <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''}>
+                    ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
+                    <span class="daily-text">${task.text}</span>
+                    <button class="delete-daily-btn">×</button>
+                `;
 
-        async function loadPhotos() {
-            const carouselDisplay = document.getElementById('carouselDisplay');
+                li.querySelector('.daily-checkbox').addEventListener('change', async () => {
+                    updateDailySync('syncing', 'Syncing...');
+                    task.completed = !task.completed;
+                    await dailyTasksRef.set({ tasks: tasks });
+                });
+
+                li.querySelector('.delete-daily-btn').addEventListener('click', async () => {
+                    updateDailySync('syncing', 'Syncing...');
+                    tasks.splice(index, 1);
+                    await dailyTasksRef.set({ tasks: tasks });
+                });
+
+                dailyList.appendChild(li);
+            });
+        }
+
+        async function addDailyTask() {
+            const text = dailyInput.value.trim();
+            if (!text) return;
+
+            updateDailySync('syncing', 'Adding...');
 
             try {
-                const albumsSnapshot = await db.collection('albums').get();
-                const photoPromises = [];
+                const doc = await dailyTasksRef.get();
+                const currentTasks = doc.exists ? doc.data().tasks || [] : [];
 
-                albumsSnapshot.forEach(albumDoc => {
-                    const promise = db.collection('albums').doc(albumDoc.id).collection('photos').get();
-                    photoPromises.push(promise);
+                currentTasks.push({
+                    text: text,
+                    time: dailyTimeInput.value || null,
+                    completed: false,
+                    timestamp: new Date().toISOString()
                 });
 
-                const photosSnapshots = await Promise.all(photoPromises);
-                
-                photosSnapshots.forEach(snapshot => {
-                    snapshot.forEach(photoDoc => {
-                        carouselPhotos.push(photoDoc.data().url);
-                    });
-                });
-
-                carouselPhotos = carouselPhotos.sort(() => Math.random() - 0.5);
-
-                if (carouselPhotos.length === 0) {
-                    carouselDisplay.innerHTML = '<div class="loading-message">No photos yet. Upload some!</div>';
-                    return;
-                }
-
-                // Duplicate photos for infinite scroll effect
-                const duplicatedPhotos = [...carouselPhotos, ...carouselPhotos];
-
-                // Create carousel track
-                const track = document.createElement('div');
-                track.className = 'carousel-track';
-
-                duplicatedPhotos.forEach((url, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'carousel-item';
-                    item.innerHTML = `<img src="${url}" alt="Photo ${index + 1}">`;
-                    track.appendChild(item);
-                });
-
-                carouselDisplay.innerHTML = '';
-                carouselDisplay.appendChild(track);
-
+                await dailyTasksRef.set({ tasks: currentTasks });
+                dailyInput.value = '';
+                dailyTimeInput.value = '';
             } catch (error) {
-                console.error('Error loading photos:', error);
-                carouselDisplay.innerHTML = '<div class="loading-message">Error loading photos</div>';
+                console.error('Error adding task:', error);
             }
         }
 
-        loadPhotos();
+        async function archiveDay() {
+            const doc = await dailyTasksRef.get();
+            if (!doc.exists || !doc.data().tasks || doc.data().tasks.length === 0) {
+                alert('No tasks to archive for today!');
+                return;
+            }
 
-        // Google Calendar API Integration
-        const CLIENT_ID = '149129540182-2ftots8nd0nhusl5vrr429eff013tc5a.apps.googleusercontent.com';
-        const API_KEY = 'AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc';
-        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-        const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+            if (!confirm('Archive today\'s tasks? This will move them to Past Tasks.')) {
+                return;
+            }
 
-        let tokenClient;
-        let gapiInited = false;
-        let gisInited = false;
+            updateDailySync('syncing', 'Archiving...');
 
-        // Load Google API
-        function gapiLoaded() {
-            gapi.load('client', initializeGapiClient);
+            try {
+                const tasks = doc.data().tasks;
+                
+                // Save to archived collection
+                await archivedTasksRef.doc(todayId).set({
+                    date: todayId,
+                    tasks: tasks,
+                    archivedAt: new Date().toISOString()
+                });
+
+                // Clear today's tasks
+                await dailyTasksRef.delete();
+
+                updateDailySync('', '✓ Archived');
+            } catch (error) {
+                console.error('Error archiving:', error);
+                updateDailySync('error', 'Error archiving');
+            }
         }
 
-        async function initializeGapiClient() {
-            await gapi.client.init({
-                apiKey: API_KEY,
-                discoveryDocs: [DISCOVERY_DOC],
+        function renderPastDays(archivedDays) {
+            if (archivedDays.length === 0) {
+                pastDaysList.innerHTML = '<div class="past-tasks-empty">No past tasks yet</div>';
+                return;
+            }
+
+            pastDaysList.innerHTML = '';
+            archivedDays.forEach(day => {
+                const item = document.createElement('div');
+                item.className = 'past-day-item';
+                
+                const date = new Date(day.date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+
+                const completedCount = day.tasks.filter(t => t.completed).length;
+                const totalCount = day.tasks.length;
+
+                item.innerHTML = `
+                    <div class="past-day-date">${formattedDate}</div>
+                    <div class="past-day-count">${completedCount}/${totalCount} completed</div>
+                `;
+
+                item.addEventListener('click', () => viewPastDay(day));
+                pastDaysList.appendChild(item);
             });
-            gapiInited = true;
         }
 
-        function gisLoaded() {
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                callback: '',
+        function viewPastDay(day) {
+            const date = new Date(day.date);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
             });
-            gisInited = true;
+
+            pastTasksModalTitle.textContent = formattedDate;
+
+            const sortedTasks = [...day.tasks].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+
+            let html = '';
+            sortedTasks.forEach(task => {
+                html += `
+                    <div class="past-task-item ${task.completed ? 'completed' : ''}">
+                        <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''} disabled>
+                        ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
+                        <span class="daily-text">${task.text}</span>
+                    </div>
+                `;
+            });
+
+            pastTasksModalContent.innerHTML = html;
+            pastTasksModal.classList.add('active');
         }
 
-        // Handle authorization
-        document.getElementById('authorizeBtn').addEventListener('click', () => {
-            tokenClient.callback = async (resp) => {
-                if (resp.error !== undefined) {
-                    throw (resp);
-                }
-                document.getElementById('calendarAuth').style.display = 'none';
-                document.getElementById('eventListMini').style.display = 'block';
-                document.getElementById('viewCalendarLink').style.display = 'inline-block';
-                await listTodayEvents();
+        addDailyBtn.addEventListener('click', addDailyTask);
+        dailyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addDailyTask();
+        });
+        archiveDayBtn.addEventListener('click', archiveDay);
+        closePastTasksBtn.addEventListener('click', () => {
+            pastTasksModal.classList.remove('active');
+        });
+
+        // Daily tasks listener
+        dailyTasksRef.onSnapshot((doc) => {
+            if (doc.exists) {
+                renderDailyTasks(doc.data().tasks || []);
+                updateDailySync('', '✓ Synced');
+            } else {
+                renderDailyTasks([]);
+                updateDailySync('', '✓ Ready');
+            }
+        });
+
+        // Past tasks listener
+        archivedTasksRef.orderBy('date', 'desc').limit(30).onSnapshot((snapshot) => {
+            const archivedDays = [];
+            snapshot.forEach(doc => {
+                archivedDays.push(doc.data());
+            });
+            renderPastDays(archivedDays);
+        });
+
+        // Goals Functions
+        function updateGoalsSync(status, message) {
+            goalsSync.className = 'sync-status ' + status;
+            goalsSync.textContent = message;
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                high: '#dc3545',
+                medium: '#ffc107',
+                low: '#17a2b8'
+            };
+            return colors[priority] || colors.medium;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'No due date';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderGoals(goals) {
+            if (goals.length === 0) {
+                goalsGrid.innerHTML = `
+                    <div class="goals-empty">
+                        <div class="empty-icon">🎯</div>
+                        <p>No goals yet. Create one to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            goalsGrid.innerHTML = '';
+            goals.forEach(goal => {
+                const card = document.createElement('div');
+                card.className = 'goal-card';
+                card.style.setProperty('--priority-color', getPriorityColor(goal.priority));
+
+                const statusClass = `status-${goal.status}`;
+                const priorityClass = `priority-${goal.priority}`;
+                const statusText = goal.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const priorityText = goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1);
+
+                card.innerHTML = `
+                    <div class="goal-header">
+                        <div style="flex: 1;">
+                            <div class="goal-title">${goal.title}</div>
+                            ${goal.description ? `<div class="goal-description">${goal.description}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <span class="priority-badge ${priorityClass}">${priorityText}</span>
+                        ${goal.dueDate ? `<div class="meta-item">📅 ${formatDate(goal.dueDate)}</div>` : ''}
+                    </div>
+                    <div class="goal-actions">
+                        <button class="goal-action-btn edit-btn">Edit</button>
+                        <button class="delete-goal-btn">Delete</button>
+                    </div>
+                `;
+
+                card.querySelector('.edit-btn').addEventListener('click', () => openEditGoal(goal));
+                card.querySelector('.delete-goal-btn').addEventListener('click', () => deleteGoal(goal.id));
+
+                goalsGrid.appendChild(card);
+            });
+        }
+
+        function openCreateGoal() {
+            editingGoalId = null;
+            modalTitle.textContent = 'Create New Goal';
+            goalTitleInput.value = '';
+            goalDescInput.value = '';
+            goalDueDateInput.value = '';
+            goalPriorityInput.value = 'medium';
+            goalStatusInput.value = 'not-started';
+            goalModal.classList.add('active');
+        }
+
+        function openEditGoal(goal) {
+            editingGoalId = goal.id;
+            modalTitle.textContent = 'Edit Goal';
+            goalTitleInput.value = goal.title;
+            goalDescInput.value = goal.description || '';
+            goalDueDateInput.value = goal.dueDate || '';
+            goalPriorityInput.value = goal.priority;
+            goalStatusInput.value = goal.status;
+            goalModal.classList.add('active');
+        }
+
+        async function saveGoal() {
+            const title = goalTitleInput.value.trim();
+            if (!title) {
+                alert('Please enter a goal title');
+                return;
+            }
+
+            updateGoalsSync('syncing', 'Saving...');
+
+            const goalData = {
+                title: title,
+                description: goalDescInput.value.trim(),
+                dueDate: goalDueDateInput.value,
+                priority: goalPriorityInput.value,
+                status: goalStatusInput.value,
+                updatedAt: new Date().toISOString()
             };
 
-            if (gapi.client.getToken() === null) {
-                tokenClient.requestAccessToken({prompt: 'consent'});
-            } else {
-                tokenClient.requestAccessToken({prompt: ''});
+            try {
+                if (editingGoalId) {
+                    await goalsRef.doc(editingGoalId).update(goalData);
+                } else {
+                    goalData.createdAt = new Date().toISOString();
+                    await goalsRef.add(goalData);
+                }
+                goalModal.classList.remove('active');
+            } catch (error) {
+                console.error('Error saving goal:', error);
             }
-        });
-
-        // Format event time
-        function formatEventTime(dateTime) {
-            const date = new Date(dateTime);
-            const hours = date.getHours();
-            const minutes = date.getMinutes();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            const displayHour = hours % 12 || 12;
-            const displayMinutes = minutes.toString().padStart(2, '0');
-            return `${displayHour}:${displayMinutes} ${ampm}`;
         }
 
-        // List today's events
-        async function listTodayEvents() {
-            const eventList = document.getElementById('eventListMini');
-            const eventBadge = document.getElementById('eventBadge');
+        async function deleteGoal(goalId) {
+            if (!confirm('Delete this goal?')) return;
+
+            updateGoalsSync('syncing', 'Deleting...');
 
             try {
-                const todayStart = new Date();
-                todayStart.setHours(0, 0, 0, 0);
-                const todayEnd = new Date();
-                todayEnd.setHours(23, 59, 59, 999);
-
-                const response = await gapi.client.calendar.events.list({
-                    'calendarId': 'primary',
-                    'timeMin': todayStart.toISOString(),
-                    'timeMax': todayEnd.toISOString(),
-                    'showDeleted': false,
-                    'singleEvents': true,
-                    'orderBy': 'startTime',
-                });
-
-                const events = response.result.items;
-                eventBadge.textContent = events.length;
-
-                if (events.length === 0) {
-                    eventList.innerHTML = '<div class="empty-state-mini">No events today</div>';
-                    return;
-                }
-
-                eventList.innerHTML = '';
-                events.forEach(event => {
-                    const start = event.start.dateTime || event.start.date;
-                    const isAllDay = !event.start.dateTime;
-                    
-                    const li = document.createElement('li');
-                    li.className = 'task-item-mini';
-                    li.innerHTML = `
-                        ${!isAllDay ? `<span class="task-time-mini">${formatEventTime(start)}</span>` : '<span class="task-time-mini">All Day</span>'}
-                        <span>${event.summary || 'Untitled Event'}</span>
-                    `;
-                    eventList.appendChild(li);
-                });
-            } catch (err) {
-                console.error('Error fetching events:', err);
-                eventList.innerHTML = '<div class="empty-state-mini">Error loading events</div>';
+                await goalsRef.doc(goalId).delete();
+            } catch (error) {
+                console.error('Error deleting goal:', error);
             }
         }
 
-        // Check if already authorized
-        if (gapi && gapi.client && gapi.client.getToken()) {
-            document.getElementById('calendarAuth').style.display = 'none';
-            document.getElementById('eventListMini').style.display = 'block';
-            document.getElementById('viewCalendarLink').style.display = 'inline-block';
-            listTodayEvents();
-        }
-    </script>
+        createGoalBtn.addEventListener('click', openCreateGoal);
+        saveGoalBtn.addEventListener('click', saveGoal);
+        cancelGoalBtn.addEventListener('click', () => goalModal.classList.remove('active'));
 
-    <!-- Google API Scripts -->
-    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
-    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+        // Goals listener
+        goalsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            const goals = [];
+            snapshot.forEach(doc => {
+                goals.push({ id: doc.id, ...doc.data() });
+            });
+            renderGoals(goals);
+            updateGoalsSync('', '✓ Synced');
+        });
+    </script>
 </body>
 </html>
