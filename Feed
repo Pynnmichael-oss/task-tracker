@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed - Michael Pynn</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .feed-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .feed-post {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+        }
+
+        .post-header {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #667eea;
+        }
+
+        .post-user-info {
+            flex: 1;
+        }
+
+        .post-username {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 15px;
+            text-decoration: none;
+        }
+
+        .post-username:hover {
+            color: #667eea;
+        }
+
+        .post-album {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .post-timestamp {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            background: #000;
+            cursor: pointer;
+        }
+
+        .post-caption {
+            padding: 16px 20px;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .post-stats {
+            padding: 0 20px;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .comments-section {
+            padding: 16px 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .comment {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-username {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a1a;
+            margin-right: 8px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            color: #1a1a1a;
+            line-height: 1.4;
+        }
+
+        .comment-timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .add-comment {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .comment-btn {
+            padding: 8px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .comment-btn:hover {
+            background: #5568d3;
+        }
+
+        .comment-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .empty-feed {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-feed-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+        }
+
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Michael Pynn</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="feed.html" class="active logged-in-only-inline">Feed</a></li>
+                <li><a href="photos.html">Photos</a></li>
+                <li><a href="tasks.html" class="logged-in-only-inline">Tasks</a></li>
+                <li><a href="calendar.html" class="logged-in-only-inline">Calendar</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="feed-container">
+            <div class="page-header">
+                <h1>Feed</h1>
+                <p>See what everyone is sharing</p>
+            </div>
+
+            <div id="feedPosts"></div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <span class="modal-close" id="imageModalClose">&times;</span>
+        <img id="modalImage" src="" alt="Full size photo">
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        const feedPosts = document.getElementById('feedPosts');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const imageModalClose = document.getElementById('imageModalClose');
+
+        // Load feed posts
+        async function loadFeed() {
+            try {
+                const postsSnapshot = await db.collection('feed').orderBy('timestamp', 'desc').limit(50).get();
+                
+                if (postsSnapshot.empty) {
+                    feedPosts.innerHTML = `
+                        <div class="empty-feed">
+                            <div class="empty-feed-icon">📷</div>
+                            <div>No posts yet. Be the first to share!</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                feedPosts.innerHTML = '';
+                
+                for (const doc of postsSnapshot.docs) {
+                    const post = { id: doc.id, ...doc.data() };
+                    await renderPost(post);
+                }
+            } catch (error) {
+                console.error('Error loading feed:', error);
+            }
+        }
+
+        // Render a single post
+        async function renderPost(post) {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'feed-post';
+            
+            // Format timestamp
+            const timestamp = new Date(post.timestamp);
+            const timeAgo = getTimeAgo(timestamp);
+
+            postDiv.innerHTML = `
+                <div class="post-header">
+                    <img src="${post.userPhotoURL}" class="post-avatar" alt="${post.userName}">
+                    <div class="post-user-info">
+                        <a href="profile.html?user=${post.userId}" class="post-username">${post.userName}</a>
+                        <div class="post-album">${post.albumName}</div>
+                    </div>
+                    <div class="post-timestamp">${timeAgo}</div>
+                </div>
+                <img src="${post.photoURL}" class="post-image" alt="Post photo" onclick="openImageModal('${post.photoURL}')">
+                ${post.caption ? `<div class="post-caption">${post.caption}</div>` : ''}
+                <div class="comments-section">
+                    <div class="post-stats">
+                        <span id="commentCount-${post.id}">0 comments</span>
+                    </div>
+                    <div id="comments-${post.id}"></div>
+                    <div class="add-comment">
+                        <input type="text" class="comment-input" id="commentInput-${post.id}" placeholder="Add a comment...">
+                        <button class="comment-btn" onclick="addComment('${post.id}')">Post</button>
+                    </div>
+                </div>
+            `;
+
+            feedPosts.appendChild(postDiv);
+
+            // Load comments
+            loadComments(post.id);
+        }
+
+        // Load comments for a post
+        function loadComments(postId) {
+            db.collection('feed').doc(postId).collection('comments')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot((snapshot) => {
+                    const commentsDiv = document.getElementById(`comments-${postId}`);
+                    const commentCount = document.getElementById(`commentCount-${postId}`);
+                    
+                    commentCount.textContent = `${snapshot.size} comment${snapshot.size !== 1 ? 's' : ''}`;
+                    
+                    commentsDiv.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const comment = doc.data();
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'comment';
+                        
+                        const timeAgo = getTimeAgo(new Date(comment.timestamp));
+                        
+                        commentDiv.innerHTML = `
+                            <img src="${comment.userPhotoURL}" class="comment-avatar" alt="${comment.userName}">
+                            <div class="comment-content">
+                                <div>
+                                    <span class="comment-username">${comment.userName}</span>
+                                    <span class="comment-text">${comment.text}</span>
+                                </div>
+                                <div class="comment-timestamp">${timeAgo}</div>
+                            </div>
+                        `;
+                        commentsDiv.appendChild(commentDiv);
+                    });
+                });
+        }
+
+        // Add comment
+        async function addComment(postId) {
+            const input = document.getElementById(`commentInput-${postId}`);
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const currentUserProfile = getUserProfile();
+            if (!currentUserProfile) {
+                alert('Please sign in to comment');
+                return;
+            }
+
+            try {
+                await db.collection('feed').doc(postId).collection('comments').add({
+                    userId: getCurrentUserId(),
+                    userName: currentUserProfile.displayName,
+                    userPhotoURL: currentUserProfile.photoURL,
+                    text: text,
+                    timestamp: new Date().toISOString()
+                });
+
+                input.value = '';
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                alert('Error adding comment');
+            }
+        }
+
+        // Get time ago string
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        // Open image modal
+        function openImageModal(url) {
+            modalImage.src = url;
+            imageModal.classList.add('active');
+        }
+
+        // Close modal
+        imageModalClose.addEventListener('click', () => {
+            imageModal.classList.remove('active');
+        });
+
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.classList.remove('active');
+            }
+        });
+
+        // Load feed on auth
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Wait for profile to load, then load feed
+                setTimeout(loadFeed, 500);
+            }
+        });
+    </script>
+</body>
+</html>
