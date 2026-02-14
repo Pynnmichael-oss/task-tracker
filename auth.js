@@ -43,7 +43,7 @@ auth.onAuthStateChanged(async (user) => {
             } else {
                 // No profile - redirect to setup unless already on setup page
                 if (!window.location.pathname.includes('profile-setup.html')) {
-                    window.location.href = 'profile-setup.html';
+                    window.location.href = '/task-tracker/profile-setup.html';
                 }
             }
         } catch (error) {
@@ -67,7 +67,7 @@ async function signInWithGoogle() {
         
         if (!profileDoc.exists) {
             // New user - redirect to profile setup
-            window.location.href = 'profile-setup.html';
+            window.location.href = '/task-tracker/profile-setup.html';
         }
     } catch (error) {
         console.error('Sign in error:', error);
@@ -79,7 +79,7 @@ async function signInWithGoogle() {
 async function signOut() {
     try {
         await auth.signOut();
-        window.location.href = 'index.html';
+        window.location.href = '/task-tracker/index.html';
     } catch (error) {
         console.error('Sign out error:', error);
     }
