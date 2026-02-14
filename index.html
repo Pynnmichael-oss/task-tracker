@@ -1,3 +1,6 @@
+Index · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -434,11 +437,11 @@
         <div class="nav-container">
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#photos">Photos</a></li>
-                <li><a href="#dashboard">Dashboard</a></li>
-                <li><a href="tasks.html">Tasks</a></li>
-                <li><a href="calendar.html">Calendar</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="photos.html">Photos</a></li>
+                <li><a href="tasks.html" class="admin-only-inline">Tasks</a></li>
+                <li><a href="calendar.html" class="admin-only-inline">Calendar</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
     </nav>
@@ -503,8 +506,8 @@
     <!-- Dashboard Section -->
     <section class="scroll-section dashboard-section-scroll" id="dashboard">
         <div class="dashboard-container">
-            <div class="section-title">Live Dashboard</div>
-            <h2 class="section-heading">What's happening today</h2>
+            <div class="section-title">What's Happening</div>
+            <h2 class="section-heading">Today at a glance</h2>
             
             <div class="dashboard-grid-scroll">
                 <div class="dashboard-card">
@@ -516,7 +519,8 @@
                     <a href="tasks.html" class="view-link">View all tasks →</a>
                 </div>
 
-                <div class="dashboard-card">
+                <!-- Calendar events - only show when logged in -->
+                <div class="dashboard-card admin-only">
                     <div class="card-title">
                         <span>Today's Events</span>
                         <span class="card-badge" id="eventBadge">0</span>
@@ -529,30 +533,12 @@
                     <ul class="task-list-mini" id="eventListMini" style="display: none;"></ul>
                     <a href="calendar.html" class="view-link" style="display: none;" id="viewCalendarLink">View full calendar →</a>
                 </div>
-
-                <div class="dashboard-card" style="grid-column: 1 / -1;">
-                    <div class="card-title">
-                        <span>Quick Access</span>
-                    </div>
-                    <p style="color: #666; margin-bottom: 24px;">Jump to what you need</p>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                        <a href="tasks.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
-                            ✓ Tasks & Goals
-                        </a>
-                        <a href="photos.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
-                            📷 Photo Albums
-                        </a>
-                        <a href="calendar.html" style="padding: 12px 24px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: #1a1a1a; font-weight: 500; transition: all 0.2s; flex: 1; min-width: 150px; text-align: center;" onmouseover="this.style.background='#667eea'; this.style.color='white'" onmouseout="this.style.background='#f8f9fa'; this.style.color='#1a1a1a'">
-                            📅 Calendar
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="scroll-section features-section">
+    <!-- Features Section - only show when logged in -->
+    <section class="scroll-section features-section admin-only">
         <div class="features-container">
             <div class="section-title">What I'm Building</div>
             <h2 class="section-heading">Tools for productivity and memory</h2>
@@ -587,24 +573,13 @@
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="auth.js"></script>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
-            authDomain: "michael-new-website.firebaseapp.com",
-            projectId: "michael-new-website",
-            storageBucket: "michael-new-website.firebasestorage.app",
-            messagingSenderId: "149129540182",
-            appId: "1:149129540182:web:ea47a8eaa08181ecd6c1f7",
-            measurementId: "G-8R2FKQ3XMN"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Firebase is initialized in auth.js
 
         // Live Time
         function updateLiveTime() {
