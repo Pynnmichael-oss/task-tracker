@@ -569,8 +569,10 @@
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="tasks.html" class="active">Tasks</a></li>
                 <li><a href="photos.html">Photos</a></li>
+                <li><a href="tasks.html" class="active admin-only-inline">Tasks</a></li>
+                <li><a href="calendar.html" class="admin-only-inline">Calendar</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
     </nav>
@@ -675,23 +677,12 @@
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="auth.js"></script>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
-            authDomain: "michael-new-website.firebaseapp.com",
-            projectId: "michael-new-website",
-            storageBucket: "michael-new-website.firebasestorage.app",
-            messagingSenderId: "149129540182",
-            appId: "1:149129540182:web:ea47a8eaa08181ecd6c1f7",
-            measurementId: "G-8R2FKQ3XMN"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Firebase is initialized in auth.js
 
         // Get elements
         const dateElement = document.getElementById('currentDate');
