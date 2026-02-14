@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Michael Pynn</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .profile-header {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 32px;
+            border: 1px solid #f0f0f0;
+            display: flex;
+            gap: 32px;
+            align-items: start;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #667eea;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .profile-email {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .profile-bio {
+            color: #1a1a1a;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .edit-profile-btn {
+            padding: 10px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+
+        .edit-profile-btn:hover {
+            background: #5568d3;
+        }
+
+        .albums-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .album-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 1px solid #f0f0f0;
+        }
+
+        .album-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .album-cover {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .album-info {
+            padding: 16px;
+        }
+
+        .album-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .album-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-albums {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">Michael Pynn</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="feed.html" class="logged-in-only-inline">Feed</a></li>
+                <li><a href="photos.html">Photos</a></li>
+                <li><a href="tasks.html" class="logged-in-only-inline">Tasks</a></li>
+                <li><a href="calendar.html" class="logged-in-only-inline">Calendar</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-container">
+            <div id="profileContent" class="loading">Loading profile...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        // Get user ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const profileUserId = urlParams.get('user');
+
+        if (!profileUserId) {
+            window.location.href = 'index.html';
+        }
+
+        // Load profile
+        async function loadProfile() {
+            const profileContent = document.getElementById('profileContent');
+
+            try {
+                // Get profile info
+                const profileDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('info').get();
+                
+                if (!profileDoc.exists) {
+                    profileContent.innerHTML = '<div class="loading">Profile not found</div>';
+                    return;
+                }
+
+                const profile = profileDoc.data();
+                const isOwnProfile = getCurrentUserId() === profileUserId;
+
+                // Get album count
+                const albumsSnapshot = await db.collection('users').doc(profileUserId).collection('albums').get();
+                const albumCount = albumsSnapshot.size;
+
+                // Count total photos
+                let photoCount = 0;
+                for (const albumDoc of albumsSnapshot.docs) {
+                    const photosSnapshot = await db.collection('users').doc(profileUserId).collection('albums').doc(albumDoc.id).collection('photos').get();
+                    photoCount += photosSnapshot.size;
+                }
+
+                // Render profile
+                profileContent.innerHTML = `
+                    <div class="profile-header">
+                        <img src="${profile.photoURL}" class="profile-picture" alt="${profile.displayName}">
+                        <div class="profile-info">
+                            <h1 class="profile-name">${profile.displayName}</h1>
+                            <div class="profile-email">${profile.email}</div>
+                            ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
+                            
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <div class="stat-number">${albumCount}</div>
+                                    <div class="stat-label">Albums</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-number">${photoCount}</div>
+                                    <div class="stat-label">Photos</div>
+                                </div>
+                            </div>
+
+                            ${isOwnProfile ? '<button class="edit-profile-btn" onclick="editProfile()">Edit Profile</button>' : ''}
+                        </div>
+                    </div>
+
+                    <div class="albums-section">
+                        <div class="section-title">Albums</div>
+                        <div class="album-grid" id="albumGrid"></div>
+                    </div>
+                `;
+
+                // Load albums
+                loadAlbums();
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                profileContent.innerHTML = '<div class="loading">Error loading profile</div>';
+            }
+        }
+
+        // Load albums
+        async function loadAlbums() {
+            const albumGrid = document.getElementById('albumGrid');
+
+            try {
+                const albumsSnapshot = await db.collection('users').doc(profileUserId).collection('albums')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                if (albumsSnapshot.empty) {
+                    albumGrid.innerHTML = '<div class="no-albums">No albums yet</div>';
+                    return;
+                }
+
+                albumGrid.innerHTML = '';
+                albumsSnapshot.forEach(doc => {
+                    const album = { id: doc.id, ...doc.data() };
+                    
+                    const card = document.createElement('div');
+                    card.className = 'album-card';
+                    card.onclick = () => window.location.href = `photos.html?user=${profileUserId}&album=${album.id}`;
+                    
+                    card.innerHTML = `
+                        <img src="${album.coverUrl}" class="album-cover" alt="${album.name}">
+                        <div class="album-info">
+                            <div class="album-name">${album.name}</div>
+                            <div class="album-count">${album.photoCount || 0} photos</div>
+                        </div>
+                    `;
+                    
+                    albumGrid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading albums:', error);
+            }
+        }
+
+        // Edit profile
+        function editProfile() {
+            // TODO: Create edit profile modal or page
+            alert('Edit profile feature coming soon!');
+        }
+
+        // Load profile when auth ready
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                setTimeout(loadProfile, 300);
+            }
+        });
+    </script>
+</body>
+</html>
