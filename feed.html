@@ -457,6 +457,11 @@
 
         // Load feed on auth
         auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '/task-tracker/landing.html';
+                return;
+            }
+            
             if (user) {
                 // Wait for profile to load, then load feed
                 setTimeout(loadFeed, 500);
