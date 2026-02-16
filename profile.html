@@ -54,6 +54,56 @@
             color: #1a1a1a;
             line-height: 1.6;
             margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        .profile-about {
+            color: #1a1a1a;
+            line-height: 1.8;
+            margin-bottom: 24px;
+            white-space: pre-wrap;
+        }
+
+        .profile-social-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .profile-social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1a1a1a;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .profile-social-link:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .edit-about-btn {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .edit-about-btn:hover {
+            background: #e0e0e0;
         }
 
         .profile-stats {
@@ -523,9 +573,7 @@
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="feed.html" class="logged-in-only-inline">Feed</a></li>
-                <li><a href="tasks.html" class="logged-in-only-inline">Tasks</a></li>
-                <li><a href="calendar.html" class="logged-in-only-inline">Calendar</a></li>
+                <li><a href="feed.html">Feed</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
@@ -601,6 +649,24 @@
     <div class="image-modal" id="imageModal">
         <span class="modal-close" id="imageModalClose">&times;</span>
         <img id="modalImage" src="" alt="Full size photo">
+    </div>
+
+    <!-- Edit About Modal -->
+    <div class="modal" id="editAboutModal">
+        <div class="modal-content">
+            <div class="modal-header">Edit About Me</div>
+            
+            <div class="form-group">
+                <label class="form-label">About Me</label>
+                <textarea id="aboutTextarea" class="form-input" style="min-height: 200px; resize: vertical;" placeholder="Tell people about yourself... (supports multiple paragraphs)"></textarea>
+                <div style="font-size: 12px; color: #999; margin-top: 4px;">Press Enter for new paragraphs</div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-primary" id="saveAboutBtn">Save</button>
+                <button class="btn-secondary" id="cancelAboutBtn">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDKs -->
@@ -686,6 +752,48 @@
                     photoCount += photosSnapshot.size;
                 }
 
+                // Load social links
+                let socialLinks = {};
+                try {
+                    const socialDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').get();
+                    if (socialDoc.exists) {
+                        socialLinks = socialDoc.data();
+                    }
+                } catch (error) {
+                    console.log('No social links found');
+                }
+
+                // Load extended about
+                let extendedAbout = '';
+                try {
+                    const aboutDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
+                    if (aboutDoc.exists) {
+                        extendedAbout = aboutDoc.data().text || '';
+                    }
+                } catch (error) {
+                    console.log('No extended about found');
+                }
+
+                // Build social links HTML
+                let socialLinksHTML = '';
+                if (socialLinks.instagram || socialLinks.linkedin || socialLinks.twitter || socialLinks.github) {
+                    const links = [];
+                    if (socialLinks.instagram) {
+                        links.push(`<a href="https://instagram.com/${socialLinks.instagram.replace('@', '')}" target="_blank" class="profile-social-link">📷 Instagram</a>`);
+                    }
+                    if (socialLinks.linkedin) {
+                        const url = socialLinks.linkedin.startsWith('http') ? socialLinks.linkedin : `https://linkedin.com/in/${socialLinks.linkedin}`;
+                        links.push(`<a href="${url}" target="_blank" class="profile-social-link">💼 LinkedIn</a>`);
+                    }
+                    if (socialLinks.twitter) {
+                        links.push(`<a href="https://twitter.com/${socialLinks.twitter.replace('@', '')}" target="_blank" class="profile-social-link">🐦 Twitter</a>`);
+                    }
+                    if (socialLinks.github) {
+                        links.push(`<a href="https://github.com/${socialLinks.github.replace('@', '')}" target="_blank" class="profile-social-link">💻 GitHub</a>`);
+                    }
+                    socialLinksHTML = `<div class="profile-social-links">${links.join('')}</div>`;
+                }
+
                 // Render profile header
                 profileHeader.innerHTML = `
                     <div class="profile-header">
@@ -694,6 +802,7 @@
                             <h1 class="profile-name">${profile.displayName}</h1>
                             <div class="profile-email">${profile.email}</div>
                             ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
+                            ${socialLinksHTML}
                             
                             <div class="profile-stats">
                                 <div class="stat">
@@ -705,8 +814,25 @@
                                     <div class="stat-label">Photos</div>
                                 </div>
                             </div>
+
+                            ${isOwnProfile ? '<button class="edit-about-btn" id="editAboutBtnProfile">Edit About</button>' : ''}
                         </div>
                     </div>
+
+                    ${extendedAbout ? `
+                        <div class="content-section" style="margin-top: 24px;">
+                            <div class="section-header">
+                                <div class="section-title">About Me</div>
+                                ${isOwnProfile ? '<button class="btn-edit" onclick="document.getElementById(\'editAboutBtnProfile\').click()">Edit</button>' : ''}
+                            </div>
+                            <div class="profile-about">${extendedAbout}</div>
+                        </div>
+                    ` : (isOwnProfile ? `
+                        <div class="content-section" style="margin-top: 24px; text-align: center; color: #999;">
+                            <p>Add an extended About section to tell people more about yourself</p>
+                            <button class="btn btn-primary" style="margin-top: 16px;" onclick="document.getElementById('editAboutBtnProfile').click()">Add About Section</button>
+                        </div>
+                    ` : '')}
                 `;
 
                 // Show albums section
@@ -715,6 +841,23 @@
                 // Show create button if own profile
                 if (isOwnProfile) {
                     createAlbumBtn.classList.remove('hidden');
+                    
+                    // Setup About edit button
+                    setTimeout(() => {
+                        const editAboutBtn = document.getElementById('editAboutBtnProfile');
+                        if (editAboutBtn) {
+                            editAboutBtn.addEventListener('click', async () => {
+                                // Load current about text
+                                try {
+                                    const aboutDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
+                                    document.getElementById('aboutTextarea').value = aboutDoc.exists ? (aboutDoc.data().text || '') : '';
+                                } catch (error) {
+                                    document.getElementById('aboutTextarea').value = '';
+                                }
+                                document.getElementById('editAboutModal').classList.add('active');
+                            });
+                        }
+                    }, 100);
                 }
 
                 // Load albums
@@ -1028,6 +1171,43 @@
         imageModalClose.onclick = () => imageModal.classList.remove('active');
         imageModal.onclick = (e) => {
             if (e.target === imageModal) imageModal.classList.remove('active');
+        };
+
+        // Edit About Modal Handlers
+        const editAboutModal = document.getElementById('editAboutModal');
+        const aboutTextarea = document.getElementById('aboutTextarea');
+        const saveAboutBtn = document.getElementById('saveAboutBtn');
+        const cancelAboutBtn = document.getElementById('cancelAboutBtn');
+
+        cancelAboutBtn.onclick = () => {
+            editAboutModal.classList.remove('active');
+        };
+
+        saveAboutBtn.onclick = async () => {
+            const aboutText = aboutTextarea.value.trim();
+            
+            try {
+                saveAboutBtn.disabled = true;
+                saveAboutBtn.textContent = 'Saving...';
+
+                await db.collection('users').doc(profileUserId).collection('profile').doc('about').set({
+                    text: aboutText,
+                    updatedAt: new Date().toISOString()
+                });
+
+                editAboutModal.classList.remove('active');
+                saveAboutBtn.disabled = false;
+                saveAboutBtn.textContent = 'Save';
+
+                // Reload profile to show changes
+                await loadProfile();
+
+            } catch (error) {
+                console.error('Error saving about:', error);
+                alert('Error saving. Please try again.');
+                saveAboutBtn.disabled = false;
+                saveAboutBtn.textContent = 'Save';
+            }
         };
     </script>
 </body>
