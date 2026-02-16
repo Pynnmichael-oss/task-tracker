@@ -3,200 +3,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feed - Michael Pynn</title>
+    <title>Profile - Michael Pynn</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .feed-container {
-            max-width: 700px;
+        .profile-container {
+            max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
-        .feed-post {
+        /* Profile Header */
+        .profile-header {
             background: white;
             border-radius: 16px;
+            padding: 40px;
             margin-bottom: 32px;
             border: 1px solid #f0f0f0;
-            overflow: hidden;
-        }
-
-        .post-header {
-            padding: 16px 20px;
             display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid #f0f0f0;
+            gap: 32px;
+            align-items: start;
         }
 
-        .post-avatar {
-            width: 40px;
-            height: 40px;
+        .profile-picture {
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #667eea;
-        }
-
-        .post-user-info {
-            flex: 1;
-        }
-
-        .post-username {
-            font-weight: 600;
-            color: #1a1a1a;
-            font-size: 15px;
-            text-decoration: none;
-        }
-
-        .post-username:hover {
-            color: #667eea;
-        }
-
-        .post-album {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .post-timestamp {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .post-image {
-            width: 100%;
-            max-height: 600px;
-            object-fit: contain;
-            background: #000;
-            cursor: pointer;
-        }
-
-        .post-caption {
-            padding: 16px 20px;
-            color: #1a1a1a;
-            line-height: 1.5;
-        }
-
-        .post-stats {
-            padding: 0 20px;
-            color: #666;
-            font-size: 14px;
-            display: flex;
-            gap: 16px;
-        }
-
-        .comments-section {
-            padding: 16px 20px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .comment {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .comment-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
+            border: 4px solid #667eea;
             flex-shrink: 0;
         }
 
-        .comment-content {
+        .profile-info {
             flex: 1;
         }
 
-        .comment-username {
+        .profile-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .profile-email {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .profile-bio {
+            color: #1a1a1a;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        .profile-about {
+            color: #1a1a1a;
+            line-height: 1.8;
+            margin-bottom: 24px;
+            white-space: pre-wrap;
+        }
+
+        .profile-social-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .profile-social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1a1a1a;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .profile-social-link:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .edit-about-btn {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-weight: 600;
             font-size: 14px;
-            color: #1a1a1a;
-            margin-right: 8px;
+            margin-top: 16px;
         }
 
-        .comment-text {
+        .edit-about-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 24px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
             font-size: 14px;
-            color: #1a1a1a;
-            line-height: 1.4;
-        }
-
-        .comment-timestamp {
-            font-size: 12px;
-            color: #999;
+            color: #666;
             margin-top: 4px;
         }
 
-        .add-comment {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 1px solid #f0f0f0;
         }
 
-        .comment-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 20px;
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Album Grid */
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .create-album-card {
+            aspect-ratio: 4/3;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .create-album-card:hover {
+            border-color: #667eea;
+            background: white;
+        }
+
+        .create-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .album-card {
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 1px solid #f0f0f0;
+            background: white;
+        }
+
+        .album-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .album-cover {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+
+        .album-info {
+            padding: 16px;
+        }
+
+        .album-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .photo-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Album Detail View */
+        .album-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .album-detail-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .album-photo-count {
+            color: #666;
             font-size: 14px;
         }
 
-        .comment-input:focus {
+        /* Photo Grid */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .photo-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .photo-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .photo-item:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
             outline: none;
             border-color: #667eea;
         }
 
-        .comment-btn {
-            padding: 8px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 20px;
+        .cover-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
+            transition: all 0.2s;
         }
 
-        .comment-btn:hover {
-            background: #5568d3;
+        .cover-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
         }
 
-        .comment-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .cover-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 12px;
         }
 
-        .empty-feed {
-            text-align: center;
-            padding: 80px 20px;
-            color: #999;
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
         }
 
-        .empty-feed-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+        .modal-actions .btn {
+            flex: 1;
+            padding: 12px;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f0f0f0;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-feed {
-            text-align: center;
-            padding: 80px 20px;
-            color: #999;
-        }
-
+        /* Image Modal */
         .image-modal {
             display: none;
             position: fixed;
@@ -229,26 +440,129 @@
             cursor: pointer;
         }
 
+        /* States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f0f0f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         @media (max-width: 768px) {
-            .feed-container {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 24px;
+            }
+
+            .profile-picture {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-name {
+                font-size: 24px;
+            }
+
+            .profile-stats {
+                justify-content: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .album-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 16px;
+            }
+
+            .photo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 12px;
+            }
+
+            .modal-content {
+                padding: 24px;
+                width: 95%;
+            }
+
+            .album-detail-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .album-detail-header > div {
+                text-align: center !important;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 16px;
+                min-height: 44px; /* Better touch target */
+            }
+
+            .create-album-card {
+                min-height: 150px;
+            }
+
+            .navbar .nav-menu {
+                gap: 8px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-container {
                 padding: 20px 12px;
             }
 
-            .feed-post {
-                margin-bottom: 24px;
+            .content-section {
+                padding: 20px;
             }
 
-            .post-image {
-                max-height: 400px;
+            .album-grid {
+                grid-template-columns: 1fr;
             }
 
-            .comment-input {
-                font-size: 16px; /* Prevents zoom on iOS */
+            .profile-stats {
+                gap: 24px;
             }
 
-            .modal-close {
-                right: 20px;
-                font-size: 32px;
+            .modal-header {
+                font-size: 20px;
             }
         }
     </style>
@@ -259,20 +573,75 @@
             <a href="index.html" class="nav-brand">Michael Pynn</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="feed.html" class="active">Feed</a></li>
+                <li><a href="feed.html">Feed</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
             </ul>
         </div>
     </nav>
 
     <div class="container">
-        <div class="feed-container">
-            <div class="page-header">
-                <h1>Feed</h1>
-                <p>See what everyone is sharing</p>
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div id="profileHeader" class="loading">
+                <div class="spinner"></div>
+                <p>Loading profile...</p>
             </div>
 
-            <div id="feedPosts"></div>
+            <!-- Albums Section -->
+            <div id="albumsSection" class="content-section hidden">
+                <!-- Albums Grid View -->
+                <div id="albumsView">
+                    <div class="section-header">
+                        <div class="section-title">Photo Albums</div>
+                        <button class="btn btn-primary hidden" id="createAlbumBtn">+ Create Album</button>
+                    </div>
+                    <div class="album-grid" id="albumGrid"></div>
+                </div>
+
+                <!-- Album Detail View -->
+                <div id="albumDetailView" class="hidden">
+                    <div class="album-detail-header">
+                        <div>
+                            <button class="btn btn-secondary" id="backBtn">← Back to Albums</button>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <h2 class="album-detail-title" id="albumTitle"></h2>
+                            <p class="album-photo-count" id="albumPhotoCount"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary hidden" id="uploadPhotosBtn">+ Add Photos</button>
+                            <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+                    <div class="photo-grid" id="photoGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Album Modal -->
+    <div class="modal" id="createAlbumModal">
+        <div class="modal-content">
+            <div class="modal-header">Create New Album</div>
+            
+            <div class="form-group">
+                <label class="form-label">Album Name</label>
+                <input type="text" class="form-input" id="albumNameInput" placeholder="e.g., Summer Vacation" maxlength="50">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Cover Photo</label>
+                <div class="cover-upload-area" id="coverUploadArea">
+                    <div>📷 Click to select cover photo</div>
+                    <input type="file" id="coverInput" accept="image/*" style="display: none;">
+                    <img id="coverPreview" class="cover-preview" style="display: none;">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="createAlbumConfirm">Create Album</button>
+                <button class="btn btn-secondary" id="cancelAlbumBtn">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -280,6 +649,24 @@
     <div class="image-modal" id="imageModal">
         <span class="modal-close" id="imageModalClose">&times;</span>
         <img id="modalImage" src="" alt="Full size photo">
+    </div>
+
+    <!-- Edit About Modal -->
+    <div class="modal" id="editAboutModal">
+        <div class="modal-content">
+            <div class="modal-header">Edit About Me</div>
+            
+            <div class="form-group">
+                <label class="form-label">About Me</label>
+                <textarea id="aboutTextarea" class="form-input" style="min-height: 200px; resize: vertical;" placeholder="Tell people about yourself... (supports multiple paragraphs)"></textarea>
+                <div style="font-size: 12px; color: #999; margin-top: 4px;">Press Enter for new paragraphs</div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-primary" id="saveAboutBtn">Save</button>
+                <button class="btn-secondary" id="cancelAboutBtn">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDKs -->
@@ -290,181 +677,538 @@
     <script src="auth.js"></script>
 
     <script>
-        const feedPosts = document.getElementById('feedPosts');
+        // Get user ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const profileUserId = urlParams.get('user');
+        
+        if (!profileUserId) {
+            window.location.href = '/task-tracker/index.html';
+        }
+
+        // State
+        let isOwnProfile = false;
+        let currentAlbumId = null;
+        let selectedCoverFile = null;
+        let albumsRef = null;
+
+        // Elements
+        const profileHeader = document.getElementById('profileHeader');
+        const albumsSection = document.getElementById('albumsSection');
+        const albumsView = document.getElementById('albumsView');
+        const albumDetailView = document.getElementById('albumDetailView');
+        const albumGrid = document.getElementById('albumGrid');
+        const photoGrid = document.getElementById('photoGrid');
+        const createAlbumBtn = document.getElementById('createAlbumBtn');
+        const createAlbumModal = document.getElementById('createAlbumModal');
+        const albumNameInput = document.getElementById('albumNameInput');
+        const coverUploadArea = document.getElementById('coverUploadArea');
+        const coverInput = document.getElementById('coverInput');
+        const coverPreview = document.getElementById('coverPreview');
+        const createAlbumConfirm = document.getElementById('createAlbumConfirm');
+        const cancelAlbumBtn = document.getElementById('cancelAlbumBtn');
+        const backBtn = document.getElementById('backBtn');
+        const uploadPhotosBtn = document.getElementById('uploadPhotosBtn');
+        const photoInput = document.getElementById('photoInput');
+        const albumTitle = document.getElementById('albumTitle');
+        const albumPhotoCount = document.getElementById('albumPhotoCount');
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
         const imageModalClose = document.getElementById('imageModalClose');
 
-        // Load feed posts
-        async function loadFeed() {
-            feedPosts.innerHTML = '<div class="loading-feed"><div class="spinner"></div><p>Loading feed...</p></div>';
-            
-            try {
-                const postsSnapshot = await db.collection('feed').orderBy('timestamp', 'desc').limit(50).get();
-                
-                if (postsSnapshot.empty) {
-                    feedPosts.innerHTML = `
-                        <div class="empty-feed">
-                            <div class="empty-feed-icon">📷</div>
-                            <div>No posts yet. Be the first to share!</div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                feedPosts.innerHTML = '';
-                
-                for (const doc of postsSnapshot.docs) {
-                    const post = { id: doc.id, ...doc.data() };
-                    await renderPost(post);
-                }
-            } catch (error) {
-                console.error('Error loading feed:', error);
-                feedPosts.innerHTML = '<div class="empty-feed"><div>Error loading feed. Please refresh.</div></div>';
-            }
-        }
-
-        // Render a single post
-        async function renderPost(post) {
-            const postDiv = document.createElement('div');
-            postDiv.className = 'feed-post';
-            
-            // Format timestamp
-            const timestamp = new Date(post.timestamp);
-            const timeAgo = getTimeAgo(timestamp);
-
-            postDiv.innerHTML = `
-                <div class="post-header">
-                    <img src="${post.userPhotoURL}" class="post-avatar" alt="${post.userName}">
-                    <div class="post-user-info">
-                        <a href="profile.html?user=${post.userId}" class="post-username">${post.userName}</a>
-                        <div class="post-album">${post.albumName}</div>
-                    </div>
-                    <div class="post-timestamp">${timeAgo}</div>
-                </div>
-                <img src="${post.photoURL}" class="post-image" alt="Post photo" onclick="openImageModal('${post.photoURL}')">
-                ${post.caption ? `<div class="post-caption">${post.caption}</div>` : ''}
-                <div class="comments-section">
-                    <div class="post-stats">
-                        <span id="commentCount-${post.id}">0 comments</span>
-                    </div>
-                    <div id="comments-${post.id}"></div>
-                    <div class="add-comment">
-                        <input type="text" class="comment-input" id="commentInput-${post.id}" placeholder="Add a comment...">
-                        <button class="comment-btn" onclick="addComment('${post.id}')">Post</button>
-                    </div>
-                </div>
-            `;
-
-            feedPosts.appendChild(postDiv);
-
-            // Load comments
-            loadComments(post.id);
-        }
-
-        // Load comments for a post
-        function loadComments(postId) {
-            db.collection('feed').doc(postId).collection('comments')
-                .orderBy('timestamp', 'asc')
-                .onSnapshot((snapshot) => {
-                    const commentsDiv = document.getElementById(`comments-${postId}`);
-                    const commentCount = document.getElementById(`commentCount-${postId}`);
-                    
-                    commentCount.textContent = `${snapshot.size} comment${snapshot.size !== 1 ? 's' : ''}`;
-                    
-                    commentsDiv.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        const comment = doc.data();
-                        const commentDiv = document.createElement('div');
-                        commentDiv.className = 'comment';
-                        
-                        const timeAgo = getTimeAgo(new Date(comment.timestamp));
-                        
-                        commentDiv.innerHTML = `
-                            <img src="${comment.userPhotoURL}" class="comment-avatar" alt="${comment.userName}">
-                            <div class="comment-content">
-                                <div>
-                                    <span class="comment-username">${comment.userName}</span>
-                                    <span class="comment-text">${comment.text}</span>
-                                </div>
-                                <div class="comment-timestamp">${timeAgo}</div>
-                            </div>
-                        `;
-                        commentsDiv.appendChild(commentDiv);
-                    });
-                });
-        }
-
-        // Add comment
-        async function addComment(postId) {
-            const input = document.getElementById(`commentInput-${postId}`);
-            const text = input.value.trim();
-            
-            if (!text) return;
-            
-            const currentUserProfile = getUserProfile();
-            if (!currentUserProfile) {
-                alert('Please sign in to comment');
-                return;
-            }
-
-            try {
-                await db.collection('feed').doc(postId).collection('comments').add({
-                    userId: getCurrentUserId(),
-                    userName: currentUserProfile.displayName,
-                    userPhotoURL: currentUserProfile.photoURL,
-                    text: text,
-                    timestamp: new Date().toISOString()
-                });
-
-                input.value = '';
-            } catch (error) {
-                console.error('Error adding comment:', error);
-                alert('Error adding comment');
-            }
-        }
-
-        // Get time ago string
-        function getTimeAgo(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            
-            if (seconds < 60) return 'just now';
-            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-            if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-            
-            return date.toLocaleDateString();
-        }
-
-        // Open image modal
-        function openImageModal(url) {
-            modalImage.src = url;
-            imageModal.classList.add('active');
-        }
-
-        // Close modal
-        imageModalClose.addEventListener('click', () => {
-            imageModal.classList.remove('active');
-        });
-
-        imageModal.addEventListener('click', (e) => {
-            if (e.target === imageModal) {
-                imageModal.classList.remove('active');
-            }
-        });
-
-        // Load feed on auth
-        auth.onAuthStateChanged((user) => {
+        // Load profile on auth
+        auth.onAuthStateChanged(async (user) => {
             if (!user) {
+                // Not logged in - redirect to landing
                 window.location.href = '/task-tracker/landing.html';
                 return;
             }
             
             if (user) {
-                // Wait for profile to load, then load feed
-                setTimeout(loadFeed, 500);
+                isOwnProfile = user.uid === profileUserId;
+                albumsRef = db.collection('users').doc(profileUserId).collection('albums');
+                await loadProfile();
             }
         });
+
+        // Load Profile
+        async function loadProfile() {
+            try {
+                const profileDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('info').get();
+                
+                if (!profileDoc.exists) {
+                    profileHeader.innerHTML = '<div class="loading">Profile not found</div>';
+                    return;
+                }
+
+                const profile = profileDoc.data();
+
+                // Count albums and photos
+                const albumsSnapshot = await albumsRef.get();
+                const albumCount = albumsSnapshot.size;
+
+                let photoCount = 0;
+                for (const albumDoc of albumsSnapshot.docs) {
+                    const photosSnapshot = await albumsRef.doc(albumDoc.id).collection('photos').get();
+                    photoCount += photosSnapshot.size;
+                }
+
+                // Load social links
+                let socialLinks = {};
+                try {
+                    const socialDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').get();
+                    if (socialDoc.exists) {
+                        socialLinks = socialDoc.data();
+                    }
+                } catch (error) {
+                    console.log('No social links found');
+                }
+
+                // Load extended about
+                let extendedAbout = '';
+                try {
+                    const aboutDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
+                    if (aboutDoc.exists) {
+                        extendedAbout = aboutDoc.data().text || '';
+                    }
+                } catch (error) {
+                    console.log('No extended about found');
+                }
+
+                // Build social links HTML
+                let socialLinksHTML = '';
+                if (socialLinks.instagram || socialLinks.linkedin || socialLinks.twitter || socialLinks.github) {
+                    const links = [];
+                    if (socialLinks.instagram) {
+                        links.push(`<a href="https://instagram.com/${socialLinks.instagram.replace('@', '')}" target="_blank" class="profile-social-link">📷 Instagram</a>`);
+                    }
+                    if (socialLinks.linkedin) {
+                        const url = socialLinks.linkedin.startsWith('http') ? socialLinks.linkedin : `https://linkedin.com/in/${socialLinks.linkedin}`;
+                        links.push(`<a href="${url}" target="_blank" class="profile-social-link">💼 LinkedIn</a>`);
+                    }
+                    if (socialLinks.twitter) {
+                        links.push(`<a href="https://twitter.com/${socialLinks.twitter.replace('@', '')}" target="_blank" class="profile-social-link">🐦 Twitter</a>`);
+                    }
+                    if (socialLinks.github) {
+                        links.push(`<a href="https://github.com/${socialLinks.github.replace('@', '')}" target="_blank" class="profile-social-link">💻 GitHub</a>`);
+                    }
+                    socialLinksHTML = `<div class="profile-social-links">${links.join('')}</div>`;
+                }
+
+                // Render profile header
+                profileHeader.innerHTML = `
+                    <div class="profile-header">
+                        <img src="${profile.photoURL}" class="profile-picture" alt="${profile.displayName}">
+                        <div class="profile-info">
+                            <h1 class="profile-name">${profile.displayName}</h1>
+                            <div class="profile-email">${profile.email}</div>
+                            ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
+                            ${socialLinksHTML}
+                            
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <div class="stat-number">${albumCount}</div>
+                                    <div class="stat-label">Albums</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-number">${photoCount}</div>
+                                    <div class="stat-label">Photos</div>
+                                </div>
+                            </div>
+
+                            ${isOwnProfile ? '<button class="edit-about-btn" id="editAboutBtnProfile">Edit About</button>' : ''}
+                        </div>
+                    </div>
+
+                    ${extendedAbout ? `
+                        <div class="content-section" style="margin-top: 24px;">
+                            <div class="section-header">
+                                <div class="section-title">About Me</div>
+                                ${isOwnProfile ? '<button class="btn-edit" onclick="document.getElementById(\'editAboutBtnProfile\').click()">Edit</button>' : ''}
+                            </div>
+                            <div class="profile-about">${extendedAbout}</div>
+                        </div>
+                    ` : (isOwnProfile ? `
+                        <div class="content-section" style="margin-top: 24px; text-align: center; color: #999;">
+                            <p>Add an extended About section to tell people more about yourself</p>
+                            <button class="btn btn-primary" style="margin-top: 16px;" onclick="document.getElementById('editAboutBtnProfile').click()">Add About Section</button>
+                        </div>
+                    ` : '')}
+                `;
+
+                // Show albums section
+                albumsSection.classList.remove('hidden');
+
+                // Show create button if own profile
+                if (isOwnProfile) {
+                    createAlbumBtn.classList.remove('hidden');
+                    
+                    // Setup About edit button
+                    setTimeout(() => {
+                        const editAboutBtn = document.getElementById('editAboutBtnProfile');
+                        if (editAboutBtn) {
+                            editAboutBtn.addEventListener('click', async () => {
+                                // Load current about text
+                                try {
+                                    const aboutDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
+                                    document.getElementById('aboutTextarea').value = aboutDoc.exists ? (aboutDoc.data().text || '') : '';
+                                } catch (error) {
+                                    document.getElementById('aboutTextarea').value = '';
+                                }
+                                document.getElementById('editAboutModal').classList.add('active');
+                            });
+                        }
+                    }, 100);
+                }
+
+                // Load albums
+                loadAlbums();
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                profileHeader.innerHTML = '<div class="loading">Error loading profile</div>';
+            }
+        }
+
+        // Load Albums
+        function loadAlbums() {
+            albumsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+                renderAlbums(snapshot.docs.map(doc => ({id: doc.id, ...doc.data()})));
+            });
+        }
+
+        // Render Albums
+        function renderAlbums(albums) {
+            albumGrid.innerHTML = '';
+
+            // Create album card (own profile only)
+            if (isOwnProfile) {
+                const createCard = document.createElement('div');
+                createCard.className = 'create-album-card';
+                createCard.innerHTML = `
+                    <div class="create-icon">+</div>
+                    <div style="font-weight: 600; color: #667eea;">Create Album</div>
+                `;
+                createCard.onclick = () => createAlbumModal.classList.add('active');
+                albumGrid.appendChild(createCard);
+            }
+
+            // Album cards
+            if (albums.length === 0 && !isOwnProfile) {
+                albumGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">📷</div><p>No albums yet</p></div>';
+                return;
+            }
+
+            albums.forEach(album => {
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                card.innerHTML = `
+                    <img src="${album.coverUrl}" class="album-cover" alt="${album.name}">
+                    <div class="album-info">
+                        <div class="album-name">${album.name}</div>
+                        <div class="photo-count">${album.photoCount || 0} photos</div>
+                    </div>
+                `;
+                card.onclick = () => openAlbum(album.id, album.name);
+                albumGrid.appendChild(card);
+            });
+        }
+
+        // Create Album Modal Handlers
+        coverUploadArea.onclick = () => coverInput.click();
+        coverInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedCoverFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    coverPreview.src = e.target.result;
+                    coverPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        createAlbumBtn.onclick = () => createAlbumModal.classList.add('active');
+        cancelAlbumBtn.onclick = () => {
+            createAlbumModal.classList.remove('active');
+            albumNameInput.value = '';
+            coverPreview.style.display = 'none';
+            selectedCoverFile = null;
+        };
+
+        createAlbumConfirm.onclick = async () => {
+            const name = albumNameInput.value.trim();
+            if (!name || !selectedCoverFile) {
+                alert('Please provide album name and cover photo');
+                return;
+            }
+
+            try {
+                createAlbumConfirm.disabled = true;
+                createAlbumConfirm.textContent = 'Creating...';
+
+                const user = auth.currentUser;
+                const coverFileName = `users/${user.uid}/covers/${Date.now()}_${selectedCoverFile.name}`;
+                const coverRef = storage.ref(coverFileName);
+                await coverRef.put(selectedCoverFile);
+                const coverUrl = await coverRef.getDownloadURL();
+
+                await albumsRef.add({
+                    name: name,
+                    coverUrl: coverUrl,
+                    coverFileName: coverFileName,
+                    photoCount: 0,
+                    createdAt: new Date().toISOString()
+                });
+
+                albumNameInput.value = '';
+                coverPreview.style.display = 'none';
+                selectedCoverFile = null;
+                createAlbumModal.classList.remove('active');
+                createAlbumConfirm.disabled = false;
+                createAlbumConfirm.textContent = 'Create Album';
+
+            } catch (error) {
+                console.error('Error creating album:', error);
+                alert('Error creating album');
+                createAlbumConfirm.disabled = false;
+                createAlbumConfirm.textContent = 'Create Album';
+            }
+        };
+
+        // Open Album
+        function openAlbum(albumId, albumName) {
+            currentAlbumId = albumId;
+            albumTitle.textContent = albumName;
+            albumsView.classList.add('hidden');
+            albumDetailView.classList.remove('hidden');
+
+            if (isOwnProfile) {
+                uploadPhotosBtn.classList.remove('hidden');
+            }
+
+            loadPhotos(albumId);
+        }
+
+        // Back to Albums
+        backBtn.onclick = () => {
+            currentAlbumId = null;
+            albumDetailView.classList.add('hidden');
+            albumsView.classList.remove('hidden');
+        };
+
+        // Upload Photos
+        uploadPhotosBtn.onclick = () => photoInput.click();
+        photoInput.onchange = async (e) => {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            const user = auth.currentUser;
+            let uploadedPhotos = [];
+
+            for (let file of files) {
+                if (!file.type.startsWith('image/')) continue;
+
+                const fileName = `users/${user.uid}/albums/${currentAlbumId}/${Date.now()}_${file.name}`;
+                const storageRef = storage.ref(fileName);
+
+                try {
+                    await storageRef.put(file);
+                    const url = await storageRef.getDownloadURL();
+
+                    await albumsRef.doc(currentAlbumId).collection('photos').add({
+                        url: url,
+                        fileName: fileName,
+                        uploadedAt: new Date().toISOString()
+                    });
+
+                    uploadedPhotos.push({url, fileName});
+
+                    // Update photo count
+                    const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                    await albumsRef.doc(currentAlbumId).update({
+                        photoCount: (albumDoc.data().photoCount || 0) + 1
+                    });
+
+                } catch (error) {
+                    console.error('Error uploading photo:', error);
+                }
+            }
+
+            photoInput.value = '';
+
+            // Ask about sharing to feed with custom dialog
+            if (uploadedPhotos.length > 0) {
+                showShareDialog(uploadedPhotos);
+            }
+        };
+
+        // Show Share Dialog
+        let pendingSharePhotos = [];
+        function showShareDialog(photos) {
+            pendingSharePhotos = photos;
+            const shareDialog = document.createElement('div');
+            shareDialog.className = 'modal active';
+            shareDialog.id = 'shareDialog';
+            shareDialog.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">Upload Complete!</div>
+                    <p style="margin-bottom: 24px;">Share ${photos.length} photo(s) to your feed?</p>
+                    <div class="modal-actions">
+                        <button class="btn btn-primary" onclick="confirmShare(true)">Yes, Share</button>
+                        <button class="btn btn-secondary" onclick="confirmShare(false)">No Thanks</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(shareDialog);
+        }
+
+        async function confirmShare(share) {
+            const shareDialog = document.getElementById('shareDialog');
+            if (shareDialog) shareDialog.remove();
+            
+            if (share) {
+                await sharePhotosToFeed(pendingSharePhotos);
+            }
+            pendingSharePhotos = [];
+        }
+        window.confirmShare = confirmShare;
+
+        // Share to Feed
+        async function sharePhotosToFeed(photos) {
+            try {
+                const user = auth.currentUser;
+                const userProfile = getUserProfile();
+                const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                const albumName = albumDoc.data().name;
+
+                for (const photo of photos) {
+                    await db.collection('feed').add({
+                        userId: user.uid,
+                        userName: userProfile.displayName,
+                        userPhotoURL: userProfile.photoURL,
+                        albumName: albumName,
+                        photoURL: photo.url,
+                        caption: '',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                alert('Shared to feed!');
+            } catch (error) {
+                console.error('Error sharing to feed:', error);
+            }
+        }
+
+        // Load Photos
+        function loadPhotos(albumId) {
+            albumsRef.doc(albumId).collection('photos')
+                .orderBy('uploadedAt', 'desc')
+                .onSnapshot((snapshot) => {
+                    const photos = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    albumPhotoCount.textContent = `${photos.length} photo${photos.length !== 1 ? 's' : ''}`;
+                    renderPhotos(photos);
+                });
+        }
+
+        // Render Photos
+        function renderPhotos(photos) {
+            if (photos.length === 0) {
+                photoGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📷</div>
+                        <p>No photos yet. ${isOwnProfile ? 'Click "Add Photos" to upload!' : ''}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            photoGrid.innerHTML = '';
+            photos.forEach(photo => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.innerHTML = `
+                    <img src="${photo.url}" alt="Photo">
+                    ${isOwnProfile ? `
+                        <div class="photo-overlay">
+                            <button class="btn btn-danger" onclick="event.stopPropagation(); deletePhoto('${photo.id}', '${photo.fileName}')">Delete</button>
+                        </div>
+                    ` : ''}
+                `;
+                
+                // Click photo to view full size
+                item.onclick = (e) => {
+                    // Don't open if clicking delete button
+                    if (e.target.tagName === 'BUTTON') return;
+                    modalImage.src = photo.url;
+                    imageModal.classList.add('active');
+                };
+
+                photoGrid.appendChild(item);
+            });
+        }
+
+        // Delete Photo
+        async function deletePhoto(photoId, fileName) {
+            if (!confirm('Delete this photo?')) return;
+
+            try {
+                await storage.ref(fileName).delete();
+                await albumsRef.doc(currentAlbumId).collection('photos').doc(photoId).delete();
+
+                const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                await albumsRef.doc(currentAlbumId).update({
+                    photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1)
+                });
+            } catch (error) {
+                console.error('Error deleting photo:', error);
+                alert('Error deleting photo');
+            }
+        }
+        window.deletePhoto = deletePhoto;
+
+        // Image Modal
+        imageModalClose.onclick = () => imageModal.classList.remove('active');
+        imageModal.onclick = (e) => {
+            if (e.target === imageModal) imageModal.classList.remove('active');
+        };
+
+        // Edit About Modal Handlers
+        const editAboutModal = document.getElementById('editAboutModal');
+        const aboutTextarea = document.getElementById('aboutTextarea');
+        const saveAboutBtn = document.getElementById('saveAboutBtn');
+        const cancelAboutBtn = document.getElementById('cancelAboutBtn');
+
+        cancelAboutBtn.onclick = () => {
+            editAboutModal.classList.remove('active');
+        };
+
+        saveAboutBtn.onclick = async () => {
+            const aboutText = aboutTextarea.value.trim();
+            
+            try {
+                saveAboutBtn.disabled = true;
+                saveAboutBtn.textContent = 'Saving...';
+
+                await db.collection('users').doc(profileUserId).collection('profile').doc('about').set({
+                    text: aboutText,
+                    updatedAt: new Date().toISOString()
+                });
+
+                editAboutModal.classList.remove('active');
+                saveAboutBtn.disabled = false;
+                saveAboutBtn.textContent = 'Save';
+
+                // Reload profile to show changes
+                await loadProfile();
+
+            } catch (error) {
+                console.error('Error saving about:', error);
+                alert('Error saving. Please try again.');
+                saveAboutBtn.disabled = false;
+                saveAboutBtn.textContent = 'Save';
+            }
+        };
     </script>
 </body>
 </html>
