@@ -578,7 +578,19 @@
     <script>
         // Firebase is initialized in auth.js
 
-        // Live Time
+        // Auth Gate - redirect to landing if not logged in
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '/task-tracker/landing.html';
+                return;
+            }
+            
+            // User is logged in, proceed with page
+            initializePage();
+        });
+
+        function initializePage() {
+            // Live Time
         function updateLiveTime() {
             const now = new Date();
             const options = { 
@@ -817,6 +829,8 @@
             document.getElementById('viewCalendarLink').style.display = 'inline-block';
             listTodayEvents();
         }
+        
+        } // End initializePage()
     </script>
 
     <!-- Google API Scripts -->
