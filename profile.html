@@ -802,6 +802,12 @@
                             <h1 class="profile-name">${profile.displayName}</h1>
                             <div class="profile-email">${profile.email}</div>
                             ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
+                            ${profile.voiceMemoURL ? `
+                                <audio controls style="width: 100%; max-width: 400px; margin-top: 12px; border-radius: 8px;">
+                                    <source src="${profile.voiceMemoURL}" type="audio/webm">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            ` : ''}
                             ${socialLinksHTML}
                             
                             <div class="profile-stats">
