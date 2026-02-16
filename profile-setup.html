@@ -195,10 +195,18 @@
             <input type="text" id="displayNameInput" class="form-input" placeholder="How should we call you?" maxlength="50">
         </div>
 
-        <div class="form-group">
-            <label class="form-label">Bio (Optional)</label>
-            <textarea id="bioInput" class="form-textarea" placeholder="Tell us a little about yourself..." maxlength="300"></textarea>
-        </div>
+      <div class="form-group">
+    <label class="form-label">Introduce Yourself (Voice Memo) <span class="required">*</span></label>
+    <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+        <button type="button" id="recordBtn" style="width: 80px; height: 80px; border-radius: 50%; border: none; background: #667eea; color: white; font-size: 32px; cursor: pointer; margin-bottom: 12px; transition: all 0.3s;">
+            🎤
+        </button>
+        <div id="recordingStatus" style="font-size: 14px; color: #666; margin-bottom: 8px;">Click to start recording</div>
+        <div id="recordingTimer" style="font-size: 24px; font-weight: 600; color: #1a1a1a; display: none;">0:00</div>
+        <audio id="audioPlayback" controls style="width: 100%; margin-top: 12px; display: none;"></audio>
+    </div>
+    <div style="font-size: 12px; color: #999; margin-top: 8px; text-align: center;">Record a 10-60 second voice introduction</div>
+</div>
 
         <button class="submit-btn" id="submitBtn">Complete Profile</button>
     </div>
@@ -212,6 +220,11 @@
 
     <script>
         let selectedFile = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordingTimer = null;
+        let recordingSeconds = 0;
+        let audioBlob = null;
 
         // Check if user is logged in
         auth.onAuthStateChanged(async (user) => {
@@ -247,58 +260,133 @@
                 reader.readAsDataURL(file);
             }
         });
+// Voice Recording
+const recordBtn = document.getElementById('recordBtn');
+const recordingStatus = document.getElementById('recordingStatus');
+const recordingTimerDisplay = document.getElementById('recordingTimer');
+const audioPlayback = document.getElementById('audioPlayback');
 
+recordBtn.addEventListener('click', async () => {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        // Start recording
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            recordingSeconds = 0;
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPlayback.src = audioUrl;
+                audioPlayback.style.display = 'block';
+                recordingStatus.textContent = 'Recording saved! Play to listen';
+                recordBtn.textContent = '🎤';
+                recordBtn.style.background = '#667eea';
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            recordBtn.textContent = '⏹️';
+            recordBtn.style.background = '#dc3545';
+            recordingStatus.textContent = 'Recording... (click to stop)';
+            recordingTimerDisplay.style.display = 'block';
+
+            recordingTimer = setInterval(() => {
+                recordingSeconds++;
+                const mins = Math.floor(recordingSeconds / 60);
+                const secs = recordingSeconds % 60;
+                recordingTimerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                if (recordingSeconds >= 60) recordBtn.click();
+            }, 1000);
+
+        } catch (error) {
+            alert('Could not access microphone. Please allow microphone access.');
+        }
+    } else {
+        // Stop recording
+        mediaRecorder.stop();
+        clearInterval(recordingTimer);
+        recordingTimerDisplay.style.display = 'none';
+    }
+});
+
+
+        
         // Handle form submission
-        document.getElementById('submitBtn').addEventListener('click', async () => {
-            const errorMessage = document.getElementById('errorMessage');
-            const displayName = document.getElementById('displayNameInput').value.trim();
-            const bio = document.getElementById('bioInput').value.trim();
+document.getElementById('submitBtn').addEventListener('click', async () => {
+    const errorMessage = document.getElementById('errorMessage');
+    const displayName = document.getElementById('displayNameInput').value.trim();
 
-            // Validation
-            if (!selectedFile) {
-                errorMessage.textContent = 'Please upload a profile picture';
-                errorMessage.style.display = 'block';
-                return;
-            }
+    // Validation
+    if (!selectedFile) {
+        errorMessage.textContent = 'Please upload a profile picture';
+        errorMessage.style.display = 'block';
+        return;
+    }
 
-            if (!displayName) {
-                errorMessage.textContent = 'Please enter a display name';
-                errorMessage.style.display = 'block';
-                return;
-            }
+    if (!displayName) {
+        errorMessage.textContent = 'Please enter a display name';
+        errorMessage.style.display = 'block';
+        return;
+    }
 
-            errorMessage.style.display = 'none';
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = 'Creating Profile...';
+    if (!audioBlob) {
+        errorMessage.textContent = 'Please record a voice introduction';
+        errorMessage.style.display = 'block';
+        return;
+    }
 
-            try {
-                const user = auth.currentUser;
-                
-                // Upload profile picture
-                const fileName = `profile-pictures/${user.uid}/${Date.now()}_${selectedFile.name}`;
-                const storageRef = storage.ref(fileName);
-                await storageRef.put(selectedFile);
-                const photoURL = await storageRef.getDownloadURL();
+    if (recordingSeconds < 10) {
+        errorMessage.textContent = 'Voice memo must be at least 10 seconds';
+        errorMessage.style.display = 'block';
+        return;
+    }
 
-                // Create user profile
-                await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
-                    displayName: displayName,
-                    bio: bio || '',
-                    photoURL: photoURL,
-                    email: user.email,
-                    createdAt: new Date().toISOString()
-                });
+    errorMessage.style.display = 'none';
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').textContent = 'Creating Profile...';
 
-                // Redirect to home
-                window.location.href = '/task-tracker/index.html';
-            } catch (error) {
-                console.error('Error creating profile:', error);
-                errorMessage.textContent = 'Error creating profile. Please try again.';
-                errorMessage.style.display = 'block';
-                document.getElementById('submitBtn').disabled = false;
-                document.getElementById('submitBtn').textContent = 'Complete Profile';
-            }
+    try {
+        const user = auth.currentUser;
+        
+        // Upload profile picture
+        const fileName = `profile-pictures/${user.uid}/${Date.now()}_${selectedFile.name}`;
+        const storageRef = storage.ref(fileName);
+        await storageRef.put(selectedFile);
+        const photoURL = await storageRef.getDownloadURL();
+
+        // Upload voice memo
+        const voiceFileName = `voice-memos/${user.uid}/${Date.now()}.webm`;
+        const voiceRef = storage.ref(voiceFileName);
+        await voiceRef.put(audioBlob);
+        const voiceURL = await voiceRef.getDownloadURL();
+
+        // Create user profile
+        await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
+            displayName: displayName,
+            bio: 'Listen to my voice intro!',
+            voiceMemoURL: voiceURL,
+            voiceMemoDuration: recordingSeconds,
+            photoURL: photoURL,
+            email: user.email,
+            createdAt: new Date().toISOString()
         });
+
+        // Redirect to home
+        window.location.href = '/task-tracker/index.html';
+    } catch (error) {
+        console.error('Error creating profile:', error);
+        errorMessage.textContent = 'Error creating profile. Please try again.';
+        errorMessage.style.display = 'block';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = 'Complete Profile';
+    }
+});
     </script>
 </body>
 </html>
