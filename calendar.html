@@ -232,7 +232,6 @@
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html" class="logged-in-only-inline">Feed</a></li>
-                <li><a href="photos.html">Photos</a></li>
                 <li><a href="tasks.html" class="logged-in-only-inline">Tasks</a></li>
                 <li><a href="calendar.html" class="active logged-in-only-inline">Calendar</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
@@ -296,6 +295,14 @@
     <script src="https://accounts.google.com/gsi/client"></script>
 
     <script>
+        // Auth Gate
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = '/task-tracker/landing.html';
+                return;
+            }
+        });
+
         const CLIENT_ID = '149129540182-2ftots8nd0nhusl5vrr429eff013tc5a.apps.googleusercontent.com';
         const API_KEY = 'AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc';
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
