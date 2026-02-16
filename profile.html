@@ -651,12 +651,14 @@
 
         // Load profile on auth
         auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                // Not logged in - redirect to landing
+                window.location.href = '/task-tracker/landing.html';
+                return;
+            }
+            
             if (user) {
                 isOwnProfile = user.uid === profileUserId;
-                albumsRef = db.collection('users').doc(profileUserId).collection('albums');
-                await loadProfile();
-            } else {
-                // Not logged in, can still view profile
                 albumsRef = db.collection('users').doc(profileUserId).collection('albums');
                 await loadProfile();
             }
