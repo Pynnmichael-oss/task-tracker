@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="style.css">
     <style>
         .profile-container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
         }
 
+        /* Profile Header */
         .profile-header {
             background: white;
             border-radius: 16px;
@@ -77,45 +78,103 @@
             margin-top: 4px;
         }
 
-        .edit-profile-btn {
-            padding: 10px 24px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 16px;
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 1px solid #f0f0f0;
         }
 
-        .edit-profile-btn:hover {
-            background: #5568d3;
-        }
-
-        .albums-section {
-            margin-top: 40px;
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
         }
 
         .section-title {
             font-size: 24px;
             font-weight: 700;
             color: #1a1a1a;
-            margin-bottom: 24px;
         }
 
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Album Grid */
         .album-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 24px;
         }
 
-        .album-card {
+        .create-album-card {
+            aspect-ratio: 4/3;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .create-album-card:hover {
+            border-color: #667eea;
             background: white;
+        }
+
+        .create-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .album-card {
             border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.3s;
             border: 1px solid #f0f0f0;
+            background: white;
         }
 
         .album-card:hover {
@@ -125,7 +184,7 @@
 
         .album-cover {
             width: 100%;
-            height: 200px;
+            aspect-ratio: 4/3;
             object-fit: cover;
             background: #f0f0f0;
         }
@@ -140,21 +199,217 @@
             margin-bottom: 4px;
         }
 
-        .album-count {
+        .photo-count {
             font-size: 14px;
             color: #666;
         }
 
+        /* Album Detail View */
+        .album-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .album-detail-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .album-photo-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Photo Grid */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .photo-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .photo-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .photo-item:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .cover-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cover-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .cover-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            padding: 12px;
+        }
+
+        /* Image Modal */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+        }
+
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        /* States */
         .loading {
             text-align: center;
             padding: 60px 20px;
             color: #999;
         }
 
-        .no-albums {
+        .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         @media (max-width: 768px) {
@@ -167,6 +422,16 @@
             .profile-stats {
                 justify-content: center;
             }
+
+            .section-header {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .album-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
         }
     </style>
 </head>
@@ -177,7 +442,6 @@
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html" class="logged-in-only-inline">Feed</a></li>
-                <li><a href="photos.html">Photos</a></li>
                 <li><a href="tasks.html" class="logged-in-only-inline">Tasks</a></li>
                 <li><a href="calendar.html" class="logged-in-only-inline">Calendar</a></li>
                 <li id="authButton" style="margin-left: auto;"></li>
@@ -187,8 +451,71 @@
 
     <div class="container">
         <div class="profile-container">
-            <div id="profileContent" class="loading">Loading profile...</div>
+            <!-- Profile Header -->
+            <div id="profileHeader" class="loading">Loading profile...</div>
+
+            <!-- Albums Section -->
+            <div id="albumsSection" class="content-section hidden">
+                <!-- Albums Grid View -->
+                <div id="albumsView">
+                    <div class="section-header">
+                        <div class="section-title">Photo Albums</div>
+                        <button class="btn btn-primary hidden" id="createAlbumBtn">+ Create Album</button>
+                    </div>
+                    <div class="album-grid" id="albumGrid"></div>
+                </div>
+
+                <!-- Album Detail View -->
+                <div id="albumDetailView" class="hidden">
+                    <div class="album-detail-header">
+                        <div>
+                            <button class="btn btn-secondary" id="backBtn">← Back to Albums</button>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <h2 class="album-detail-title" id="albumTitle"></h2>
+                            <p class="album-photo-count" id="albumPhotoCount"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary hidden" id="uploadPhotosBtn">+ Add Photos</button>
+                            <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
+                        </div>
+                    </div>
+                    <div class="photo-grid" id="photoGrid"></div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <!-- Create Album Modal -->
+    <div class="modal" id="createAlbumModal">
+        <div class="modal-content">
+            <div class="modal-header">Create New Album</div>
+            
+            <div class="form-group">
+                <label class="form-label">Album Name</label>
+                <input type="text" class="form-input" id="albumNameInput" placeholder="e.g., Summer Vacation" maxlength="50">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Cover Photo</label>
+                <div class="cover-upload-area" id="coverUploadArea">
+                    <div>📷 Click to select cover photo</div>
+                    <input type="file" id="coverInput" accept="image/*" style="display: none;">
+                    <img id="coverPreview" class="cover-preview" style="display: none;">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="createAlbumConfirm">Create Album</button>
+                <button class="btn btn-secondary" id="cancelAlbumBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="image-modal" id="imageModal">
+        <span class="modal-close" id="imageModalClose">&times;</span>
+        <img id="modalImage" src="" alt="Full size photo">
     </div>
 
     <!-- Firebase SDKs -->
@@ -202,40 +529,78 @@
         // Get user ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const profileUserId = urlParams.get('user');
-
+        
         if (!profileUserId) {
-            window.location.href = 'index.html';
+            window.location.href = '/task-tracker/index.html';
         }
 
-        // Load profile
-        async function loadProfile() {
-            const profileContent = document.getElementById('profileContent');
+        // State
+        let isOwnProfile = false;
+        let currentAlbumId = null;
+        let selectedCoverFile = null;
+        let albumsRef = null;
 
+        // Elements
+        const profileHeader = document.getElementById('profileHeader');
+        const albumsSection = document.getElementById('albumsSection');
+        const albumsView = document.getElementById('albumsView');
+        const albumDetailView = document.getElementById('albumDetailView');
+        const albumGrid = document.getElementById('albumGrid');
+        const photoGrid = document.getElementById('photoGrid');
+        const createAlbumBtn = document.getElementById('createAlbumBtn');
+        const createAlbumModal = document.getElementById('createAlbumModal');
+        const albumNameInput = document.getElementById('albumNameInput');
+        const coverUploadArea = document.getElementById('coverUploadArea');
+        const coverInput = document.getElementById('coverInput');
+        const coverPreview = document.getElementById('coverPreview');
+        const createAlbumConfirm = document.getElementById('createAlbumConfirm');
+        const cancelAlbumBtn = document.getElementById('cancelAlbumBtn');
+        const backBtn = document.getElementById('backBtn');
+        const uploadPhotosBtn = document.getElementById('uploadPhotosBtn');
+        const photoInput = document.getElementById('photoInput');
+        const albumTitle = document.getElementById('albumTitle');
+        const albumPhotoCount = document.getElementById('albumPhotoCount');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const imageModalClose = document.getElementById('imageModalClose');
+
+        // Load profile on auth
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                isOwnProfile = user.uid === profileUserId;
+                albumsRef = db.collection('users').doc(profileUserId).collection('albums');
+                await loadProfile();
+            } else {
+                // Not logged in, can still view profile
+                albumsRef = db.collection('users').doc(profileUserId).collection('albums');
+                await loadProfile();
+            }
+        });
+
+        // Load Profile
+        async function loadProfile() {
             try {
-                // Get profile info
                 const profileDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('info').get();
                 
                 if (!profileDoc.exists) {
-                    profileContent.innerHTML = '<div class="loading">Profile not found</div>';
+                    profileHeader.innerHTML = '<div class="loading">Profile not found</div>';
                     return;
                 }
 
                 const profile = profileDoc.data();
-                const isOwnProfile = getCurrentUserId() === profileUserId;
 
-                // Get album count
-                const albumsSnapshot = await db.collection('users').doc(profileUserId).collection('albums').get();
+                // Count albums and photos
+                const albumsSnapshot = await albumsRef.get();
                 const albumCount = albumsSnapshot.size;
 
-                // Count total photos
                 let photoCount = 0;
                 for (const albumDoc of albumsSnapshot.docs) {
-                    const photosSnapshot = await db.collection('users').doc(profileUserId).collection('albums').doc(albumDoc.id).collection('photos').get();
+                    const photosSnapshot = await albumsRef.doc(albumDoc.id).collection('photos').get();
                     photoCount += photosSnapshot.size;
                 }
 
-                // Render profile
-                profileContent.innerHTML = `
+                // Render profile header
+                profileHeader.innerHTML = `
                     <div class="profile-header">
                         <img src="${profile.photoURL}" class="profile-picture" alt="${profile.displayName}">
                         <div class="profile-info">
@@ -253,74 +618,299 @@
                                     <div class="stat-label">Photos</div>
                                 </div>
                             </div>
-
-                            ${isOwnProfile ? '<button class="edit-profile-btn" onclick="editProfile()">Edit Profile</button>' : ''}
                         </div>
-                    </div>
-
-                    <div class="albums-section">
-                        <div class="section-title">Albums</div>
-                        <div class="album-grid" id="albumGrid"></div>
                     </div>
                 `;
 
-                // Load albums
-                loadAlbums();
-            } catch (error) {
-                console.error('Error loading profile:', error);
-                profileContent.innerHTML = '<div class="loading">Error loading profile</div>';
-            }
-        }
+                // Show albums section
+                albumsSection.classList.remove('hidden');
 
-        // Load albums
-        async function loadAlbums() {
-            const albumGrid = document.getElementById('albumGrid');
-
-            try {
-                const albumsSnapshot = await db.collection('users').doc(profileUserId).collection('albums')
-                    .orderBy('createdAt', 'desc')
-                    .get();
-
-                if (albumsSnapshot.empty) {
-                    albumGrid.innerHTML = '<div class="no-albums">No albums yet</div>';
-                    return;
+                // Show create button if own profile
+                if (isOwnProfile) {
+                    createAlbumBtn.classList.remove('hidden');
                 }
 
-                albumGrid.innerHTML = '';
-                albumsSnapshot.forEach(doc => {
-                    const album = { id: doc.id, ...doc.data() };
-                    
-                    const card = document.createElement('div');
-                    card.className = 'album-card';
-                    card.onclick = () => window.location.href = `photos.html?user=${profileUserId}&album=${album.id}`;
-                    
-                    card.innerHTML = `
-                        <img src="${album.coverUrl}" class="album-cover" alt="${album.name}">
-                        <div class="album-info">
-                            <div class="album-name">${album.name}</div>
-                            <div class="album-count">${album.photoCount || 0} photos</div>
+                // Load albums
+                loadAlbums();
+
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                profileHeader.innerHTML = '<div class="loading">Error loading profile</div>';
+            }
+        }
+
+        // Load Albums
+        function loadAlbums() {
+            albumsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+                renderAlbums(snapshot.docs.map(doc => ({id: doc.id, ...doc.data()})));
+            });
+        }
+
+        // Render Albums
+        function renderAlbums(albums) {
+            albumGrid.innerHTML = '';
+
+            // Create album card (own profile only)
+            if (isOwnProfile) {
+                const createCard = document.createElement('div');
+                createCard.className = 'create-album-card';
+                createCard.innerHTML = `
+                    <div class="create-icon">+</div>
+                    <div style="font-weight: 600; color: #667eea;">Create Album</div>
+                `;
+                createCard.onclick = () => createAlbumModal.classList.add('active');
+                albumGrid.appendChild(createCard);
+            }
+
+            // Album cards
+            if (albums.length === 0 && !isOwnProfile) {
+                albumGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">📷</div><p>No albums yet</p></div>';
+                return;
+            }
+
+            albums.forEach(album => {
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                card.innerHTML = `
+                    <img src="${album.coverUrl}" class="album-cover" alt="${album.name}">
+                    <div class="album-info">
+                        <div class="album-name">${album.name}</div>
+                        <div class="photo-count">${album.photoCount || 0} photos</div>
+                    </div>
+                `;
+                card.onclick = () => openAlbum(album.id, album.name);
+                albumGrid.appendChild(card);
+            });
+        }
+
+        // Create Album Modal Handlers
+        coverUploadArea.onclick = () => coverInput.click();
+        coverInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedCoverFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    coverPreview.src = e.target.result;
+                    coverPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        createAlbumBtn.onclick = () => createAlbumModal.classList.add('active');
+        cancelAlbumBtn.onclick = () => {
+            createAlbumModal.classList.remove('active');
+            albumNameInput.value = '';
+            coverPreview.style.display = 'none';
+            selectedCoverFile = null;
+        };
+
+        createAlbumConfirm.onclick = async () => {
+            const name = albumNameInput.value.trim();
+            if (!name || !selectedCoverFile) {
+                alert('Please provide album name and cover photo');
+                return;
+            }
+
+            try {
+                createAlbumConfirm.disabled = true;
+                createAlbumConfirm.textContent = 'Creating...';
+
+                const user = auth.currentUser;
+                const coverFileName = `users/${user.uid}/covers/${Date.now()}_${selectedCoverFile.name}`;
+                const coverRef = storage.ref(coverFileName);
+                await coverRef.put(selectedCoverFile);
+                const coverUrl = await coverRef.getDownloadURL();
+
+                await albumsRef.add({
+                    name: name,
+                    coverUrl: coverUrl,
+                    coverFileName: coverFileName,
+                    photoCount: 0,
+                    createdAt: new Date().toISOString()
+                });
+
+                albumNameInput.value = '';
+                coverPreview.style.display = 'none';
+                selectedCoverFile = null;
+                createAlbumModal.classList.remove('active');
+                createAlbumConfirm.disabled = false;
+                createAlbumConfirm.textContent = 'Create Album';
+
+            } catch (error) {
+                console.error('Error creating album:', error);
+                alert('Error creating album');
+                createAlbumConfirm.disabled = false;
+                createAlbumConfirm.textContent = 'Create Album';
+            }
+        };
+
+        // Open Album
+        function openAlbum(albumId, albumName) {
+            currentAlbumId = albumId;
+            albumTitle.textContent = albumName;
+            albumsView.classList.add('hidden');
+            albumDetailView.classList.remove('hidden');
+
+            if (isOwnProfile) {
+                uploadPhotosBtn.classList.remove('hidden');
+            }
+
+            loadPhotos(albumId);
+        }
+
+        // Back to Albums
+        backBtn.onclick = () => {
+            currentAlbumId = null;
+            albumDetailView.classList.add('hidden');
+            albumsView.classList.remove('hidden');
+        };
+
+        // Upload Photos
+        uploadPhotosBtn.onclick = () => photoInput.click();
+        photoInput.onchange = async (e) => {
+            const files = e.target.files;
+            if (files.length === 0) return;
+
+            const user = auth.currentUser;
+            let uploadedPhotos = [];
+
+            for (let file of files) {
+                if (!file.type.startsWith('image/')) continue;
+
+                const fileName = `users/${user.uid}/albums/${currentAlbumId}/${Date.now()}_${file.name}`;
+                const storageRef = storage.ref(fileName);
+
+                try {
+                    await storageRef.put(file);
+                    const url = await storageRef.getDownloadURL();
+
+                    await albumsRef.doc(currentAlbumId).collection('photos').add({
+                        url: url,
+                        fileName: fileName,
+                        uploadedAt: new Date().toISOString()
+                    });
+
+                    uploadedPhotos.push({url, fileName});
+
+                    // Update photo count
+                    const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                    await albumsRef.doc(currentAlbumId).update({
+                        photoCount: (albumDoc.data().photoCount || 0) + 1
+                    });
+
+                } catch (error) {
+                    console.error('Error uploading photo:', error);
+                }
+            }
+
+            photoInput.value = '';
+
+            // Ask about sharing to feed
+            if (uploadedPhotos.length > 0) {
+                const share = confirm(`Upload complete! Share ${uploadedPhotos.length} photo(s) to feed?`);
+                if (share) {
+                    await sharePhotosToFeed(uploadedPhotos);
+                }
+            }
+        };
+
+        // Share to Feed
+        async function sharePhotosToFeed(photos) {
+            try {
+                const user = auth.currentUser;
+                const userProfile = getUserProfile();
+                const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                const albumName = albumDoc.data().name;
+
+                for (const photo of photos) {
+                    await db.collection('feed').add({
+                        userId: user.uid,
+                        userName: userProfile.displayName,
+                        userPhotoURL: userProfile.photoURL,
+                        albumName: albumName,
+                        photoURL: photo.url,
+                        caption: '',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                alert('Shared to feed!');
+            } catch (error) {
+                console.error('Error sharing to feed:', error);
+            }
+        }
+
+        // Load Photos
+        function loadPhotos(albumId) {
+            albumsRef.doc(albumId).collection('photos')
+                .orderBy('uploadedAt', 'desc')
+                .onSnapshot((snapshot) => {
+                    const photos = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    albumPhotoCount.textContent = `${photos.length} photo${photos.length !== 1 ? 's' : ''}`;
+                    renderPhotos(photos);
+                });
+        }
+
+        // Render Photos
+        function renderPhotos(photos) {
+            if (photos.length === 0) {
+                photoGrid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📷</div>
+                        <p>No photos yet. ${isOwnProfile ? 'Click "Add Photos" to upload!' : ''}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            photoGrid.innerHTML = '';
+            photos.forEach(photo => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.innerHTML = `
+                    <img src="${photo.url}" alt="Photo">
+                    ${isOwnProfile ? `
+                        <div class="photo-overlay">
+                            <button class="btn btn-danger" onclick="deletePhoto('${photo.id}', '${photo.fileName}')">Delete</button>
                         </div>
-                    `;
-                    
-                    albumGrid.appendChild(card);
+                    ` : ''}
+                `;
+                
+                item.querySelector('img').onclick = () => {
+                    modalImage.src = photo.url;
+                    imageModal.classList.add('active');
+                };
+
+                photoGrid.appendChild(item);
+            });
+        }
+
+        // Delete Photo
+        async function deletePhoto(photoId, fileName) {
+            if (!confirm('Delete this photo?')) return;
+
+            try {
+                await storage.ref(fileName).delete();
+                await albumsRef.doc(currentAlbumId).collection('photos').doc(photoId).delete();
+
+                const albumDoc = await albumsRef.doc(currentAlbumId).get();
+                await albumsRef.doc(currentAlbumId).update({
+                    photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1)
                 });
             } catch (error) {
-                console.error('Error loading albums:', error);
+                console.error('Error deleting photo:', error);
+                alert('Error deleting photo');
             }
         }
+        window.deletePhoto = deletePhoto;
 
-        // Edit profile
-        function editProfile() {
-            // TODO: Create edit profile modal or page
-            alert('Edit profile feature coming soon!');
-        }
-
-        // Load profile when auth ready
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                setTimeout(loadProfile, 300);
-            }
-        });
+        // Image Modal
+        imageModalClose.onclick = () => imageModal.classList.remove('active');
+        imageModal.onclick = (e) => {
+            if (e.target === imageModal) imageModal.classList.remove('active');
+        };
     </script>
 </body>
 </html>
