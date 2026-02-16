@@ -613,8 +613,8 @@
         function renderAlbums(albums) {
             albumGrid.innerHTML = '';
 
-            // Create album card (admin only)
-            if (isAdmin()) {
+            // Create album card (only for own profile)
+            if (isOwnProfile) {
                 const createCard = document.createElement('div');
                 createCard.className = 'create-album-card';
                 createCard.innerHTML = `
@@ -635,21 +635,12 @@
                     <img src="${album.coverUrl}" alt="${album.name}" class="album-cover">
                     <div class="album-info">
                         <div class="album-name">${album.name}</div>
-                        <div class="album-count">${album.photoCount || 0} photos</div>
+                        <div class="photo-count">${album.photoCount || 0} photos</div>
                     </div>
                 `;
-                card.addEventListener('click', () => openAlbum(album.id, album.name));
+                card.addEventListener('click', () => loadAlbumPhotos(album.id));
                 albumGrid.appendChild(card);
             });
-        }
-
-        // Open album
-        function openAlbum(albumId, albumName) {
-            currentAlbumId = albumId;
-            albumTitle.textContent = albumName;
-            albumsView.style.display = 'none';
-            albumDetailView.style.display = 'block';
-            loadAlbumPhotos(albumId);
         }
 
         // Back to albums
