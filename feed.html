@@ -177,6 +177,26 @@
             margin-bottom: 16px;
         }
 
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f0f0f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-feed {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
         .image-modal {
             display: none;
             position: fixed;
@@ -207,6 +227,29 @@
             color: white;
             font-size: 40px;
             cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .feed-container {
+                padding: 20px 12px;
+            }
+
+            .feed-post {
+                margin-bottom: 24px;
+            }
+
+            .post-image {
+                max-height: 400px;
+            }
+
+            .comment-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .modal-close {
+                right: 20px;
+                font-size: 32px;
+            }
         }
     </style>
 </head>
@@ -256,6 +299,8 @@
 
         // Load feed posts
         async function loadFeed() {
+            feedPosts.innerHTML = '<div class="loading-feed"><div class="spinner"></div><p>Loading feed...</p></div>';
+            
             try {
                 const postsSnapshot = await db.collection('feed').orderBy('timestamp', 'desc').limit(50).get();
                 
@@ -277,6 +322,7 @@
                 }
             } catch (error) {
                 console.error('Error loading feed:', error);
+                feedPosts.innerHTML = '<div class="empty-feed"><div>Error loading feed. Please refresh.</div></div>';
             }
         }
 
