@@ -669,6 +669,24 @@
         </div>
     </div>
 
+    <!-- Bottom Tab Bar (Mobile) -->
+    <div class="bottom-tab-bar">
+        <div class="bottom-tabs">
+            <a href="index.html" class="bottom-tab">
+                <span class="bottom-tab-icon">🏠</span>
+                <span class="bottom-tab-label">Home</span>
+            </a>
+            <a href="feed.html" class="bottom-tab">
+                <span class="bottom-tab-icon">📸</span>
+                <span class="bottom-tab-label">Feed</span>
+            </a>
+            <a href="#" class="bottom-tab active" id="mobileProfileTab">
+                <span class="bottom-tab-icon">👤</span>
+                <span class="bottom-tab-label">Profile</span>
+            </a>
+        </div>
+    </div>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -1215,6 +1233,11 @@
                 saveAboutBtn.textContent = 'Save';
             }
         };
+        // Mobile profile tab - link to own profile
+        auth.onAuthStateChanged((user) => {
+            const tab = document.getElementById('mobileProfileTab');
+            if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
+        });
     </script>
 </body>
 </html>
