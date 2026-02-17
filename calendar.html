@@ -494,5 +494,29 @@
             });
         }
     </script>
+    <!-- Bottom Tab Bar (Mobile) -->
+    <div class="bottom-tab-bar">
+        <div class="bottom-tabs">
+            <a href="index.html" class="bottom-tab active">
+                <span class="bottom-tab-icon">🏠</span>
+                <span class="bottom-tab-label">Home</span>
+            </a>
+            <a href="feed.html" class="bottom-tab">
+                <span class="bottom-tab-icon">📸</span>
+                <span class="bottom-tab-label">Feed</span>
+            </a>
+            <a href="#" class="bottom-tab" id="mobileProfileTab">
+                <span class="bottom-tab-icon">👤</span>
+                <span class="bottom-tab-label">Profile</span>
+            </a>
+        </div>
+    </div>
+    <script>
+        // Mobile profile tab link
+        auth.onAuthStateChanged((user) => {
+            const tab = document.getElementById("mobileProfileTab");
+            if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
+        });
+    </script>
 </body>
 </html>
