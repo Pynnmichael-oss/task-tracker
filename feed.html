@@ -12,6 +12,45 @@
             padding: 40px 20px;
         }
 
+        /* Camera Section */
+        .camera-section {
+            margin-bottom: 24px;
+        }
+
+        .camera-button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .camera-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .camera-button:active {
+            transform: translateY(0);
+        }
+
+        .camera-icon {
+            font-size: 32px;
+        }
+
+        .camera-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
         .feed-post {
             background: white;
             border-radius: 16px;
@@ -272,7 +311,40 @@
                 <p>See what everyone is sharing</p>
             </div>
 
+            <!-- Camera Button -->
+            <div class="camera-section">
+                <button class="camera-button" id="cameraButton">
+                    <span class="camera-icon">📷</span>
+                    <span class="camera-text">Share a moment</span>
+                </button>
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+            </div>
+
             <div id="feedPosts"></div>
+        </div>
+    </div>
+
+    <!-- Camera Preview Modal -->
+    <div class="modal" id="cameraModal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">Share Your Moment</div>
+            
+            <img id="cameraPreview" style="width: 100%; border-radius: 12px; margin-bottom: 16px;">
+            
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 8px;">Caption</label>
+                <textarea id="captionInput" style="width: 100%; padding: 12px; border: 2px solid #f0f0f0; border-radius: 8px; min-height: 80px; font-family: inherit;" placeholder="What's happening?"></textarea>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; color: #666;">
+                <div id="locationInfo">📍 Getting location...</div>
+                <div id="timeInfo"></div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button id="postPhotoBtn" style="flex: 1; padding: 14px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Post to Feed</button>
+                <button id="cancelPhotoBtn" style="flex: 1; padding: 14px; background: #f0f0f0; color: #1a1a1a; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -479,10 +551,142 @@
             }
             
             if (user) {
-                // Wait for profile to load, then load feed
                 setTimeout(loadFeed, 500);
+                setupCamera(user);
             }
         });
+
+        // Camera Setup
+        let capturedPhoto = null;
+        let capturedPhotoFile = null;
+
+        function setupCamera(user) {
+            const cameraButton = document.getElementById('cameraButton');
+            const cameraInput = document.getElementById('cameraInput');
+            const cameraModal = document.getElementById('cameraModal');
+            const cameraPreview = document.getElementById('cameraPreview');
+            const captionInput = document.getElementById('captionInput');
+            const locationInfo = document.getElementById('locationInfo');
+            const timeInfo = document.getElementById('timeInfo');
+            const postPhotoBtn = document.getElementById('postPhotoBtn');
+            const cancelPhotoBtn = document.getElementById('cancelPhotoBtn');
+
+            cameraButton.onclick = () => cameraInput.click();
+
+            cameraInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                capturedPhotoFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    capturedPhoto = e.target.result;
+                    cameraPreview.src = capturedPhoto;
+                    
+                    // Get location
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                locationInfo.textContent = `📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+                            },
+                            () => {
+                                locationInfo.textContent = '📍 Location unavailable';
+                            }
+                        );
+                    } else {
+                        locationInfo.textContent = '📍 Location unavailable';
+                    }
+
+                    // Set time
+                    const now = new Date();
+                    timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
+
+                    cameraModal.style.display = 'flex';
+                };
+                reader.readAsDataURL(file);
+            };
+
+            cancelPhotoBtn.onclick = () => {
+                cameraModal.style.display = 'none';
+                cameraInput.value = '';
+                captionInput.value = '';
+            };
+
+            postPhotoBtn.onclick = async () => {
+                if (!capturedPhotoFile) return;
+
+                postPhotoBtn.disabled = true;
+                postPhotoBtn.textContent = 'Posting...';
+
+                try {
+                    // Upload photo
+                    const fileName = `feed-moments/${user.uid}/${Date.now()}_${capturedPhotoFile.name}`;
+                    const storageRef = storage.ref(fileName);
+                    await storageRef.put(capturedPhotoFile);
+                    const photoURL = await storageRef.getDownloadURL();
+
+                    const userProfile = getUserProfile();
+
+                    // Post to feed
+                    await db.collection('feed').add({
+                        userId: user.uid,
+                        userName: userProfile.displayName,
+                        userPhotoURL: userProfile.photoURL,
+                        photoURL: photoURL,
+                        caption: captionInput.value.trim(),
+                        location: locationInfo.textContent,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    // Save to Feed Moments album
+                    const albumsSnapshot = await db.collection('users').doc(user.uid).collection('albums')
+                        .where('name', '==', 'Feed Moments').get();
+
+                    let feedMomentsAlbumId;
+                    if (albumsSnapshot.empty) {
+                        // Create Feed Moments album
+                        const newAlbum = await db.collection('users').doc(user.uid).collection('albums').add({
+                            name: 'Feed Moments',
+                            coverUrl: photoURL,
+                            coverFileName: fileName,
+                            photoCount: 1,
+                            createdAt: new Date().toISOString()
+                        });
+                        feedMomentsAlbumId = newAlbum.id;
+                    } else {
+                        feedMomentsAlbumId = albumsSnapshot.docs[0].id;
+                        const currentCount = albumsSnapshot.docs[0].data().photoCount || 0;
+                        await db.collection('users').doc(user.uid).collection('albums').doc(feedMomentsAlbumId).update({
+                            photoCount: currentCount + 1
+                        });
+                    }
+
+                    // Add photo to album
+                    await db.collection('users').doc(user.uid).collection('albums')
+                        .doc(feedMomentsAlbumId).collection('photos').add({
+                            url: photoURL,
+                            fileName: fileName,
+                            uploadedAt: new Date().toISOString()
+                        });
+
+                    // Reset and close
+                    cameraModal.style.display = 'none';
+                    cameraInput.value = '';
+                    captionInput.value = '';
+                    postPhotoBtn.disabled = false;
+                    postPhotoBtn.textContent = 'Post to Feed';
+
+                    // Reload feed
+                    loadFeed();
+
+                } catch (error) {
+                    console.error('Error posting photo:', error);
+                    alert('Error posting photo');
+                    postPhotoBtn.disabled = false;
+                    postPhotoBtn.textContent = 'Post to Feed';
+                }
+            };
+        }
     </script>
     <script>
         // Mobile profile tab link
