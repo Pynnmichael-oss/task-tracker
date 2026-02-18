@@ -599,27 +599,46 @@
 
             cameraButton.onclick = () => cameraInput.click();
 
-            cameraInput.onchange = async (e) => {
+            cameraInput.onchange = (e) => {
                 const file = e.target.files[0];
-                if (!file) return;
+                if (!file) {
+                    console.log('No file selected');
+                    return;
+                }
 
-                console.log('Photo selected:', file.name);
+                console.log('Photo selected:', file.name, 'Size:', file.size, 'Type:', file.type);
                 capturedPhotoFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    capturedPhoto = e.target.result;
-                    cameraPreview.src = capturedPhoto;
+                
+                // Use setTimeout to break out of the input event context
+                setTimeout(() => {
+                    const reader = new FileReader();
                     
-                    // Set time and location
-                    const now = new Date();
-                    timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
-                    locationInfo.textContent = '📍 Shared from mobile';
+                    reader.onerror = (error) => {
+                        console.error('FileReader error:', error);
+                        alert('Error reading file: ' + error);
+                    };
+                    
+                    reader.onload = (e) => {
+                        console.log('FileReader loaded successfully');
+                        capturedPhoto = e.target.result;
+                        console.log('Setting preview image...');
+                        cameraPreview.src = capturedPhoto;
+                        
+                        // Set time and location
+                        const now = new Date();
+                        timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
+                        locationInfo.textContent = '📍 Shared from mobile';
 
-                    // Show modal
-                    console.log('Opening modal');
-                    cameraModal.style.display = 'flex';
-                };
-                reader.readAsDataURL(file);
+                        // Show modal
+                        console.log('Opening modal now...');
+                        cameraModal.style.display = 'flex';
+                        console.log('Modal display set to:', cameraModal.style.display);
+                    };
+                    
+                    console.log('Starting FileReader...');
+                    reader.readAsDataURL(file);
+                    console.log('FileReader readAsDataURL called');
+                }, 10);
             };
 
             cancelPhotoBtn.onclick = () => {
