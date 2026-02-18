@@ -97,42 +97,22 @@
             object-fit: cover;
         }
 
-        /* ── Action Buttons ── */
-        .post-actions {
-            display: flex;
-            gap: 14px;
-            padding: 10px 14px 6px;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            font-size: 22px;
-            line-height: 1;
-            transition: transform 0.1s;
-        }
-        .action-btn:hover { transform: scale(1.15); }
-
         /* ── Post Content ── */
-        .post-content { padding: 0 14px 12px; }
-
-        .post-comment-count {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 6px;
-        }
+        .post-content { padding: 10px 14px 8px; }
 
         .post-caption-line {
-            font-size: 14px;
+            font-size: 15px;
             color: #1a1a1a;
-            margin-bottom: 4px;
-            line-height: 1.4;
+            margin-bottom: 8px;
+            line-height: 1.5;
         }
+        .post-caption-line strong { margin-right: 6px; font-size: 15px; }
 
-        .post-caption-line strong { margin-right: 6px; }
+        .post-comment-count {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
 
         .post-timestamp {
             font-size: 10px;
@@ -148,21 +128,21 @@
         .view-all-comments {
             background: none;
             border: none;
-            color: #888;
-            font-size: 14px;
+            color: #aaa;
+            font-size: 12px;
             cursor: pointer;
-            padding: 0 0 8px;
+            padding: 0 0 6px;
             display: block;
         }
-        .view-all-comments:hover { color: #555; }
+        .view-all-comments:hover { color: #777; }
 
         .comment-line {
-            font-size: 14px;
-            color: #1a1a1a;
-            margin-bottom: 4px;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 3px;
             line-height: 1.4;
         }
-        .comment-line strong { margin-right: 6px; }
+        .comment-line strong { margin-right: 5px; color: #333; font-size: 12px; }
 
         /* ── Add Comment ── */
         .add-comment {
@@ -390,15 +370,9 @@
                     <img src="${post.photoURL}" alt="Post photo">
                 </div>
 
-                <div class="post-actions">
-                    <button class="action-btn">🤍</button>
-                    <button class="action-btn">💬</button>
-                    <button class="action-btn">✈️</button>
-                </div>
-
                 <div class="post-content">
-                    <div class="post-comment-count" id="commentCount-${post.id}">0 comments</div>
                     ${post.caption ? `<div class="post-caption-line"><strong>${post.userName}</strong>${post.caption}</div>` : ''}
+                    <div class="post-comment-count" id="commentCount-${post.id}">0 comments</div>
                     <div class="post-timestamp">${timeAgo}</div>
                 </div>
 
@@ -588,10 +562,39 @@
                         console.log('Setting preview image...');
                         cameraPreview.src = capturedPhoto;
                         
-                        // Set time and location
+                        // Set time
                         const now = new Date();
                         timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
-                        locationInfo.textContent = '📍 Shared from mobile';
+
+                        // Get real location
+                        locationInfo.textContent = '📍 Getting location...';
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                async (position) => {
+                                    const { latitude, longitude } = position.coords;
+                                    try {
+                                        // Use OpenStreetMap's free reverse geocode API (no key needed)
+                                        const res = await fetch(
+                                            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+                                        );
+                                        const data = await res.json();
+                                        const addr = data.address;
+                                        // Build a readable place: "City, State" or "Town, Country"
+                                        const place = addr.city || addr.town || addr.village || addr.county || '';
+                                        const region = addr.state || addr.country || '';
+                                        locationInfo.textContent = `📍 ${[place, region].filter(Boolean).join(', ')}`;
+                                    } catch {
+                                        locationInfo.textContent = `📍 ${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
+                                    }
+                                },
+                                () => {
+                                    locationInfo.textContent = '📍 Location unavailable';
+                                },
+                                { timeout: 8000 }
+                            );
+                        } else {
+                            locationInfo.textContent = '📍 Location not supported';
+                        }
 
                         // Show modal with explicit styles (needed for mobile)
                         console.log('Opening modal now...');
@@ -659,7 +662,7 @@
                         userPhotoURL: globalUserProfile.photoURL,
                         photoURL: photoURL,
                         caption: captionInput.value.trim(),
-                        location: locationInfo.textContent,
+                        location: locationInfo.textContent.replace('📍 ', '').trim(),
                         timestamp: new Date().toISOString()
                     });
                     console.log('Feed post created');
