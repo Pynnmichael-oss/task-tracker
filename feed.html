@@ -384,6 +384,8 @@
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
         const imageModalClose = document.getElementById('imageModalClose');
+        
+        let globalUserProfile = null;
 
         // Load feed posts
         async function loadFeed() {
@@ -492,17 +494,16 @@
             
             if (!text) return;
             
-            const currentUserProfile = getUserProfile();
-            if (!currentUserProfile) {
-                alert('Please sign in to comment');
+            if (!globalUserProfile) {
+                alert('Profile not loaded. Please refresh the page.');
                 return;
             }
 
             try {
                 await db.collection('feed').doc(postId).collection('comments').add({
-                    userId: getCurrentUserId(),
-                    userName: currentUserProfile.displayName,
-                    userPhotoURL: currentUserProfile.photoURL,
+                    userId: auth.currentUser.uid,
+                    userName: globalUserProfile.displayName,
+                    userPhotoURL: globalUserProfile.photoURL,
                     text: text,
                     timestamp: new Date().toISOString()
                 });
@@ -544,16 +545,20 @@
         });
 
         // Load feed on auth
-        auth.onAuthStateChanged((user) => {
+        auth.onAuthStateChanged(async (user) => {
             if (!user) {
                 window.location.href = '/task-tracker/landing.html';
                 return;
             }
             
-            if (user) {
-                setTimeout(loadFeed, 500);
-                setupCamera(user);
+            // Load user profile
+            const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
+            if (profileDoc.exists) {
+                globalUserProfile = profileDoc.data();
             }
+            
+            setTimeout(loadFeed, 500);
+            setupCamera(user);
         });
 
         // Camera Setup
@@ -618,6 +623,11 @@
 
             postPhotoBtn.onclick = async () => {
                 if (!capturedPhotoFile) return;
+                
+                if (!globalUserProfile) {
+                    alert('Profile not loaded. Please try again.');
+                    return;
+                }
 
                 postPhotoBtn.disabled = true;
                 postPhotoBtn.textContent = 'Posting...';
@@ -629,13 +639,11 @@
                     await storageRef.put(capturedPhotoFile);
                     const photoURL = await storageRef.getDownloadURL();
 
-                    const userProfile = getUserProfile();
-
                     // Post to feed
                     await db.collection('feed').add({
                         userId: user.uid,
-                        userName: userProfile.displayName,
-                        userPhotoURL: userProfile.photoURL,
+                        userName: globalUserProfile.displayName,
+                        userPhotoURL: globalUserProfile.photoURL,
                         photoURL: photoURL,
                         caption: captionInput.value.trim(),
                         location: locationInfo.textContent,
