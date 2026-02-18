@@ -629,10 +629,26 @@
                         timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
                         locationInfo.textContent = '📍 Shared from mobile';
 
-                        // Show modal
+                        // Show modal with explicit styles
                         console.log('Opening modal now...');
                         cameraModal.style.display = 'flex';
+                        cameraModal.style.position = 'fixed';
+                        cameraModal.style.top = '0';
+                        cameraModal.style.left = '0';
+                        cameraModal.style.width = '100%';
+                        cameraModal.style.height = '100%';
+                        cameraModal.style.zIndex = '9999';
+                        cameraModal.style.background = 'rgba(0,0,0,0.8)';
+                        cameraModal.style.justifyContent = 'center';
+                        cameraModal.style.alignItems = 'center';
                         console.log('Modal display set to:', cameraModal.style.display);
+                        console.log('Modal visible on page!');
+                        
+                        // Test if modal is actually in DOM
+                        const isInDOM = document.body.contains(cameraModal);
+                        console.log('Modal in DOM:', isInDOM);
+                        
+                        alert('Modal should be visible now. Is it showing?');
                     };
                     
                     console.log('Starting FileReader...');
