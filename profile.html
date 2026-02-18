@@ -1061,68 +1061,8 @@
 
             photoInput.value = '';
 
-            // Ask about sharing to feed with custom dialog
-            if (uploadedPhotos.length > 0) {
-                showShareDialog(uploadedPhotos);
-            }
+            // Photos uploaded successfully - no feed sharing from profile
         };
-
-        // Show Share Dialog
-        let pendingSharePhotos = [];
-        function showShareDialog(photos) {
-            pendingSharePhotos = photos;
-            const shareDialog = document.createElement('div');
-            shareDialog.className = 'modal active';
-            shareDialog.id = 'shareDialog';
-            shareDialog.innerHTML = `
-                <div class="modal-content">
-                    <div class="modal-header">Upload Complete!</div>
-                    <p style="margin-bottom: 24px;">Share ${photos.length} photo(s) to your feed?</p>
-                    <div class="modal-actions">
-                        <button class="btn btn-primary" onclick="confirmShare(true)">Yes, Share</button>
-                        <button class="btn btn-secondary" onclick="confirmShare(false)">No Thanks</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(shareDialog);
-        }
-
-        async function confirmShare(share) {
-            const shareDialog = document.getElementById('shareDialog');
-            if (shareDialog) shareDialog.remove();
-            
-            if (share) {
-                await sharePhotosToFeed(pendingSharePhotos);
-            }
-            pendingSharePhotos = [];
-        }
-        window.confirmShare = confirmShare;
-
-        // Share to Feed
-        async function sharePhotosToFeed(photos) {
-            try {
-                const user = auth.currentUser;
-                const userProfile = getUserProfile();
-                const albumDoc = await albumsRef.doc(currentAlbumId).get();
-                const albumName = albumDoc.data().name;
-
-                for (const photo of photos) {
-                    await db.collection('feed').add({
-                        userId: user.uid,
-                        userName: userProfile.displayName,
-                        userPhotoURL: userProfile.photoURL,
-                        albumName: albumName,
-                        photoURL: photo.url,
-                        caption: '',
-                        timestamp: new Date().toISOString()
-                    });
-                }
-
-                alert('Shared to feed!');
-            } catch (error) {
-                console.error('Error sharing to feed:', error);
-            }
-        }
 
         // Load Photos
         function loadPhotos(albumId) {
