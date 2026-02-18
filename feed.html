@@ -582,35 +582,21 @@
                 const file = e.target.files[0];
                 if (!file) return;
 
+                console.log('Photo selected:', file.name);
                 capturedPhotoFile = file;
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     capturedPhoto = e.target.result;
                     cameraPreview.src = capturedPhoto;
                     
-                    // Set time immediately
+                    // Set time and location
                     const now = new Date();
                     timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
+                    locationInfo.textContent = '📍 Shared from mobile';
 
-                    // Show modal immediately
+                    // Show modal
+                    console.log('Opening modal');
                     cameraModal.style.display = 'flex';
-                    
-                    // Get location in background
-                    locationInfo.textContent = '📍 Getting location...';
-                    if (navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition(
-                            (pos) => {
-                                locationInfo.textContent = `📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-                            },
-                            (error) => {
-                                console.log('Location error:', error);
-                                locationInfo.textContent = '📍 Location not available';
-                            },
-                            { timeout: 10000, enableHighAccuracy: false }
-                        );
-                    } else {
-                        locationInfo.textContent = '📍 Location not available';
-                    }
                 };
                 reader.readAsDataURL(file);
             };
@@ -622,24 +608,37 @@
             };
 
             postPhotoBtn.onclick = async () => {
-                if (!capturedPhotoFile) return;
+                console.log('Post button clicked');
+                console.log('Captured file:', capturedPhotoFile);
+                console.log('Global profile:', globalUserProfile);
+                
+                if (!capturedPhotoFile) {
+                    console.error('No photo file');
+                    alert('No photo selected');
+                    return;
+                }
                 
                 if (!globalUserProfile) {
-                    alert('Profile not loaded. Please try again.');
+                    console.error('No profile loaded');
+                    alert('Profile not loaded. Please refresh the page.');
                     return;
                 }
 
                 postPhotoBtn.disabled = true;
                 postPhotoBtn.textContent = 'Posting...';
+                console.log('Starting upload...');
 
                 try {
                     // Upload photo
                     const fileName = `feed-moments/${user.uid}/${Date.now()}_${capturedPhotoFile.name}`;
+                    console.log('Uploading to:', fileName);
                     const storageRef = storage.ref(fileName);
                     await storageRef.put(capturedPhotoFile);
                     const photoURL = await storageRef.getDownloadURL();
+                    console.log('Photo uploaded:', photoURL);
 
                     // Post to feed
+                    console.log('Creating feed post...');
                     await db.collection('feed').add({
                         userId: user.uid,
                         userName: globalUserProfile.displayName,
@@ -649,6 +648,7 @@
                         location: locationInfo.textContent,
                         timestamp: new Date().toISOString()
                     });
+                    console.log('Feed post created');
 
                     // Save to Feed Moments album
                     const albumsSnapshot = await db.collection('users').doc(user.uid).collection('albums')
@@ -693,7 +693,7 @@
 
                 } catch (error) {
                     console.error('Error posting photo:', error);
-                    alert('Error posting photo');
+                    alert('Error posting photo: ' + error.message);
                     postPhotoBtn.disabled = false;
                     postPhotoBtn.textContent = 'Post to Feed';
                 }
