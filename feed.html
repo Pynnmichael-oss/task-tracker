@@ -570,6 +570,9 @@
         let capturedPhotoFile = null;
 
         function setupCamera(user) {
+            console.log('=== SETUP CAMERA CALLED ===');
+            console.log('User:', user.uid);
+            
             const cameraButton = document.getElementById('cameraButton');
             const cameraInput = document.getElementById('cameraInput');
             const cameraModal = document.getElementById('cameraModal');
@@ -579,6 +582,20 @@
             const timeInfo = document.getElementById('timeInfo');
             const postPhotoBtn = document.getElementById('postPhotoBtn');
             const cancelPhotoBtn = document.getElementById('cancelPhotoBtn');
+            
+            console.log('Elements found:', {
+                cameraButton: !!cameraButton,
+                cameraInput: !!cameraInput,
+                cameraModal: !!cameraModal,
+                postPhotoBtn: !!postPhotoBtn,
+                cancelPhotoBtn: !!cancelPhotoBtn
+            });
+
+            if (!postPhotoBtn) {
+                console.error('POST BUTTON NOT FOUND!');
+                alert('ERROR: Post button not found on page');
+                return;
+            }
 
             cameraButton.onclick = () => cameraInput.click();
 
@@ -612,19 +629,22 @@
             };
 
             postPhotoBtn.onclick = async () => {
+                alert('Post button clicked! Check console.');
+                console.log('=== POST BUTTON CLICKED ===');
                 console.log('Post button clicked');
                 console.log('Captured file:', capturedPhotoFile);
                 console.log('Global profile:', globalUserProfile);
+                console.log('User:', user);
                 
                 if (!capturedPhotoFile) {
                     console.error('No photo file');
-                    alert('No photo selected');
+                    alert('ERROR: No photo selected');
                     return;
                 }
                 
                 if (!globalUserProfile) {
                     console.error('No profile loaded');
-                    alert('Profile not loaded. Please refresh the page.');
+                    alert('ERROR: Profile not loaded. Please refresh the page.');
                     return;
                 }
 
