@@ -583,25 +583,29 @@
                     capturedPhoto = e.target.result;
                     cameraPreview.src = capturedPhoto;
                     
-                    // Get location
+                    // Set time immediately
+                    const now = new Date();
+                    timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
+
+                    // Show modal immediately
+                    cameraModal.style.display = 'flex';
+                    
+                    // Get location in background
+                    locationInfo.textContent = '📍 Getting location...';
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
                             (pos) => {
                                 locationInfo.textContent = `📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
                             },
-                            () => {
-                                locationInfo.textContent = '📍 Location unavailable';
-                            }
+                            (error) => {
+                                console.log('Location error:', error);
+                                locationInfo.textContent = '📍 Location not available';
+                            },
+                            { timeout: 10000, enableHighAccuracy: false }
                         );
                     } else {
-                        locationInfo.textContent = '📍 Location unavailable';
+                        locationInfo.textContent = '📍 Location not available';
                     }
-
-                    // Set time
-                    const now = new Date();
-                    timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
-
-                    cameraModal.style.display = 'flex';
                 };
                 reader.readAsDataURL(file);
             };
