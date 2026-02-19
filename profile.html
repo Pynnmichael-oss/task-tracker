@@ -330,62 +330,90 @@
             color: #1a1a1a;
         }
 
-        /* ── Album Grid ── */
+        /* ── Album Grid — Instagram style, 3-col squares ── */
         .album-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+        }
+
+        /* Every cell is a perfect square */
+        .album-grid-cell {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            overflow: hidden;
+            cursor: pointer;
         }
 
         .create-album-card {
-            aspect-ratio: 4/3;
+            position: absolute;
+            inset: 0;
             border: 2px dashed #d0d0d0;
-            border-radius: 12px;
+            border-radius: 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
             background: #fafafa;
             color: #667eea;
             font-weight: 600;
-            font-size: 14px;
-            gap: 8px;
+            font-size: 13px;
+            gap: 6px;
+            transition: all 0.2s;
         }
 
         .create-album-card:hover {
             border-color: #667eea;
             background: white;
-            transform: translateY(-2px);
         }
 
-        .create-icon { font-size: 32px; }
+        .create-icon { font-size: 28px; }
 
         .album-card {
-            border-radius: 12px;
+            position: absolute;
+            inset: 0;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.25s, box-shadow 0.25s;
-            border: 1px solid #f0f0f0;
-            background: white;
+            border-radius: 4px;
         }
 
-        .album-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.1);
-        }
+        .album-card:hover .album-cover { transform: scale(1.05); }
+        .album-card:hover .album-overlay { opacity: 1; }
 
         .album-cover {
             width: 100%;
-            aspect-ratio: 4/3;
+            height: 100%;
             object-fit: cover;
             background: #f0f0f0;
+            transition: transform 0.3s;
+            display: block;
         }
 
-        .album-info { padding: 14px 16px; }
-        .album-name { font-weight: 600; color: #1a1a1a; margin-bottom: 3px; font-size: 15px; }
-        .photo-count { font-size: 13px; color: #888; }
+        /* Name overlay on hover (desktop) / always visible bottom strip (mobile) */
+        .album-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.65));
+            padding: 20px 8px 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .album-name {
+            font-weight: 600;
+            color: white;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .photo-count { font-size: 11px; color: rgba(255,255,255,0.8); }
+
+        @media (max-width: 768px) {
+            .album-overlay { opacity: 1; } /* Always show on mobile */
+        }
 
         /* ── Album Detail ── */
         .album-detail-header {
@@ -627,7 +655,6 @@
             .about-section, .albums-section { margin-left: 12px; margin-right: 12px; }
             .content-section { padding: 16px; }
             .about-section { padding: 16px 20px; }
-            .album-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
             .photo-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
             .create-album-card { min-height: 120px; }
             .album-detail-header { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; }
@@ -642,7 +669,6 @@
         }
 
         @media (max-width: 380px) {
-            .album-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px; }
             .photo-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px; }
             .stat-number { font-size: 18px; }
             .bg-swatches { grid-template-columns: repeat(2, 1fr); }
@@ -1271,29 +1297,35 @@
 
         function renderAlbums(albums) {
             albumGrid.innerHTML = '';
-            if (isOwnProfile) {
-                const createCard = document.createElement('div');
-                createCard.className = 'create-album-card';
-                createCard.innerHTML = `<div class="create-icon">＋</div><div>Create Album</div>`;
-                createCard.onclick = () => createAlbumModal.classList.add('active');
-                albumGrid.appendChild(createCard);
-            }
+
             if (albums.length === 0 && !isOwnProfile) {
-                albumGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">📷</div><p>No albums yet</p></div>';
+                albumGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📷</div><p>No albums yet</p></div>';
                 return;
             }
+
+            // Create album cell (own profile only)
+            if (isOwnProfile) {
+                const cell = document.createElement('div');
+                cell.className = 'album-grid-cell';
+                cell.innerHTML = `<div class="create-album-card"><div class="create-icon">＋</div><div>New Album</div></div>`;
+                cell.querySelector('.create-album-card').onclick = () => createAlbumModal.classList.add('active');
+                albumGrid.appendChild(cell);
+            }
+
             albums.forEach(album => {
-                const card = document.createElement('div');
-                card.className = 'album-card';
-                card.innerHTML = `
-                    <img src="${album.coverUrl}" class="album-cover" alt="${album.name}">
-                    <div class="album-info">
-                        <div class="album-name">${album.name}</div>
-                        <div class="photo-count">${album.photoCount || 0} photos</div>
+                const cell = document.createElement('div');
+                cell.className = 'album-grid-cell';
+                cell.innerHTML = `
+                    <div class="album-card">
+                        <img src="${album.coverUrl}" class="album-cover" alt="${album.name}">
+                        <div class="album-overlay">
+                            <div class="album-name">${album.name}</div>
+                            <div class="photo-count">${album.photoCount || 0} photos</div>
+                        </div>
                     </div>
                 `;
-                card.onclick = () => openAlbum(album.id, album.name);
-                albumGrid.appendChild(card);
+                cell.querySelector('.album-card').onclick = () => openAlbum(album.id, album.name);
+                albumGrid.appendChild(cell);
             });
         }
 
