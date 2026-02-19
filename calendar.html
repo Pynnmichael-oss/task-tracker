@@ -307,52 +307,100 @@
         const API_KEY = 'AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc';
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
         const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+        const TOKEN_KEY = 'gcal_access_token';
+        const TOKEN_EXPIRY_KEY = 'gcal_token_expiry';
 
         let tokenClient;
         let currentDate = new Date();
         let allEvents = [];
 
-        // Initialize Google API
+        // Persist token so user stays logged in across page reloads
+        function saveToken(tokenResponse) {
+            localStorage.setItem(TOKEN_KEY, tokenResponse.access_token);
+            const expiry = Date.now() + (tokenResponse.expires_in * 1000);
+            localStorage.setItem(TOKEN_EXPIRY_KEY, expiry);
+        }
+
+        function getSavedToken() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+            if (!token || !expiry) return null;
+            if (Date.now() > expiry - 60000) return null; // expired (60s buffer)
+            return token;
+        }
+
+        function clearToken() {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(TOKEN_EXPIRY_KEY);
+        }
+
+        function showAuthSection() {
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('calendarView').style.display = 'none';
+        }
+
+        function showCalendar() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('calendarView').style.display = 'block';
+            loadCalendar();
+        }
+
+        // Initialize gapi — minimal init first, load discovery doc after auth
         gapi.load('client', async () => {
-            try {
-                await gapi.client.init({
-                    apiKey: API_KEY,
-                    discoveryDocs: [DISCOVERY_DOC],
-                });
-            } catch (err) {
-                console.error('Google API init error:', err);
-                const authSection = document.getElementById('authSection');
-                authSection.innerHTML = `
-                    <h2>Calendar Setup Required</h2>
-                    <p style="color:#e53e3e; margin-top:12px; font-weight:600;">⚠️ Google Calendar API not authorized</p>
-                    <p style="color:#666; margin-top:8px; max-width:480px; margin-left:auto; margin-right:auto;">
-                        The API key needs <strong>Google Calendar API</strong> enabled in your 
-                        <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" style="color:#667eea;">Google Cloud Console</a>.
-                        Enable it, then also add your domain to the key's allowed referrers.
-                    </p>
-                `;
+            await gapi.client.init({ apiKey: API_KEY });
+
+            // Try to restore a saved token silently
+            const savedToken = getSavedToken();
+            if (savedToken) {
+                gapi.client.setToken({ access_token: savedToken });
+                try {
+                    await gapi.client.load(DISCOVERY_DOC);
+                    showCalendar();
+                    return;
+                } catch (err) {
+                    console.warn('Saved token invalid, re-auth needed');
+                    clearToken();
+                }
             }
+
+            // Try silent re-auth (no popup if user already consented)
+            tokenClient.requestAccessToken({ prompt: '' });
         });
 
-        // Initialize OAuth
+        // OAuth token client
         tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: CLIENT_ID,
             scope: SCOPES,
             callback: async (response) => {
                 if (response.error !== undefined) {
-                    console.error('OAuth error:', response.error);
-                    alert('Calendar authorization failed: ' + response.error);
+                    // Silent auth failed — show login button
+                    showAuthSection();
                     return;
                 }
-                document.getElementById('authSection').style.display = 'none';
-                document.getElementById('calendarView').style.display = 'block';
-                await loadCalendar();
+                saveToken(response);
+                gapi.client.setToken({ access_token: response.access_token });
+                try {
+                    await gapi.client.load(DISCOVERY_DOC);
+                    showCalendar();
+                } catch (err) {
+                    console.error('Failed to load Calendar API:', err);
+                    document.getElementById('authSection').innerHTML = `
+                        <h2>Calendar API Not Enabled</h2>
+                        <p style="color:#e53e3e;margin-top:12px;font-weight:600;">
+                            ⚠️ Enable the Google Calendar API in your
+                            <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com"
+                               target="_blank" style="color:#667eea;">Google Cloud Console</a>,
+                            then refresh.
+                        </p>
+                    `;
+                    showAuthSection();
+                }
             },
         });
 
-        // Auth button
+        // Manual login button — full consent prompt
         document.getElementById('authorizeBtn').addEventListener('click', () => {
-            tokenClient.requestAccessToken({prompt: 'consent'});
+            tokenClient.requestAccessToken({ prompt: 'consent' });
         });
 
         // Navigation
