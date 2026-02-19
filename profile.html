@@ -1115,6 +1115,9 @@
         document.getElementById('cancelBgBtn').addEventListener('click', () => {
             document.getElementById('bgPickerModal').classList.remove('active');
         });
+
+        // Edit About modal
+        async function openEditAbout() {
             try {
                 const ad = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
                 document.getElementById('aboutTextarea').value = ad.exists ? (ad.data().text || '') : '';
