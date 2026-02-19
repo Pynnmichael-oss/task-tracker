@@ -520,6 +520,15 @@
             const mobileTab = document.getElementById('mobileProfileTab');
             if (mobileTab) mobileTab.href = '/task-tracker/profile.html?user=' + user.uid;
 
+            // Wire up Edit Links button NOW that user is loaded
+            document.getElementById('editLinksBtn').addEventListener('click', () => {
+                document.getElementById('instagramInput').value = socialLinks.instagram || '';
+                document.getElementById('linkedinInput').value = socialLinks.linkedin || '';
+                document.getElementById('twitterInput').value = socialLinks.twitter || '';
+                document.getElementById('githubInput').value = socialLinks.github || '';
+                document.getElementById('editLinksModal').classList.add('active');
+            });
+
             // Load data
             loadSocialLinks();
             loadRecentPhotos();
@@ -613,15 +622,6 @@
             `;
         }
 
-        // Edit Links Modal
-        document.getElementById('editLinksBtn').addEventListener('click', () => {
-            document.getElementById('instagramInput').value = socialLinks.instagram || '';
-            document.getElementById('linkedinInput').value = socialLinks.linkedin || '';
-            document.getElementById('twitterInput').value = socialLinks.twitter || '';
-            document.getElementById('githubInput').value = socialLinks.github || '';
-            document.getElementById('editLinksModal').classList.add('active');
-        });
-
         document.getElementById('cancelLinksBtn').addEventListener('click', () => {
             document.getElementById('editLinksModal').classList.remove('active');
         });
@@ -645,26 +645,34 @@
             }
         });
 
-        // Load Recent Photos (max 10 for performance)
+        // Load Recent Photos from Feed Moments album
         async function loadRecentPhotos() {
             try {
-                const albumsSnapshot = await db.collection('users').doc(currentUser.uid).collection('albums').limit(5).get();
-                const photos = [];
+                // Find the Feed Moments album specifically
+                const albumsSnapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('albums')
+                    .where('name', '==', 'Feed Moments')
+                    .limit(1)
+                    .get();
 
-                for (const albumDoc of albumsSnapshot.docs) {
-                    const photosSnapshot = await db.collection('users').doc(currentUser.uid)
-                        .collection('albums').doc(albumDoc.id)
-                        .collection('photos')
-                        .orderBy('uploadedAt', 'desc')
-                        .limit(2)
-                        .get();
-                    
-                    photosSnapshot.forEach(photoDoc => {
-                        photos.push(photoDoc.data());
-                    });
+                if (albumsSnapshot.empty) {
+                    document.getElementById('photoCarouselContainer').innerHTML = `
+                        <div class="widget-empty">
+                            <p>No feed photos yet.</p>
+                            <a href="feed.html" style="color:#667eea; font-weight:600;">Share your first moment →</a>
+                        </div>`;
+                    return;
                 }
 
-                recentPhotos = photos.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)).slice(0, 10);
+                const albumId = albumsSnapshot.docs[0].id;
+                const photosSnapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('albums').doc(albumId)
+                    .collection('photos')
+                    .orderBy('uploadedAt', 'desc')
+                    .limit(10)
+                    .get();
+
+                recentPhotos = photosSnapshot.docs.map(d => d.data());
                 renderPhotoCarousel();
             } catch (error) {
                 console.error('Error loading photos:', error);
@@ -737,16 +745,81 @@
         window.prevSlide = prevSlide;
         window.goToSlide = goToSlide;
 
-        // Load Today's Tasks (placeholder)
-        function loadTodayTasks() {
+        // Load Today's Tasks from Firestore
+        async function loadTodayTasks() {
             const tasksList = document.getElementById('tasksList');
-            tasksList.innerHTML = '<li class="widget-empty">Connect your tasks to see them here</li>';
+            try {
+                // Build today's date range in local time (avoids timezone mismatch)
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+                const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
+
+                const snapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('tasks')
+                    .where('dueDate', '>=', todayStart)
+                    .where('dueDate', '<', todayEnd)
+                    .orderBy('dueDate', 'asc')
+                    .limit(5)
+                    .get();
+
+                if (snapshot.empty) {
+                    tasksList.innerHTML = '<li class="widget-empty">No tasks due today 🎉</li>';
+                    return;
+                }
+
+                tasksList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const task = doc.data();
+                    const li = document.createElement('li');
+                    li.className = 'widget-item';
+                    li.innerHTML = `
+                        <span class="widget-text" style="${task.completed ? 'text-decoration:line-through; color:#999;' : ''}">${task.title || task.text || 'Untitled'}</span>
+                        <span class="widget-meta">${task.completed ? '✅' : '⏳'}</span>
+                    `;
+                    tasksList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                tasksList.innerHTML = '<li class="widget-empty">Could not load tasks</li>';
+            }
         }
 
-        // Load Upcoming Events (placeholder)
-        function loadUpcomingEvents() {
+        // Load Upcoming Events - pulls future tasks as stand-in until Calendar API is set up
+        async function loadUpcomingEvents() {
             const eventsList = document.getElementById('eventsList');
-            eventsList.innerHTML = '<li class="widget-empty">Connect your calendar to see events</li>';
+            try {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+
+                const snapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('tasks')
+                    .where('dueDate', '>=', tomorrow.toISOString())
+                    .orderBy('dueDate', 'asc')
+                    .limit(5)
+                    .get();
+
+                if (snapshot.empty) {
+                    eventsList.innerHTML = '<li class="widget-empty">No upcoming tasks. <a href="calendar.html" style="color:#667eea;">Connect Google Calendar →</a></li>';
+                    return;
+                }
+
+                eventsList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const task = doc.data();
+                    const dueDate = new Date(task.dueDate);
+                    const li = document.createElement('li');
+                    li.className = 'widget-item';
+                    li.innerHTML = `
+                        <span class="widget-text">${task.title || task.text || 'Untitled'}</span>
+                        <span class="widget-meta">${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    `;
+                    eventsList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading events:', error);
+                eventsList.innerHTML = '<li class="widget-empty">Could not load events</li>';
+            }
         }
     </script>
 </body>
