@@ -333,7 +333,7 @@
         /* ── Album Grid ── */
         .album-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 20px;
         }
 
@@ -620,22 +620,32 @@
 
         .bg-upload-area:hover { border-color: #667eea; background: #f8f9fa; color: #667eea; }
         @media (max-width: 768px) {
+            .profile-container { padding: 0 0 80px; }
             .profile-hero { padding: 48px 20px 72px; }
-            .profile-name { font-size: 28px; }
+            .profile-name { font-size: 26px; }
             .stats-strip { margin: -24px 12px 0; }
             .about-section, .albums-section { margin-left: 12px; margin-right: 12px; }
-            .content-section { padding: 20px; }
-            .about-section { padding: 20px; }
-            .album-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .album-detail-header { flex-direction: column; gap: 12px; align-items: stretch; text-align: center; }
-            .modal-content { padding: 24px; width: 95%; }
-            .edit-profile-btn { top: 12px; right: 12px; }
+            .content-section { padding: 16px; }
+            .about-section { padding: 16px 20px; }
+            .album-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+            .photo-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+            .create-album-card { min-height: 120px; }
+            .album-detail-header { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; }
+            .album-detail-header button { width: 100%; }
+            .modal-content { padding: 20px; width: 95%; max-height: 85vh; border-radius: 16px; }
+            .edit-profile-btn { top: 12px; right: 12px; font-size: 11px; padding: 5px 10px; }
+            .bg-picker-btn { bottom: 12px; right: 12px; font-size: 11px; padding: 5px 10px; }
+            .social-row { gap: 6px; }
+            .social-icon-link { font-size: 12px; padding: 6px 10px; }
+            .bg-swatches { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+            .stat-item { padding: 14px 8px; }
         }
 
-        @media (max-width: 480px) {
-            .album-grid { grid-template-columns: 1fr 1fr; }
-            .stat-number { font-size: 20px; }
+        @media (max-width: 380px) {
+            .album-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px; }
+            .photo-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 6px; }
+            .stat-number { font-size: 18px; }
+            .bg-swatches { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -745,21 +755,62 @@
         <img id="modalImage" src="" alt="Full size photo">
     </div>
 
-    <!-- Edit About Modal -->
-    <div class="modal" id="editAboutModal">
-        <div class="modal-content">
-            <div class="modal-header">Edit About Me</div>
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content" style="max-width:560px;">
+            <div class="modal-header">Edit Profile</div>
+
+            <div class="form-group">
+                <label class="form-label">Bio</label>
+                <input type="text" class="form-input" id="editBioInput" placeholder="Short tagline under your name" maxlength="100">
+            </div>
+
             <div class="form-group">
                 <label class="form-label">About Me</label>
-                <textarea id="aboutTextarea" class="form-input" style="min-height: 180px; resize: vertical;" placeholder="Tell people about yourself..."></textarea>
-                <div style="font-size: 12px; color: #999; margin-top: 4px;">Press Enter for new paragraphs</div>
+                <textarea id="aboutTextarea" class="form-input" style="min-height:120px; resize:vertical;" placeholder="Tell people more about yourself..."></textarea>
+                <div style="font-size:12px; color:#999; margin-top:4px;">Press Enter for new paragraphs</div>
             </div>
+
+            <div class="form-group">
+                <label class="form-label">Social Links</label>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="width:28px; text-align:center;">📷</span>
+                        <input type="text" class="form-input" id="editInstagram" placeholder="Instagram username">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="width:28px; text-align:center;">💼</span>
+                        <input type="text" class="form-input" id="editLinkedin" placeholder="LinkedIn username or URL">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="width:28px; text-align:center;">🐦</span>
+                        <input type="text" class="form-input" id="editTwitter" placeholder="Twitter username">
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="width:28px; text-align:center;">💻</span>
+                        <input type="text" class="form-input" id="editGithub" placeholder="GitHub username">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Voice Introduction</label>
+                <div style="background:#f8f9fa; border-radius:10px; padding:20px; text-align:center;">
+                    <div id="currentVoicePreview" style="margin-bottom:12px;"></div>
+                    <button type="button" id="editRecordBtn" style="width:64px; height:64px; border-radius:50%; border:none; background:#667eea; color:white; font-size:26px; cursor:pointer; transition:all 0.2s; margin-bottom:8px;">🎤</button>
+                    <div id="editRecordingStatus" style="font-size:13px; color:#666; margin-bottom:4px;">Record a new intro to replace current</div>
+                    <div id="editRecordingTimer" style="font-size:20px; font-weight:700; color:#1a1a1a; display:none;">0:00</div>
+                    <audio id="editAudioPlayback" controls style="width:100%; margin-top:10px; display:none;"></audio>
+                </div>
+            </div>
+
             <div class="modal-actions">
-                <button class="btn btn-primary" id="saveAboutBtn">Save</button>
-                <button class="btn btn-secondary" id="cancelAboutBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+                <button class="btn btn-secondary" id="cancelProfileBtn">Cancel</button>
             </div>
         </div>
     </div>
+    <div id="editAboutModal" style="display:none;"></div>
 
     <!-- Bottom Tab Bar -->
     <div class="bottom-tab-bar">
@@ -1116,16 +1167,100 @@
             document.getElementById('bgPickerModal').classList.remove('active');
         });
 
-        // Edit About modal
+        // Open full Edit Profile modal
         async function openEditAbout() {
             try {
+                // Load bio
+                const profileDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('info').get();
+                if (profileDoc.exists) {
+                    document.getElementById('editBioInput').value = profileDoc.data().bio || '';
+                    // Show current voice memo if exists
+                    const voiceURL = profileDoc.data().voiceMemoURL;
+                    const preview = document.getElementById('currentVoicePreview');
+                    if (voiceURL) {
+                        preview.innerHTML = `<audio controls style="width:100%; border-radius:8px;"><source src="${voiceURL}" type="audio/webm"></audio>`;
+                    } else {
+                        preview.innerHTML = '<p style="color:#999; font-size:13px;">No voice intro recorded yet</p>';
+                    }
+                }
+                // Load about text
                 const ad = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
                 document.getElementById('aboutTextarea').value = ad.exists ? (ad.data().text || '') : '';
-            } catch(e) {
-                document.getElementById('aboutTextarea').value = '';
-            }
-            document.getElementById('editAboutModal').classList.add('active');
+                // Load social links
+                const sd = await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').get();
+                if (sd.exists) {
+                    const links = sd.data();
+                    document.getElementById('editInstagram').value = links.instagram || '';
+                    document.getElementById('editLinkedin').value = links.linkedin || '';
+                    document.getElementById('editTwitter').value = links.twitter || '';
+                    document.getElementById('editGithub').value = links.github || '';
+                }
+            } catch(e) { console.error('Error loading edit data:', e); }
+
+            // Reset recorder state
+            editAudioBlob = null;
+            document.getElementById('editAudioPlayback').style.display = 'none';
+            document.getElementById('editRecordingStatus').textContent = 'Record a new intro to replace current';
+            document.getElementById('editRecordBtn').textContent = '🎤';
+            document.getElementById('editRecordBtn').style.background = '#667eea';
+
+            document.getElementById('editProfileModal').classList.add('active');
         }
+
+        // Voice recorder for edit modal
+        let editMediaRecorder = null;
+        let editAudioChunks = [];
+        let editAudioBlob = null;
+        let editRecordingTimer = null;
+        let editRecordingSeconds = 0;
+
+        document.getElementById('editRecordBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('editRecordBtn');
+            const status = document.getElementById('editRecordingStatus');
+            const timerDisplay = document.getElementById('editRecordingTimer');
+            const playback = document.getElementById('editAudioPlayback');
+
+            if (!editMediaRecorder || editMediaRecorder.state === 'inactive') {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    editMediaRecorder = new MediaRecorder(stream);
+                    editAudioChunks = [];
+                    editRecordingSeconds = 0;
+
+                    editMediaRecorder.ondataavailable = (e) => editAudioChunks.push(e.data);
+                    editMediaRecorder.onstop = () => {
+                        editAudioBlob = new Blob(editAudioChunks, { type: 'audio/webm' });
+                        playback.src = URL.createObjectURL(editAudioBlob);
+                        playback.style.display = 'block';
+                        status.textContent = 'New recording ready!';
+                        btn.textContent = '🎤';
+                        btn.style.background = '#667eea';
+                        stream.getTracks().forEach(t => t.stop());
+                    };
+
+                    editMediaRecorder.start();
+                    btn.textContent = '⏹️';
+                    btn.style.background = '#dc3545';
+                    status.textContent = 'Recording... (click to stop)';
+                    timerDisplay.style.display = 'block';
+
+                    editRecordingTimer = setInterval(() => {
+                        editRecordingSeconds++;
+                        const m = Math.floor(editRecordingSeconds / 60);
+                        const s = editRecordingSeconds % 60;
+                        timerDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+                        if (editRecordingSeconds >= 60) btn.click();
+                    }, 1000);
+
+                } catch(err) {
+                    alert('Could not access microphone. Please allow microphone access.');
+                }
+            } else {
+                editMediaRecorder.stop();
+                clearInterval(editRecordingTimer);
+                document.getElementById('editRecordingTimer').style.display = 'none';
+            }
+        });
 
         // Albums
         function loadAlbums() {
@@ -1286,22 +1421,51 @@
         imageModalClose.onclick = () => imageModal.classList.remove('active');
         imageModal.onclick = (e) => { if (e.target === imageModal) imageModal.classList.remove('active'); };
 
-        // Edit About
-        const editAboutModal = document.getElementById('editAboutModal');
-        document.getElementById('cancelAboutBtn').onclick = () => editAboutModal.classList.remove('active');
-        document.getElementById('saveAboutBtn').onclick = async () => {
-            const btn = document.getElementById('saveAboutBtn');
-            const text = document.getElementById('aboutTextarea').value.trim();
+        // Save full profile edits
+        document.getElementById('cancelProfileBtn').onclick = () => {
+            document.getElementById('editProfileModal').classList.remove('active');
+        };
+
+        document.getElementById('saveProfileBtn').onclick = async () => {
+            const btn = document.getElementById('saveProfileBtn');
             try {
                 btn.disabled = true; btn.textContent = 'Saving...';
-                await db.collection('users').doc(profileUserId).collection('profile').doc('about').set({ text, updatedAt: new Date().toISOString() });
-                editAboutModal.classList.remove('active');
-                await loadProfile();
+                const user = auth.currentUser;
+
+                // Save bio to profile/info
+                const bio = document.getElementById('editBioInput').value.trim();
+                const updates = { bio, updatedAt: new Date().toISOString() };
+
+                // Upload new voice memo if recorded
+                if (editAudioBlob) {
+                    const vRef = storage.ref(`voice-memos/${user.uid}/${Date.now()}.webm`);
+                    await vRef.put(editAudioBlob);
+                    updates.voiceMemoURL = await vRef.getDownloadURL();
+                    updates.voiceMemoDuration = editRecordingSeconds;
+                }
+
+                await db.collection('users').doc(profileUserId).collection('profile').doc('info').update(updates);
+
+                // Save about text
+                const aboutText = document.getElementById('aboutTextarea').value.trim();
+                await db.collection('users').doc(profileUserId).collection('profile').doc('about').set({ text: aboutText, updatedAt: new Date().toISOString() });
+
+                // Save social links
+                await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').set({
+                    instagram: document.getElementById('editInstagram').value.trim(),
+                    linkedin:  document.getElementById('editLinkedin').value.trim(),
+                    twitter:   document.getElementById('editTwitter').value.trim(),
+                    github:    document.getElementById('editGithub').value.trim(),
+                    updatedAt: new Date().toISOString()
+                });
+
+                document.getElementById('editProfileModal').classList.remove('active');
+                await loadProfile(); // Refresh to show changes
             } catch(err) {
                 console.error('Save error:', err);
                 alert('Error saving. Please try again.');
             } finally {
-                btn.disabled = false; btn.textContent = 'Save';
+                btn.disabled = false; btn.textContent = 'Save Changes';
             }
         };
 
