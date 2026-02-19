@@ -200,6 +200,15 @@
             margin-top: 4px;
         }
 
+        .event-description {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+            line-height: 1.4;
+            border-top: 1px solid #eee;
+            padding-top: 6px;
+        }
+
         .no-events {
             text-align: center;
             padding: 40px;
@@ -513,7 +522,8 @@
 
                 dayDiv.innerHTML = `
                     <div class="day-number">${day}</div>
-                    ${dayEvents.length > 0 ? `<div class="day-events">${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}</div>` : ''}
+                    ${dayEvents.slice(0, 2).map(e => `<div class="day-events">${e.summary || 'Event'}</div>`).join('')}
+                    ${dayEvents.length > 2 ? `<div class="day-events">+${dayEvents.length - 2} more</div>` : ''}
                 `;
 
                 calendarDays.appendChild(dayDiv);
@@ -555,6 +565,8 @@
                     <div class="event-title">${event.summary || 'Untitled Event'}</div>
                     <div class="event-time">${isAllDay ? 'All Day' : formatEventTime(start)}</div>
                     <div class="event-date">${formatEventDate(start)}</div>
+                    ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
+                    ${event.location ? `<div class="event-description">📍 ${event.location}</div>` : ''}
                 `;
                 eventsList.appendChild(eventDiv);
             });
