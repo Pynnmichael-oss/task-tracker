@@ -323,19 +323,29 @@
         let currentDate = new Date();
         let allEvents = [];
 
-        // Persist token so user stays logged in across page reloads
+        // Persist token — use a 23hr soft expiry so silent refresh triggers before Google's 1hr hard limit
         function saveToken(tokenResponse) {
             localStorage.setItem(TOKEN_KEY, tokenResponse.access_token);
+            // Store actual expiry (1hr) for API calls
             const expiry = Date.now() + (tokenResponse.expires_in * 1000);
             localStorage.setItem(TOKEN_EXPIRY_KEY, expiry);
+            // Store a "last authed" timestamp — used to show calendar without re-login for 23hrs
+            localStorage.setItem('gcal_last_auth', Date.now());
         }
 
         function getSavedToken() {
             const token = localStorage.getItem(TOKEN_KEY);
             const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
             if (!token || !expiry) return null;
-            if (Date.now() > expiry - 60000) return null; // expired (60s buffer)
+            if (Date.now() > expiry - 60000) return null; // expired
             return token;
+        }
+
+        function hasRecentAuth() {
+            // Consider user "connected" for 23 hours after last successful auth
+            const lastAuth = localStorage.getItem('gcal_last_auth');
+            if (!lastAuth) return false;
+            return Date.now() - lastAuth < 23 * 60 * 60 * 1000;
         }
 
         function clearToken() {
@@ -358,7 +368,7 @@
         gapi.load('client', async () => {
             await gapi.client.init({ apiKey: API_KEY });
 
-            // Try to restore a saved token silently
+            // Try saved token first (still valid within 1hr window)
             const savedToken = getSavedToken();
             if (savedToken) {
                 gapi.client.setToken({ access_token: savedToken });
@@ -372,8 +382,14 @@
                 }
             }
 
-            // Try silent re-auth (no popup if user already consented)
-            tokenClient.requestAccessToken({ prompt: '' });
+            // Token expired but user authed recently — silently get a new one (no popup)
+            // This covers the case where user returns after 1hr but within 23hrs
+            if (hasRecentAuth()) {
+                tokenClient.requestAccessToken({ prompt: '' });
+            } else {
+                // First time or >23hrs — show login button
+                showAuthSection();
+            }
         });
 
         // OAuth token client
