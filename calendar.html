@@ -287,6 +287,8 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
     <script src="https://apis.google.com/js/api.js"></script>
@@ -312,10 +314,24 @@
 
         // Initialize Google API
         gapi.load('client', async () => {
-            await gapi.client.init({
-                apiKey: API_KEY,
-                discoveryDocs: [DISCOVERY_DOC],
-            });
+            try {
+                await gapi.client.init({
+                    apiKey: API_KEY,
+                    discoveryDocs: [DISCOVERY_DOC],
+                });
+            } catch (err) {
+                console.error('Google API init error:', err);
+                const authSection = document.getElementById('authSection');
+                authSection.innerHTML = `
+                    <h2>Calendar Setup Required</h2>
+                    <p style="color:#e53e3e; margin-top:12px; font-weight:600;">⚠️ Google Calendar API not authorized</p>
+                    <p style="color:#666; margin-top:8px; max-width:480px; margin-left:auto; margin-right:auto;">
+                        The API key needs <strong>Google Calendar API</strong> enabled in your 
+                        <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" style="color:#667eea;">Google Cloud Console</a>.
+                        Enable it, then also add your domain to the key's allowed referrers.
+                    </p>
+                `;
+            }
         });
 
         // Initialize OAuth
@@ -324,7 +340,9 @@
             scope: SCOPES,
             callback: async (response) => {
                 if (response.error !== undefined) {
-                    throw (response);
+                    console.error('OAuth error:', response.error);
+                    alert('Calendar authorization failed: ' + response.error);
+                    return;
                 }
                 document.getElementById('authSection').style.display = 'none';
                 document.getElementById('calendarView').style.display = 'block';
