@@ -745,36 +745,28 @@
         window.prevSlide = prevSlide;
         window.goToSlide = goToSlide;
 
-        // Load Today's Tasks from Firestore
+        // Load Today's Tasks from dailyTasks/{YYYY-MM-DD}
         async function loadTodayTasks() {
             const tasksList = document.getElementById('tasksList');
             try {
-                // Build today's date range in local time (avoids timezone mismatch)
-                const now = new Date();
-                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-                const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
+                const todayId = new Date().toISOString().split('T')[0]; // "2026-02-19"
+                const doc = await db.collection('dailyTasks').doc(todayId).get();
 
-                const snapshot = await db.collection('users').doc(currentUser.uid)
-                    .collection('tasks')
-                    .where('dueDate', '>=', todayStart)
-                    .where('dueDate', '<', todayEnd)
-                    .orderBy('dueDate', 'asc')
-                    .limit(5)
-                    .get();
-
-                if (snapshot.empty) {
-                    tasksList.innerHTML = '<li class="widget-empty">No tasks due today 🎉</li>';
+                if (!doc.exists || !doc.data().tasks || doc.data().tasks.length === 0) {
+                    tasksList.innerHTML = '<li class="widget-empty">No tasks for today 🎉</li>';
                     return;
                 }
 
+                const tasks = doc.data().tasks
+                    .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+
                 tasksList.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const task = doc.data();
+                tasks.forEach(task => {
                     const li = document.createElement('li');
                     li.className = 'widget-item';
                     li.innerHTML = `
-                        <span class="widget-text" style="${task.completed ? 'text-decoration:line-through; color:#999;' : ''}">${task.title || task.text || 'Untitled'}</span>
-                        <span class="widget-meta">${task.completed ? '✅' : '⏳'}</span>
+                        <span class="widget-text" style="${task.completed ? 'text-decoration:line-through;color:#999;' : ''}">${task.text}</span>
+                        <span class="widget-meta">${task.completed ? '✅' : task.time ? task.time : '⏳'}</span>
                     `;
                     tasksList.appendChild(li);
                 });
@@ -784,41 +776,39 @@
             }
         }
 
-        // Load Upcoming Events - pulls future tasks as stand-in until Calendar API is set up
+        // Load Upcoming Events from goals collection (has real dueDate fields)
         async function loadUpcomingEvents() {
             const eventsList = document.getElementById('eventsList');
             try {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                tomorrow.setHours(0, 0, 0, 0);
+                const todayStr = new Date().toISOString().split('T')[0]; // "2026-02-19"
 
-                const snapshot = await db.collection('users').doc(currentUser.uid)
-                    .collection('tasks')
-                    .where('dueDate', '>=', tomorrow.toISOString())
+                const snapshot = await db.collection('goals')
+                    .where('dueDate', '>=', todayStr)
+                    .where('status', '!=', 'completed')
                     .orderBy('dueDate', 'asc')
                     .limit(5)
                     .get();
 
                 if (snapshot.empty) {
-                    eventsList.innerHTML = '<li class="widget-empty">No upcoming tasks. <a href="calendar.html" style="color:#667eea;">Connect Google Calendar →</a></li>';
+                    eventsList.innerHTML = '<li class="widget-empty">No upcoming goals. <a href="calendar.html" style="color:#667eea;">Connect Google Calendar →</a></li>';
                     return;
                 }
 
                 eventsList.innerHTML = '';
                 snapshot.forEach(doc => {
-                    const task = doc.data();
-                    const dueDate = new Date(task.dueDate);
+                    const goal = doc.data();
+                    const due = new Date(goal.dueDate);
                     const li = document.createElement('li');
                     li.className = 'widget-item';
                     li.innerHTML = `
-                        <span class="widget-text">${task.title || task.text || 'Untitled'}</span>
-                        <span class="widget-meta">${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        <span class="widget-text">${goal.title}</span>
+                        <span class="widget-meta">${due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                     `;
                     eventsList.appendChild(li);
                 });
             } catch (error) {
                 console.error('Error loading events:', error);
-                eventsList.innerHTML = '<li class="widget-empty">Could not load events</li>';
+                eventsList.innerHTML = '<li class="widget-empty">Could not load upcoming goals</li>';
             }
         }
     </script>
