@@ -20,7 +20,7 @@
         /* ── Hero Banner ── */
         .profile-hero {
             position: relative;
-            background: linear-gradient(135deg, #4a3f8f 0%, #667eea 45%, #9b6fd4 80%, #c084fc 100%);
+            background: linear-gradient(135deg, #1e6b14 0%, #3d9c2f 45%, #6dd832 80%, #c8f032 100%);
             padding: 60px 40px 80px;
             text-align: center;
             overflow: hidden;
@@ -231,7 +231,7 @@
         .stat-number {
             font-size: 26px;
             font-weight: 700;
-            color: #667eea;
+            color: #3d9c2f;
             font-family: 'Playfair Display', serif;
         }
 
@@ -356,7 +356,7 @@
             align-items: center;
             justify-content: center;
             background: #fafafa;
-            color: #667eea;
+            color: #3d9c2f;
             font-weight: 600;
             font-size: 13px;
             gap: 6px;
@@ -364,7 +364,7 @@
         }
 
         .create-album-card:hover {
-            border-color: #667eea;
+            border-color: #3d9c2f;
             background: white;
         }
 
@@ -479,8 +479,8 @@
             font-family: 'DM Sans', sans-serif;
         }
 
-        .btn-primary { background: #667eea; color: white; }
-        .btn-primary:hover { background: #5568d3; }
+        .btn-primary { background: #3d9c2f; color: white; }
+        .btn-primary:hover { background: #348a26; }
         .btn-secondary { background: #f0f0f0; color: #1a1a1a; }
         .btn-secondary:hover { background: #e0e0e0; }
         .btn-danger { background: #dc3545; color: white; font-size: 13px; padding: 7px 14px; }
@@ -537,7 +537,7 @@
             transition: border-color 0.2s;
         }
 
-        .form-input:focus { outline: none; border-color: #667eea; }
+        .form-input:focus { outline: none; border-color: #3d9c2f; }
 
         .cover-upload-area {
             border: 2px dashed #d0d0d0;
@@ -549,7 +549,7 @@
             color: #888;
         }
 
-        .cover-upload-area:hover { border-color: #667eea; background: #f8f9fa; }
+        .cover-upload-area:hover { border-color: #3d9c2f; background: #f8f9fa; }
         .cover-preview { max-width: 100%; max-height: 180px; border-radius: 8px; margin-top: 12px; }
 
         .modal-actions {
@@ -584,7 +584,7 @@
         .spinner {
             width: 36px; height: 36px;
             border: 3px solid #f0f0f0;
-            border-top-color: #667eea;
+            border-top-color: #3d9c2f;
             border-radius: 50%;
             animation: spin 0.9s linear infinite;
             margin: 0 auto 16px;
@@ -676,7 +676,7 @@
         }
 
         .bg-swatch:hover { transform: scale(1.04); }
-        .bg-swatch.selected { border-color: #667eea; box-shadow: 0 0 0 2px white, 0 0 0 4px #667eea; }
+        .bg-swatch.selected { border-color: #3d9c2f; box-shadow: 0 0 0 2px white, 0 0 0 4px #3d9c2f; }
 
         .bg-upload-area {
             border: 2px dashed #d0d0d0;
@@ -690,7 +690,7 @@
             margin-top: 8px;
         }
 
-        .bg-upload-area:hover { border-color: #667eea; background: #f8f9fa; color: #667eea; }
+        .bg-upload-area:hover { border-color: #3d9c2f; background: #f8f9fa; color: #3d9c2f; }
         @media (max-width: 768px) {
             .profile-container { padding: 0 0 80px; }
             .profile-hero { padding: 48px 20px 72px; }
@@ -722,7 +722,16 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">TouchGrass</a>
+            <a href="index.html" class="nav-brand"><svg class="nav-brand-logo" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left blade -->
+  <path d="M7 24 C7 24 5 16 9 8 C9 8 10 14 8 24 Z" fill="#4ab830"/>
+  <!-- Center blade (tallest) -->
+  <path d="M14 24 C14 24 11 12 14 2 C14 2 17 12 14 24 Z" fill="#6dd832"/>
+  <!-- Right blade -->
+  <path d="M21 24 C21 24 18 16 19 8 C19 8 23 14 21 24 Z" fill="#4ab830"/>
+  <!-- Ground line -->
+  <rect x="3" y="23" width="22" height="3" rx="1.5" fill="#3d9c2f"/>
+</svg>TouchGrass</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html">Feed</a></li>
@@ -868,7 +877,7 @@
                 <label class="form-label">Voice Introduction</label>
                 <div style="background:#f8f9fa; border-radius:10px; padding:20px; text-align:center;">
                     <div id="currentVoicePreview" style="margin-bottom:12px;"></div>
-                    <button type="button" id="editRecordBtn" style="width:64px; height:64px; border-radius:50%; border:none; background:#667eea; color:white; font-size:26px; cursor:pointer; transition:all 0.2s; margin-bottom:8px;">🎤</button>
+                    <button type="button" id="editRecordBtn" style="width:64px; height:64px; border-radius:50%; border:none; background:#3d9c2f; color:white; font-size:26px; cursor:pointer; transition:all 0.2s; margin-bottom:8px;">🎤</button>
                     <div id="editRecordingStatus" style="font-size:13px; color:#666; margin-bottom:4px;">Record a new intro to replace current</div>
                     <div id="editRecordingTimer" style="font-size:20px; font-weight:700; color:#1a1a1a; display:none;">0:00</div>
                     <audio id="editAudioPlayback" controls style="width:100%; margin-top:10px; display:none;"></audio>
@@ -1124,7 +1133,7 @@
 
         // ── Background Picker ──
         const BG_PRESETS = [
-            { id: 'purple',   css: 'linear-gradient(135deg, #4a3f8f 0%, #667eea 45%, #9b6fd4 80%, #c084fc 100%)' },
+            { id: 'grass',    css: 'linear-gradient(135deg, #1e6b14 0%, #3d9c2f 45%, #6dd832 80%, #c8f032 100%)' },
             { id: 'ocean',    css: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)' },
             { id: 'sunset',   css: 'linear-gradient(135deg, #f83600 0%, #f9d423 100%)' },
             { id: 'rose',     css: 'linear-gradient(135deg, #c2185b 0%, #ff6090 50%, #ffb3c1 100%)' },
@@ -1274,7 +1283,7 @@
             document.getElementById('editAudioPlayback').style.display = 'none';
             document.getElementById('editRecordingStatus').textContent = 'Record a new intro to replace current';
             document.getElementById('editRecordBtn').textContent = '🎤';
-            document.getElementById('editRecordBtn').style.background = '#667eea';
+            document.getElementById('editRecordBtn').style.background = '#3d9c2f';
 
             document.getElementById('editProfileModal').classList.add('active');
         }
@@ -1306,7 +1315,7 @@
                         playback.style.display = 'block';
                         status.textContent = 'New recording ready!';
                         btn.textContent = '🎤';
-                        btn.style.background = '#667eea';
+                        btn.style.background = '#3d9c2f';
                         stream.getTracks().forEach(t => t.stop());
                     };
 
