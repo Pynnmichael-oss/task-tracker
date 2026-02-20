@@ -332,6 +332,28 @@
                     createdAt: new Date().toISOString()
                 });
 
+                // Notify all users a new member joined
+                try {
+                    const allUsersSnap = await db.collection('users').get();
+                    const batch = db.batch();
+                    allUsersSnap.docs.forEach(userDoc => {
+                        if (userDoc.id === user.uid) return; // don't notify yourself
+                        const ref = db.collection('users').doc(userDoc.id)
+                            .collection('notifications').doc();
+                        batch.set(ref, {
+                            type: 'new_user',
+                            icon: '👋',
+                            message: `${displayName} just joined!`,
+                            actorId: user.uid,
+                            actorName: displayName,
+                            actorPhoto: photoURL,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        });
+                    });
+                    await batch.commit();
+                } catch(e) { console.warn('Notification error:', e); }
+
                 window.location.href = '/task-tracker/index.html';
             } catch (error) {
                 console.error('Error creating profile:', error);
