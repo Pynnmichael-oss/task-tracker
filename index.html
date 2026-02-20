@@ -90,7 +90,7 @@
         }
 
         .social-link:hover {
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
             transform: translateY(-2px);
         }
@@ -236,7 +236,7 @@
 
         .view-all-link {
             display: inline-block;
-            color: #667eea;
+            color: #3d9c2f;
             text-decoration: none;
             font-weight: 600;
             margin-top: 16px;
@@ -301,7 +301,7 @@
 
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3d9c2f;
         }
 
         .modal-actions {
@@ -313,7 +313,7 @@
         .btn-primary {
             flex: 1;
             padding: 12px;
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
             border: none;
             border-radius: 8px;
@@ -322,7 +322,7 @@
         }
 
         .btn-primary:hover {
-            background: #5568d3;
+            background: #348a26;
         }
 
         .btn-secondary {
@@ -385,7 +385,7 @@
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #9b6fd4);
+            background: linear-gradient(135deg, #3d9c2f, #7ec832);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -411,7 +411,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #667eea;
+            background: #3d9c2f;
             flex-shrink: 0;
             margin-top: 5px;
         }
@@ -428,7 +428,7 @@
         .notif-mark-all {
             background: none;
             border: none;
-            color: #667eea;
+            color: #3d9c2f;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
@@ -470,7 +470,16 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">TouchGrass</a>
+            <a href="index.html" class="nav-brand"><svg class="nav-brand-logo" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left blade -->
+  <path d="M7 24 C7 24 5 16 9 8 C9 8 10 14 8 24 Z" fill="#4ab830"/>
+  <!-- Center blade (tallest) -->
+  <path d="M14 24 C14 24 11 12 14 2 C14 2 17 12 14 24 Z" fill="#6dd832"/>
+  <!-- Right blade -->
+  <path d="M21 24 C21 24 18 16 19 8 C19 8 23 14 21 24 Z" fill="#4ab830"/>
+  <!-- Ground line -->
+  <rect x="3" y="23" width="22" height="3" rx="1.5" fill="#3d9c2f"/>
+</svg>TouchGrass</a>
             <ul class="nav-menu">
                 <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="feed.html">Feed</a></li>
@@ -490,7 +499,7 @@
             <!-- Notifications — full width row -->
             <div class="dashboard-card" style="margin-bottom: 24px;">
                 <div class="card-header">
-                    <h2 class="card-title">🔔 Notifications <span id="notifBadge" style="display:none; background:#667eea; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
+                    <h2 class="card-title">🔔 Notifications <span id="notifBadge" style="display:none; background:#3d9c2f; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
                     <button class="notif-mark-all" id="markAllReadBtn">Mark all read</button>
                 </div>
                 <div class="notif-list" id="notifList">
@@ -766,7 +775,7 @@
                     document.getElementById('photoCarouselContainer').innerHTML = `
                         <div class="widget-empty">
                             <p>No feed photos yet.</p>
-                            <a href="feed.html" style="color:#667eea; font-weight:600;">Share your first moment →</a>
+                            <a href="feed.html" style="color:#3d9c2f; font-weight:600;">Share your first moment →</a>
                         </div>`;
                     return;
                 }
@@ -901,7 +910,7 @@
 
             if (!tokenValid && recentAuth) {
                 // Token expired but user connected recently — nudge them to refresh
-                eventsList.innerHTML = '<li class="widget-empty">Calendar token expired. <a href="calendar.html" style="color:#667eea;">Refresh →</a></li>';
+                eventsList.innerHTML = '<li class="widget-empty">Calendar token expired. <a href="calendar.html" style="color:#3d9c2f;">Refresh →</a></li>';
                 return;
             }
 
@@ -964,7 +973,7 @@
                     .get();
 
                 if (snapshot.empty) {
-                    eventsList.innerHTML = '<li class="widget-empty">No upcoming goals. <a href="calendar.html" style="color:#667eea;">Connect Google Calendar →</a></li>';
+                    eventsList.innerHTML = '<li class="widget-empty">No upcoming goals. <a href="calendar.html" style="color:#3d9c2f;">Connect Google Calendar →</a></li>';
                     return;
                 }
 
