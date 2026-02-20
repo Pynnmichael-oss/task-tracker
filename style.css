@@ -35,14 +35,24 @@ body {
 }
 
 .nav-brand {
-    font-size: 20px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-size: 22px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #2d7a22, #7ec832);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-decoration: none;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
+    font-style: italic;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-brand-logo {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
 }
 
 .nav-menu {
@@ -68,7 +78,7 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #3d9c2f, #7ec832);
     transition: width 0.3s ease;
 }
 
@@ -117,7 +127,7 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-.bottom-tab.active { color: #667eea; }
+.bottom-tab.active { color: #3d9c2f; }
 
 .bottom-tab-icon {
     font-size: 24px;
@@ -140,7 +150,7 @@ body {
 }
 
 .bottom-tab.active .bottom-tab-profile-pic {
-    border-color: #667eea;
+    border-color: #3d9c2f;
 }
 
 /* ========================
@@ -158,14 +168,14 @@ body {
 .hero {
     text-align: center;
     padding: 120px 40px 80px;
-    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    background: linear-gradient(135deg, #3d9c2f18 0%, #c8f03218 100%);
 }
 
 .hero h1 {
     font-size: 64px;
     font-weight: 700;
     margin-bottom: 16px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #3d9c2f, #7ec832);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -202,7 +212,7 @@ body {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #3d9c2f, #7ec832);
     transform: scaleX(0);
     transition: transform 0.3s ease;
 }
@@ -210,7 +220,7 @@ body {
 .feature-card:not(.disabled):hover {
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    border-color: #667eea;
+    border-color: #3d9c2f;
 }
 
 .feature-card:not(.disabled):hover::before { transform: scaleX(1); }
