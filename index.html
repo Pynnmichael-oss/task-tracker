@@ -1160,12 +1160,12 @@
             try {
                 // Collection group query — finds all profile/info docs across every user
                 const profileSnap = await db.collectionGroup('profile')
-                    .where(firebase.firestore.FieldPath.documentId(), '==', 'info')
                     .get();
                 const members = [];
 
                 profileSnap.docs.forEach(doc => {
-                    // Path is users/{uid}/profile/info — uid is 3 levels up
+                    // Only grab 'info' docs, skip 'banner', 'socialLinks' etc
+                    if (doc.id !== 'info') return;
                     const uid = doc.ref.parent.parent.id;
                     members.push({ uid, ...doc.data() });
                 });
