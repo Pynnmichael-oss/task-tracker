@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar - Michael Pynn</title>
+    <title>TouchGrass · Calendar</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .calendar-container {
@@ -200,15 +200,6 @@
             margin-top: 4px;
         }
 
-        .event-description {
-            font-size: 13px;
-            color: #666;
-            margin-top: 6px;
-            line-height: 1.4;
-            border-top: 1px solid #eee;
-            padding-top: 6px;
-        }
-
         .no-events {
             text-align: center;
             padding: 40px;
@@ -237,7 +228,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">Michael Pynn</a>
+            <a href="index.html" class="nav-brand">TouchGrass</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html">Feed</a></li>
@@ -296,8 +287,6 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
     <script src="https://apis.google.com/js/api.js"></script>
@@ -316,116 +305,36 @@
         const API_KEY = 'AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc';
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
         const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
-        const TOKEN_KEY = 'gcal_access_token';
-        const TOKEN_EXPIRY_KEY = 'gcal_token_expiry';
 
         let tokenClient;
         let currentDate = new Date();
         let allEvents = [];
 
-        // Persist token — use a 23hr soft expiry so silent refresh triggers before Google's 1hr hard limit
-        function saveToken(tokenResponse) {
-            localStorage.setItem(TOKEN_KEY, tokenResponse.access_token);
-            // Store actual expiry (1hr) for API calls
-            const expiry = Date.now() + (tokenResponse.expires_in * 1000);
-            localStorage.setItem(TOKEN_EXPIRY_KEY, expiry);
-            // Store a "last authed" timestamp — used to show calendar without re-login for 23hrs
-            localStorage.setItem('gcal_last_auth', Date.now());
-        }
-
-        function getSavedToken() {
-            const token = localStorage.getItem(TOKEN_KEY);
-            const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
-            if (!token || !expiry) return null;
-            if (Date.now() > expiry - 60000) return null; // expired
-            return token;
-        }
-
-        function hasRecentAuth() {
-            // Consider user "connected" for 23 hours after last successful auth
-            const lastAuth = localStorage.getItem('gcal_last_auth');
-            if (!lastAuth) return false;
-            return Date.now() - lastAuth < 23 * 60 * 60 * 1000;
-        }
-
-        function clearToken() {
-            localStorage.removeItem(TOKEN_KEY);
-            localStorage.removeItem(TOKEN_EXPIRY_KEY);
-        }
-
-        function showAuthSection() {
-            document.getElementById('authSection').style.display = 'block';
-            document.getElementById('calendarView').style.display = 'none';
-        }
-
-        function showCalendar() {
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('calendarView').style.display = 'block';
-            loadCalendar();
-        }
-
-        // Initialize gapi — minimal init first, load discovery doc after auth
+        // Initialize Google API
         gapi.load('client', async () => {
-            await gapi.client.init({ apiKey: API_KEY });
-
-            // Try saved token first (still valid within 1hr window)
-            const savedToken = getSavedToken();
-            if (savedToken) {
-                gapi.client.setToken({ access_token: savedToken });
-                try {
-                    await gapi.client.load(DISCOVERY_DOC);
-                    showCalendar();
-                    return;
-                } catch (err) {
-                    console.warn('Saved token invalid, re-auth needed');
-                    clearToken();
-                }
-            }
-
-            // Token expired but user authed recently — silently get a new one (no popup)
-            // This covers the case where user returns after 1hr but within 23hrs
-            if (hasRecentAuth()) {
-                tokenClient.requestAccessToken({ prompt: '' });
-            } else {
-                // First time or >23hrs — show login button
-                showAuthSection();
-            }
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: [DISCOVERY_DOC],
+            });
         });
 
-        // OAuth token client
+        // Initialize OAuth
         tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: CLIENT_ID,
             scope: SCOPES,
             callback: async (response) => {
                 if (response.error !== undefined) {
-                    // Silent auth failed — show login button
-                    showAuthSection();
-                    return;
+                    throw (response);
                 }
-                saveToken(response);
-                gapi.client.setToken({ access_token: response.access_token });
-                try {
-                    await gapi.client.load(DISCOVERY_DOC);
-                    showCalendar();
-                } catch (err) {
-                    console.error('Failed to load Calendar API:', err);
-                    document.getElementById('authSection').innerHTML = `
-                        <h2>Calendar API Not Enabled</h2>
-                        <p style="color:#e53e3e;margin-top:12px;font-weight:600;">
-                            ⚠️ Enable the Google Calendar API in your
-                            <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com"
-                               target="_blank" style="color:#667eea;">Google Cloud Console</a>,
-                            then refresh.
-                        </p>
-                    `;
-                    showAuthSection();
-                }
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('calendarView').style.display = 'block';
+                await loadCalendar();
             },
         });
 
-        // Manual login button — full consent prompt
+        // Auth button
         document.getElementById('authorizeBtn').addEventListener('click', () => {
-            tokenClient.requestAccessToken({ prompt: 'consent' });
+            tokenClient.requestAccessToken({prompt: 'consent'});
         });
 
         // Navigation
@@ -538,8 +447,7 @@
 
                 dayDiv.innerHTML = `
                     <div class="day-number">${day}</div>
-                    ${dayEvents.slice(0, 2).map(e => `<div class="day-events">${e.summary || 'Event'}</div>`).join('')}
-                    ${dayEvents.length > 2 ? `<div class="day-events">+${dayEvents.length - 2} more</div>` : ''}
+                    ${dayEvents.length > 0 ? `<div class="day-events">${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}</div>` : ''}
                 `;
 
                 calendarDays.appendChild(dayDiv);
@@ -581,8 +489,6 @@
                     <div class="event-title">${event.summary || 'Untitled Event'}</div>
                     <div class="event-time">${isAllDay ? 'All Day' : formatEventTime(start)}</div>
                     <div class="event-date">${formatEventDate(start)}</div>
-                    ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
-                    ${event.location ? `<div class="event-description">📍 ${event.location}</div>` : ''}
                 `;
                 eventsList.appendChild(eventDiv);
             });
