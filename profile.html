@@ -1509,10 +1509,28 @@
         async function deletePhoto(photoId, fileName) {
             if (!confirm('Delete this photo?')) return;
             try {
-                await storage.ref(fileName).delete();
+                // Get the photo URL before deleting so we can match feed posts
+                const photoDoc = await albumsRef.doc(currentAlbumId).collection('photos').doc(photoId).get();
+                const photoURL = photoDoc.exists ? photoDoc.data().url : null;
+
+                // Delete from storage
+                try { await storage.ref(fileName).delete(); } catch(e) {}
+
+                // Delete from album
                 await albumsRef.doc(currentAlbumId).collection('photos').doc(photoId).delete();
                 const albumDoc = await albumsRef.doc(currentAlbumId).get();
                 await albumsRef.doc(currentAlbumId).update({ photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1) });
+
+                // Remove matching feed post (same photo URL, same user)
+                if (photoURL) {
+                    const feedSnap = await db.collection('feed')
+                        .where('userId', '==', profileUserId)
+                        .where('photoURL', '==', photoURL)
+                        .get();
+                    const batch = db.batch();
+                    feedSnap.docs.forEach(d => batch.delete(d.ref));
+                    if (!feedSnap.empty) await batch.commit();
+                }
             } catch(err) { console.error('Delete error:', err); alert('Error deleting photo'); }
         }
         window.deletePhoto = deletePhoto;
@@ -1525,8 +1543,11 @@
 
         async function deleteAlbum(albumId, coverFileName) {
             try {
-                // Delete all photos in the album from storage + firestore
+                // Get all photos before deleting
                 const photosSnap = await albumsRef.doc(albumId).collection('photos').get();
+                const photoURLs = photosSnap.docs.map(d => d.data().url).filter(Boolean);
+
+                // Delete all photos from storage + firestore
                 const batch = db.batch();
                 for (const photoDoc of photosSnap.docs) {
                     const data = photoDoc.data();
@@ -1542,6 +1563,22 @@
 
                 // Delete album document
                 await albumsRef.doc(albumId).delete();
+
+                // Remove any matching feed posts for this user
+                if (photoURLs.length > 0) {
+                    // Firestore 'in' queries max 30 items — chunk if needed
+                    const chunkSize = 30;
+                    for (let i = 0; i < photoURLs.length; i += chunkSize) {
+                        const chunk = photoURLs.slice(i, i + chunkSize);
+                        const feedSnap = await db.collection('feed')
+                            .where('userId', '==', profileUserId)
+                            .where('photoURL', 'in', chunk)
+                            .get();
+                        const feedBatch = db.batch();
+                        feedSnap.docs.forEach(d => feedBatch.delete(d.ref));
+                        if (!feedSnap.empty) await feedBatch.commit();
+                    }
+                }
 
                 // If we're inside the album detail view, go back
                 if (!albumDetailView.classList.contains('hidden')) {
