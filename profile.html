@@ -596,6 +596,50 @@
         .empty-icon { font-size: 48px; margin-bottom: 16px; }
         .hidden { display: none !important; }
 
+        /* ── Delete buttons ── */
+        .album-delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .album-card:hover .album-delete-btn { opacity: 1; }
+
+        @media (max-width: 768px) {
+            .album-delete-btn { opacity: 1; } /* Always show on mobile */
+        }
+
+        .photo-delete-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(220,53,69,0.85);
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .photo-delete-btn:hover { background: rgba(200,35,51,1); }
+
         /* ── Background Picker ── */
         .bg-picker-btn {
             position: absolute;
@@ -716,8 +760,9 @@
                             <h2 class="album-detail-title" id="albumTitle"></h2>
                             <p class="album-photo-count" id="albumPhotoCount"></p>
                         </div>
-                        <div>
+                        <div style="display:flex; gap:8px; align-items:center;">
                             <button class="btn btn-primary hidden" id="uploadPhotosBtn">+ Add Photos</button>
+                            <button class="btn btn-danger hidden" id="deleteAlbumBtn">🗑️ Delete Album</button>
                             <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
                         </div>
                     </div>
@@ -870,6 +915,7 @@
 
         let isOwnProfile = false;
         let currentAlbumId = null;
+        let currentAlbumCoverFileName = null;
         let selectedCoverFile = null;
         let albumsRef = null;
 
@@ -1322,9 +1368,19 @@
                             <div class="album-name">${album.name}</div>
                             <div class="photo-count">${album.photoCount || 0} photos</div>
                         </div>
+                        ${isOwnProfile ? `<button class="album-delete-btn" title="Delete album">🗑️</button>` : ''}
                     </div>
                 `;
-                cell.querySelector('.album-card').onclick = () => openAlbum(album.id, album.name);
+                cell.querySelector('.album-card').onclick = (e) => {
+                    if (e.target.classList.contains('album-delete-btn')) return;
+                    openAlbum(album.id, album.name, album.coverFileName);
+                };
+                if (isOwnProfile) {
+                    cell.querySelector('.album-delete-btn').onclick = (e) => {
+                        e.stopPropagation();
+                        confirmDeleteAlbum(album.id, album.name, album.coverFileName);
+                    };
+                }
                 albumGrid.appendChild(cell);
             });
         }
@@ -1374,19 +1430,30 @@
             }
         };
 
-        function openAlbum(albumId, name) {
+        function openAlbum(albumId, name, coverFileName) {
             currentAlbumId = albumId;
+            currentAlbumCoverFileName = coverFileName || null;
             albumTitle.textContent = name;
             albumsView.classList.add('hidden');
             albumDetailView.classList.remove('hidden');
-            if (isOwnProfile) uploadPhotosBtn.classList.remove('hidden');
+            if (isOwnProfile) {
+                uploadPhotosBtn.classList.remove('hidden');
+                const delBtn = document.getElementById('deleteAlbumBtn');
+                if (delBtn) delBtn.classList.remove('hidden');
+            }
             loadPhotos(albumId);
         }
 
         backBtn.onclick = () => {
             currentAlbumId = null;
+            currentAlbumCoverFileName = null;
             albumDetailView.classList.add('hidden');
             albumsView.classList.remove('hidden');
+            document.getElementById('deleteAlbumBtn').classList.add('hidden');
+        };
+
+        document.getElementById('deleteAlbumBtn').onclick = () => {
+            confirmDeleteAlbum(currentAlbumId, albumTitle.textContent, currentAlbumCoverFileName);
         };
 
         uploadPhotosBtn.onclick = () => photoInput.click();
@@ -1428,7 +1495,7 @@
                 item.className = 'photo-item';
                 item.innerHTML = `
                     <img src="${photo.url}" alt="Photo">
-                    ${isOwnProfile ? `<div class="photo-overlay"><button class="btn btn-danger" onclick="event.stopPropagation(); deletePhoto('${photo.id}', '${photo.fileName}')">Delete</button></div>` : ''}
+                    ${isOwnProfile ? `<div class="photo-overlay"><button class="photo-delete-btn" onclick="event.stopPropagation(); deletePhoto('${photo.id}', '${photo.fileName}')">🗑️</button></div>` : ''}
                 `;
                 item.onclick = (e) => {
                     if (e.target.tagName === 'BUTTON') return;
@@ -1449,6 +1516,44 @@
             } catch(err) { console.error('Delete error:', err); alert('Error deleting photo'); }
         }
         window.deletePhoto = deletePhoto;
+
+        function confirmDeleteAlbum(albumId, albumName, coverFileName) {
+            if (!confirm(`Delete the album "${albumName}" and all its photos? This cannot be undone.`)) return;
+            deleteAlbum(albumId, coverFileName);
+        }
+        window.confirmDeleteAlbum = confirmDeleteAlbum;
+
+        async function deleteAlbum(albumId, coverFileName) {
+            try {
+                // Delete all photos in the album from storage + firestore
+                const photosSnap = await albumsRef.doc(albumId).collection('photos').get();
+                const batch = db.batch();
+                for (const photoDoc of photosSnap.docs) {
+                    const data = photoDoc.data();
+                    try { await storage.ref(data.fileName).delete(); } catch(e) {}
+                    batch.delete(photoDoc.ref);
+                }
+                await batch.commit();
+
+                // Delete cover photo from storage
+                if (coverFileName) {
+                    try { await storage.ref(coverFileName).delete(); } catch(e) {}
+                }
+
+                // Delete album document
+                await albumsRef.doc(albumId).delete();
+
+                // If we're inside the album detail view, go back
+                if (!albumDetailView.classList.contains('hidden')) {
+                    albumDetailView.classList.add('hidden');
+                    albumsView.classList.remove('hidden');
+                    currentAlbumId = null;
+                }
+            } catch(err) {
+                console.error('Delete album error:', err);
+                alert('Error deleting album. Try again.');
+            }
+        }
 
         imageModalClose.onclick = () => imageModal.classList.remove('active');
         imageModal.onclick = (e) => { if (e.target === imageModal) imageModal.classList.remove('active'); };
