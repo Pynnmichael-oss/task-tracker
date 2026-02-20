@@ -340,6 +340,103 @@
             background: #e0e0e0;
         }
 
+
+        /* ── Notifications Widget ── */
+        .notif-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            max-height: 340px;
+            overflow-y: auto;
+        }
+
+        .notif-list::-webkit-scrollbar { width: 4px; }
+        .notif-list::-webkit-scrollbar-track { background: transparent; }
+        .notif-list::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
+
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background 0.15s;
+        }
+
+        .notif-item:last-child { border-bottom: none; }
+
+        .notif-item.unread {
+            background: #f8f7ff;
+            margin: 0 -16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .notif-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #f0f0f0;
+        }
+
+        .notif-avatar-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #9b6fd4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .notif-body { flex: 1; min-width: 0; }
+
+        .notif-message {
+            font-size: 14px;
+            color: #1a1a1a;
+            line-height: 1.4;
+            margin-bottom: 3px;
+        }
+
+        .notif-time {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .notif-unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .notif-empty {
+            text-align: center;
+            padding: 32px 0;
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        .notif-empty-icon { font-size: 36px; margin-bottom: 8px; }
+
+        .notif-mark-all {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .notif-mark-all:hover { text-decoration: underline; }
+
         @media (max-width: 1024px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -430,6 +527,17 @@
                         </div>
                         <ul class="widget-list" id="eventsList"></ul>
                         <a href="calendar.html" class="view-all-link">View calendar →</a>
+                    </div>
+
+                    <!-- Notifications Widget -->
+                    <div class="dashboard-card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h2 class="card-title">🔔 Notifications <span id="notifBadge" style="display:none; background:#667eea; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
+                            <button class="notif-mark-all" id="markAllReadBtn">Mark all read</button>
+                        </div>
+                        <div class="notif-list" id="notifList">
+                            <div class="notif-empty"><div class="notif-empty-icon">🔔</div>No notifications yet</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -530,6 +638,7 @@
             // Load data
             loadSocialLinks();
             loadRecentPhotos();
+            loadNotifications(user.uid);
             loadTodayTasks();
             loadUpcomingEvents();
         });
@@ -876,6 +985,84 @@
                 eventsList.innerHTML = '<li class="widget-empty">Could not load events</li>';
             }
         }
+
+        // ── Notifications ──
+        function timeAgo(isoString) {
+            const diff = Date.now() - new Date(isoString).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            const days = Math.floor(hrs / 24);
+            return `${days}d ago`;
+        }
+
+        function loadNotifications(uid) {
+            const list = document.getElementById('notifList');
+            const badge = document.getElementById('notifBadge');
+
+            db.collection('users').doc(uid).collection('notifications')
+                .orderBy('createdAt', 'desc')
+                .limit(30)
+                .onSnapshot(snapshot => {
+                    const notifs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    const unreadCount = notifs.filter(n => !n.read).length;
+
+                    // Update badge
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount;
+                        badge.style.display = 'inline';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+
+                    if (notifs.length === 0) {
+                        list.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🔔</div>No notifications yet</div>';
+                        return;
+                    }
+
+                    list.innerHTML = '';
+                    notifs.forEach(notif => {
+                        const item = document.createElement('div');
+                        item.className = 'notif-item' + (notif.read ? '' : ' unread');
+
+                        const avatarHTML = notif.actorPhoto
+                            ? `<img class="notif-avatar" src="${notif.actorPhoto}" alt="">`
+                            : `<div class="notif-avatar-icon">${notif.icon || '🔔'}</div>`;
+
+                        item.innerHTML = `
+                            ${avatarHTML}
+                            <div class="notif-body">
+                                <div class="notif-message">${notif.message}</div>
+                                <div class="notif-time">${timeAgo(notif.createdAt)}</div>
+                            </div>
+                            ${!notif.read ? '<div class="notif-unread-dot"></div>' : ''}
+                        `;
+
+                        // Mark as read on click
+                        item.addEventListener('click', () => {
+                            if (!notif.read) {
+                                db.collection('users').doc(uid).collection('notifications')
+                                    .doc(notif.id).update({ read: true });
+                            }
+                        });
+
+                        list.appendChild(item);
+                    });
+                });
+        }
+
+        document.getElementById('markAllReadBtn').addEventListener('click', async () => {
+            const uid = auth.currentUser?.uid;
+            if (!uid) return;
+            const snap = await db.collection('users').doc(uid).collection('notifications')
+                .where('read', '==', false).get();
+            const batch = db.batch();
+            snap.docs.forEach(d => batch.update(d.ref, { read: true }));
+            await batch.commit();
+        });
+
     </script>
 </body>
 </html>
