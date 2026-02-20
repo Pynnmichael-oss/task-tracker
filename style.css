@@ -37,16 +37,20 @@ body {
 .nav-brand {
     font-size: 22px;
     font-weight: 900;
-    background: linear-gradient(135deg, #2d7a22, #7ec832);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
     text-decoration: none;
     letter-spacing: -1px;
     font-style: italic;
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    color: #3d9c2f;
+}
+
+.nav-brand-text {
+    background: linear-gradient(135deg, #2d7a22, #7ec832);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .nav-brand-logo {
