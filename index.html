@@ -346,7 +346,7 @@
             display: flex;
             flex-direction: column;
             gap: 0;
-            max-height: 340px;
+            max-height: 260px;
             overflow-y: auto;
         }
 
@@ -487,6 +487,17 @@
                 <p class="welcome-subtitle">Your personalized dashboard</p>
             </div>
 
+            <!-- Notifications — full width row -->
+            <div class="dashboard-card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h2 class="card-title">🔔 Notifications <span id="notifBadge" style="display:none; background:#667eea; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
+                    <button class="notif-mark-all" id="markAllReadBtn">Mark all read</button>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-empty"><div class="notif-empty-icon">🔔</div>No notifications yet</div>
+                </div>
+            </div>
+
             <!-- Main Grid -->
             <div class="dashboard-grid">
                 <!-- Left Column -->
@@ -527,17 +538,6 @@
                         </div>
                         <ul class="widget-list" id="eventsList"></ul>
                         <a href="calendar.html" class="view-all-link">View calendar →</a>
-                    </div>
-
-                    <!-- Notifications Widget -->
-                    <div class="dashboard-card" style="margin-top: 24px;">
-                        <div class="card-header">
-                            <h2 class="card-title">🔔 Notifications <span id="notifBadge" style="display:none; background:#667eea; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
-                            <button class="notif-mark-all" id="markAllReadBtn">Mark all read</button>
-                        </div>
-                        <div class="notif-list" id="notifList">
-                            <div class="notif-empty"><div class="notif-empty-icon">🔔</div>No notifications yet</div>
-                        </div>
                     </div>
                 </div>
             </div>
