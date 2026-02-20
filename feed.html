@@ -6,165 +6,187 @@
     <title>Feed - Michael Pynn</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ── Feed Layout ── */
         .feed-container {
-            max-width: 470px;
+            max-width: 700px;
             margin: 0 auto;
-            padding: 20px 0;
+            padding: 40px 20px;
         }
 
-        /* ── Camera Section ── */
+        /* Camera Section */
         .camera-section {
-            margin: 0 12px 20px;
+            margin-bottom: 24px;
         }
 
         .camera-button {
             width: 100%;
-            padding: 16px 20px;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .camera-button:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(102, 126, 234, 0.4); }
-        .camera-button:active { transform: translateY(0); }
+        .camera-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
 
-        .camera-icon { font-size: 22px; }
-        .camera-text { color: white; font-size: 16px; font-weight: 700; }
+        .camera-button:active {
+            transform: translateY(0);
+        }
 
-        /* ── Post Card ── */
+        .camera-icon {
+            font-size: 32px;
+        }
+
+        .camera-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
         .feed-post {
             background: white;
-            border-radius: 12px;
-            margin: 0 12px 20px;
-            border: 1px solid #e0e0e0;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            border: 1px solid #f0f0f0;
             overflow: hidden;
         }
 
-        /* ── Post Header ── */
         .post-header {
-            padding: 12px 14px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .post-avatar {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #667eea;
-            flex-shrink: 0;
         }
 
-        .post-user-info { flex: 1; }
+        .post-user-info {
+            flex: 1;
+        }
 
         .post-username {
-            font-weight: 700;
+            font-weight: 600;
             color: #1a1a1a;
-            font-size: 14px;
-            text-decoration: none;
-            display: block;
-        }
-        .post-username:hover { color: #667eea; }
-
-        .post-location {
-            font-size: 12px;
-            color: #888;
-        }
-
-        /* ── Square Photo ── */
-        .post-image-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 100%; /* creates the 1:1 square */
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .post-image-container img {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
-
-        /* ── Post Content ── */
-        .post-content { padding: 10px 14px 8px; }
-
-        .post-caption-line {
             font-size: 15px;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            line-height: 1.5;
+            text-decoration: none;
         }
-        .post-caption-line strong { margin-right: 6px; font-size: 15px; }
 
-        .post-comment-count {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 4px;
+        .post-username:hover {
+            color: #667eea;
+        }
+
+        .post-album {
+            font-size: 13px;
+            color: #666;
         }
 
         .post-timestamp {
-            font-size: 10px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 6px;
+            font-size: 12px;
+            color: #999;
         }
 
-        /* ── Comments ── */
-        .comments-list { padding: 0 14px 4px; }
-
-        .view-all-comments {
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 12px;
+        .post-image {
+            width: 100%;
+            max-height: 600px;
+            object-fit: contain;
+            background: #000;
             cursor: pointer;
-            padding: 0 0 6px;
-            display: block;
         }
-        .view-all-comments:hover { color: #777; }
 
-        .comment-line {
-            font-size: 12px;
-            color: #555;
-            margin-bottom: 3px;
+        .post-caption {
+            padding: 16px 20px;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .post-stats {
+            padding: 0 20px;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .comments-section {
+            padding: 16px 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .comment {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-username {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a1a;
+            margin-right: 8px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            color: #1a1a1a;
             line-height: 1.4;
         }
-        .comment-line strong { margin-right: 5px; color: #333; font-size: 12px; }
 
-        /* ── Add Comment ── */
+        .comment-timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
         .add-comment {
             display: flex;
-            gap: 10px;
-            padding: 10px 14px 12px;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
             border-top: 1px solid #f0f0f0;
-            align-items: center;
         }
 
         .comment-input {
             flex: 1;
-            padding: 7px 12px;
+            padding: 8px 12px;
             border: 1px solid #e0e0e0;
             border-radius: 20px;
             font-size: 14px;
-            background: #fafafa;
         }
-        .comment-input:focus { outline: none; border-color: #667eea; background: white; }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
 
         .comment-btn {
-            padding: 7px 16px;
+            padding: 8px 20px;
             background: #667eea;
             color: white;
             border: none;
@@ -173,59 +195,100 @@
             font-weight: 600;
             font-size: 14px;
         }
-        .comment-btn:hover { background: #5568d3; }
-        .comment-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* ── Empty / Loading ── */
-        .empty-feed { text-align: center; padding: 80px 20px; color: #999; }
-        .empty-feed-icon { font-size: 64px; margin-bottom: 16px; }
+        .comment-btn:hover {
+            background: #5568d3;
+        }
+
+        .comment-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .empty-feed {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-feed-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
 
         .spinner {
-            width: 36px; height: 36px;
-            border: 3px solid #f0f0f0;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f0f0f0;
             border-top-color: #667eea;
             border-radius: 50%;
-            animation: spin 0.9s linear infinite;
+            animation: spin 1s linear infinite;
             margin: 0 auto 16px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-feed { text-align: center; padding: 80px 20px; color: #999; }
 
-        /* ── Image Lightbox Modal ── */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-feed {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
         .image-modal {
             display: none;
             position: fixed;
             z-index: 2000;
-            inset: 0;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.95);
         }
-        .image-modal.active { display: flex; align-items: center; justify-content: center; }
-        .image-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
+
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
 
         .modal-close {
             position: absolute;
-            top: 20px; right: 30px;
-            color: white; font-size: 36px; cursor: pointer;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
         }
 
-        /* ── Mobile ── */
-        @media (max-width: 600px) {
-            .feed-container { padding: 12px 0; }
-
-            /* Full bleed — no side margins, no border-radius */
-            .feed-post {
-                margin: 0 0 12px;
-                border-radius: 0;
-                border-left: none;
-                border-right: none;
+        @media (max-width: 768px) {
+            .feed-container {
+                padding: 20px 12px;
             }
 
-            .camera-section { margin: 0 0 12px; }
-            .camera-button { border-radius: 0; }
+            .feed-post {
+                margin-bottom: 24px;
+            }
 
-            .comment-input { font-size: 16px; } /* prevents iOS auto-zoom */
+            .post-image {
+                max-height: 400px;
+            }
 
-            .modal-close { right: 16px; font-size: 28px; }
+            .comment-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .modal-close {
+                right: 20px;
+                font-size: 32px;
+            }
         }
     </style>
 </head>
@@ -243,6 +306,11 @@
 
     <div class="container">
         <div class="feed-container">
+            <div class="page-header">
+                <h1>Feed</h1>
+                <p>See what everyone is sharing</p>
+            </div>
+
             <!-- Camera Button -->
             <div class="camera-section">
                 <button class="camera-button" id="cameraButton">
@@ -311,6 +379,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
     
+    <!-- Mobile Console (tap 3 times in corner to open) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+
     <script>
         const feedPosts = document.getElementById('feedPosts');
         const imageModal = document.getElementById('imageModal');
@@ -352,81 +424,71 @@
         async function renderPost(post) {
             const postDiv = document.createElement('div');
             postDiv.className = 'feed-post';
-
-            const timeAgo = getTimeAgo(new Date(post.timestamp));
-            const avatarSrc = post.userPhotoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(post.userName);
-            const locationHtml = post.location ? `<div class="post-location">📍 ${post.location}</div>` : '';
+            
+            // Format timestamp
+            const timestamp = new Date(post.timestamp);
+            const timeAgo = getTimeAgo(timestamp);
 
             postDiv.innerHTML = `
                 <div class="post-header">
-                    <img src="${avatarSrc}" class="post-avatar" alt="${post.userName}">
+                    <img src="${post.userPhotoURL}" class="post-avatar" alt="${post.userName}">
                     <div class="post-user-info">
                         <a href="profile.html?user=${post.userId}" class="post-username">${post.userName}</a>
-                        ${locationHtml}
+                        <div class="post-album">${post.albumName}</div>
                     </div>
-                </div>
-
-                <div class="post-image-container" onclick="openImageModal('${post.photoURL}')">
-                    <img src="${post.photoURL}" alt="Post photo">
-                </div>
-
-                <div class="post-content">
-                    ${post.caption ? `<div class="post-caption-line"><strong>${post.userName}</strong>${post.caption}</div>` : ''}
-                    <div class="post-comment-count" id="commentCount-${post.id}">0 comments</div>
                     <div class="post-timestamp">${timeAgo}</div>
                 </div>
-
-                <div class="comments-list" id="comments-${post.id}"></div>
-
-                <div class="add-comment">
-                    <input type="text" class="comment-input" id="commentInput-${post.id}" placeholder="Add a comment...">
-                    <button class="comment-btn" onclick="addComment('${post.id}')">Post</button>
+                <img src="${post.photoURL}" class="post-image" alt="Post photo" onclick="openImageModal('${post.photoURL}')">
+                ${post.caption ? `<div class="post-caption">${post.caption}</div>` : ''}
+                <div class="comments-section">
+                    <div class="post-stats">
+                        <span id="commentCount-${post.id}">0 comments</span>
+                    </div>
+                    <div id="comments-${post.id}"></div>
+                    <div class="add-comment">
+                        <input type="text" class="comment-input" id="commentInput-${post.id}" placeholder="Add a comment...">
+                        <button class="comment-btn" onclick="addComment('${post.id}')">Post</button>
+                    </div>
                 </div>
             `;
 
             feedPosts.appendChild(postDiv);
+
+            // Load comments
             loadComments(post.id);
         }
 
-        // Load comments — show first 2, collapse rest
+        // Load comments for a post
         function loadComments(postId) {
             db.collection('feed').doc(postId).collection('comments')
                 .orderBy('timestamp', 'asc')
                 .onSnapshot((snapshot) => {
                     const commentsDiv = document.getElementById(`comments-${postId}`);
                     const commentCount = document.getElementById(`commentCount-${postId}`);
-                    const total = snapshot.size;
-
-                    commentCount.textContent = `${total} comment${total !== 1 ? 's' : ''}`;
-
-                    const allComments = [];
-                    snapshot.forEach(doc => allComments.push(doc.data()));
-
-                    renderComments(commentsDiv, allComments, false);
+                    
+                    commentCount.textContent = `${snapshot.size} comment${snapshot.size !== 1 ? 's' : ''}`;
+                    
+                    commentsDiv.innerHTML = '';
+                    snapshot.forEach(doc => {
+                        const comment = doc.data();
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'comment';
+                        
+                        const timeAgo = getTimeAgo(new Date(comment.timestamp));
+                        
+                        commentDiv.innerHTML = `
+                            <img src="${comment.userPhotoURL}" class="comment-avatar" alt="${comment.userName}">
+                            <div class="comment-content">
+                                <div>
+                                    <span class="comment-username">${comment.userName}</span>
+                                    <span class="comment-text">${comment.text}</span>
+                                </div>
+                                <div class="comment-timestamp">${timeAgo}</div>
+                            </div>
+                        `;
+                        commentsDiv.appendChild(commentDiv);
+                    });
                 });
-        }
-
-        // Render comment list (collapsed = show first 2 only)
-        function renderComments(container, comments, showAll) {
-            container.innerHTML = '';
-            const total = comments.length;
-            const visible = showAll ? comments : comments.slice(0, 2);
-
-            // "View all X comments" toggle
-            if (!showAll && total > 2) {
-                const btn = document.createElement('button');
-                btn.className = 'view-all-comments';
-                btn.textContent = `View all ${total} comments`;
-                btn.onclick = () => renderComments(container, comments, true);
-                container.appendChild(btn);
-            }
-
-            visible.forEach(comment => {
-                const line = document.createElement('div');
-                line.className = 'comment-line';
-                line.innerHTML = `<strong>${comment.userName}</strong>${comment.text}`;
-                container.appendChild(line);
-            });
         }
 
         // Add comment
@@ -442,6 +504,10 @@
             }
 
             try {
+                // Get post owner before adding comment
+                const postDoc = await db.collection('feed').doc(postId).get();
+                const postOwnerId = postDoc.exists ? postDoc.data().userId : null;
+
                 await db.collection('feed').doc(postId).collection('comments').add({
                     userId: auth.currentUser.uid,
                     userName: globalUserProfile.displayName,
@@ -451,10 +517,47 @@
                 });
 
                 input.value = '';
+
+                // Notify post owner (not if commenting on own post)
+                if (postOwnerId && postOwnerId !== auth.currentUser.uid) {
+                    try {
+                        await sendNotifToUser(postOwnerId, {
+                            type: 'new_comment',
+                            icon: '💬',
+                            message: `${globalUserProfile.displayName} commented on your photo: "${text.slice(0, 50)}${text.length > 50 ? '…' : ''}"`,
+                            actorId: auth.currentUser.uid,
+                            actorName: globalUserProfile.displayName,
+                            actorPhoto: globalUserProfile.photoURL,
+                            postId: postId,
+                        });
+                    } catch(e) { console.warn('Notification error:', e); }
+                }
             } catch (error) {
                 console.error('Error adding comment:', error);
                 alert('Error adding comment');
             }
+        }
+
+        // ── Notifications ──
+        async function getAllUserIds() {
+            const snapshot = await db.collection('users').get();
+            return snapshot.docs.map(d => d.id);
+        }
+
+        async function sendNotifToAll(notif) {
+            const uids = await getAllUserIds();
+            const batch = db.batch();
+            uids.forEach(uid => {
+                const ref = db.collection('users').doc(uid)
+                    .collection('notifications').doc();
+                batch.set(ref, { ...notif, read: false, createdAt: new Date().toISOString() });
+            });
+            await batch.commit();
+        }
+
+        async function sendNotifToUser(uid, notif) {
+            await db.collection('users').doc(uid)
+                .collection('notifications').add({ ...notif, read: false, createdAt: new Date().toISOString() });
         }
 
         // Get time ago string
@@ -562,39 +665,10 @@
                         console.log('Setting preview image...');
                         cameraPreview.src = capturedPhoto;
                         
-                        // Set time
+                        // Set time and location
                         const now = new Date();
                         timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
-
-                        // Get real location
-                        locationInfo.textContent = '📍 Getting location...';
-                        if (navigator.geolocation) {
-                            navigator.geolocation.getCurrentPosition(
-                                async (position) => {
-                                    const { latitude, longitude } = position.coords;
-                                    try {
-                                        // Use OpenStreetMap's free reverse geocode API (no key needed)
-                                        const res = await fetch(
-                                            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-                                        );
-                                        const data = await res.json();
-                                        const addr = data.address;
-                                        // Build a readable place: "City, State" or "Town, Country"
-                                        const place = addr.city || addr.town || addr.village || addr.county || '';
-                                        const region = addr.state || addr.country || '';
-                                        locationInfo.textContent = `📍 ${[place, region].filter(Boolean).join(', ')}`;
-                                    } catch {
-                                        locationInfo.textContent = `📍 ${latitude.toFixed(3)}, ${longitude.toFixed(3)}`;
-                                    }
-                                },
-                                () => {
-                                    locationInfo.textContent = '📍 Location unavailable';
-                                },
-                                { timeout: 8000 }
-                            );
-                        } else {
-                            locationInfo.textContent = '📍 Location not supported';
-                        }
+                        locationInfo.textContent = '📍 Shared from mobile';
 
                         // Show modal with explicit styles (needed for mobile)
                         console.log('Opening modal now...');
@@ -662,10 +736,22 @@
                         userPhotoURL: globalUserProfile.photoURL,
                         photoURL: photoURL,
                         caption: captionInput.value.trim(),
-                        location: locationInfo.textContent.replace('📍 ', '').trim(),
+                        location: locationInfo.textContent,
                         timestamp: new Date().toISOString()
                     });
                     console.log('Feed post created');
+
+                    // Notify all users of new feed post
+                    try {
+                        await sendNotifToAll({
+                            type: 'new_post',
+                            icon: '📸',
+                            message: `${globalUserProfile.displayName} shared a new photo`,
+                            actorId: user.uid,
+                            actorName: globalUserProfile.displayName,
+                            actorPhoto: globalUserProfile.photoURL,
+                        });
+                    } catch(e) { console.warn('Notification error:', e); }
 
                     // Save to Feed Moments album
                     const albumsSnapshot = await db.collection('users').doc(user.uid).collection('albums')
