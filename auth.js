@@ -58,21 +58,11 @@ auth.onAuthStateChanged(async (user) => {
 // Sign in with Google
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    // Request Calendar access at sign-in so no separate auth is needed
-    provider.addScope('https://www.googleapis.com/auth/calendar.readonly');
     try {
         const result = await auth.signInWithPopup(provider);
         const user = result.user;
 
-        // Save the Google OAuth access token for Calendar API calls
-        const credential = result.credential;
-        if (credential && credential.accessToken) {
-            localStorage.setItem('gcal_access_token', credential.accessToken);
-            // Token from signInWithPopup lasts ~1hr but will auto-refresh on each sign-in
-            localStorage.setItem('gcal_token_expiry', Date.now() + 3600 * 1000);
-        }
-        
-        // Check if profile exists
+        // Check if profile exists — redirect to setup if new user
         const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
         if (!profileDoc.exists) {
             window.location.href = '/task-tracker/profile-setup.html';
