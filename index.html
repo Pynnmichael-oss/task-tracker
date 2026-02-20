@@ -341,6 +341,76 @@
         }
 
 
+        /* ── Members Widget ── */
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .member-list::-webkit-scrollbar { width: 4px; }
+        .member-list::-webkit-scrollbar-track { background: transparent; }
+        .member-list::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
+
+        .member-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+            text-decoration: none;
+            transition: background 0.15s;
+            border-radius: 8px;
+        }
+
+        .member-card:last-child { border-bottom: none; }
+
+        .member-card:hover {
+            background: #f8fdf8;
+            padding-left: 8px;
+            margin: 0 -8px;
+            padding-right: 8px;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #f0f0f0;
+            flex-shrink: 0;
+            background: #f0f0f0;
+        }
+
+        .member-card.is-you .member-avatar {
+            border-color: #3d9c2f;
+        }
+
+        .member-info { flex: 1; min-width: 0; }
+
+        .member-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member-you-badge {
+            font-size: 11px;
+            color: #3d9c2f;
+            font-weight: 600;
+        }
+
+        .member-arrow {
+            font-size: 14px;
+            color: #ccc;
+            flex-shrink: 0;
+        }
+
         /* ── Notifications Widget ── */
         .notif-list {
             display: flex;
@@ -507,6 +577,16 @@
                 </div>
             </div>
 
+            <!-- Members -->
+            <div class="dashboard-card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h2 class="card-title">🌿 Members <span id="memberCount" style="display:none; background:#3d9c2f; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
+                </div>
+                <div class="member-list" id="membersList">
+                    <div class="notif-empty"><div class="notif-empty-icon">🌿</div>No members yet</div>
+                </div>
+            </div>
+
             <!-- Main Grid -->
             <div class="dashboard-grid">
                 <!-- Left Column -->
@@ -648,6 +728,7 @@
             loadSocialLinks();
             loadRecentPhotos();
             loadNotifications(user.uid);
+            loadMembers(user.uid);
             loadTodayTasks();
             loadUpcomingEvents();
         });
@@ -1071,6 +1152,63 @@
             snap.docs.forEach(d => batch.update(d.ref, { read: true }));
             await batch.commit();
         });
+
+        // ── Members ──
+        async function loadMembers(currentUid) {
+            const container = document.getElementById('membersList');
+            const countEl = document.getElementById('memberCount');
+            try {
+                const usersSnap = await db.collection('users').get();
+                const members = [];
+
+                for (const userDoc of usersSnap.docs) {
+                    try {
+                        const profileDoc = await db.collection('users').doc(userDoc.id)
+                            .collection('profile').doc('info').get();
+                        if (profileDoc.exists) {
+                            members.push({ uid: userDoc.id, ...profileDoc.data() });
+                        }
+                    } catch(e) {}
+                }
+
+                // Update badge count
+                countEl.textContent = members.length;
+                countEl.style.display = members.length > 0 ? 'inline' : 'none';
+
+                if (members.length === 0) {
+                    container.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🌿</div>No members yet</div>';
+                    return;
+                }
+
+                // Sort: current user first, then alphabetical
+                members.sort((a, b) => {
+                    if (a.uid === currentUid) return -1;
+                    if (b.uid === currentUid) return 1;
+                    return (a.displayName || '').localeCompare(b.displayName || '');
+                });
+
+                container.innerHTML = '';
+                members.forEach(member => {
+                    const isYou = member.uid === currentUid;
+                    const card = document.createElement('a');
+                    card.href = `/task-tracker/profile.html?user=${member.uid}`;
+                    card.className = 'member-card' + (isYou ? ' is-you' : '');
+                    card.innerHTML = `
+                        <img class="member-avatar" src="${member.photoURL || ''}" alt="${member.displayName}">
+                        <div class="member-info">
+                            <div class="member-name">${member.displayName}</div>
+                            ${isYou ? '<div class="member-you-badge">✦ You</div>' : ''}
+                        </div>
+                        <span class="member-arrow">›</span>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch(err) {
+                console.error('Error loading members:', err);
+                container.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🌿</div>Could not load members</div>';
+            }
+        }
 
     </script>
 </body>
