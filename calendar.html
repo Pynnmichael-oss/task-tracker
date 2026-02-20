@@ -37,9 +37,9 @@
         }
 
         .month-nav-btn:hover {
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
-            border-color: #667eea;
+            border-color: #3d9c2f;
         }
 
         .current-month {
@@ -58,7 +58,7 @@
 
         .auth-btn {
             padding: 16px 32px;
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
             border: none;
             border-radius: 8px;
@@ -69,7 +69,7 @@
         }
 
         .auth-btn:hover {
-            background: #5568d3;
+            background: #348a26;
         }
 
         .calendar-grid {
@@ -112,7 +112,7 @@
         }
 
         .calendar-day:hover {
-            border-color: #667eea;
+            border-color: #3d9c2f;
             background: #f8f9fa;
         }
 
@@ -121,9 +121,9 @@
         }
 
         .calendar-day.today {
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
-            border-color: #667eea;
+            border-color: #3d9c2f;
         }
 
         .calendar-day.has-events::after {
@@ -134,7 +134,7 @@
             transform: translateX(-50%);
             width: 6px;
             height: 6px;
-            background: #667eea;
+            background: #3d9c2f;
             border-radius: 50%;
         }
 
@@ -176,7 +176,7 @@
             background: #f8f9fa;
             border-radius: 8px;
             margin-bottom: 12px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #3d9c2f;
         }
 
         .event-item.all-day {
@@ -228,7 +228,16 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">TouchGrass</a>
+            <a href="index.html" class="nav-brand"><svg class="nav-brand-logo" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left blade -->
+  <path d="M7 24 C7 24 5 16 9 8 C9 8 10 14 8 24 Z" fill="#4ab830"/>
+  <!-- Center blade (tallest) -->
+  <path d="M14 24 C14 24 11 12 14 2 C14 2 17 12 14 24 Z" fill="#6dd832"/>
+  <!-- Right blade -->
+  <path d="M21 24 C21 24 18 16 19 8 C19 8 23 14 21 24 Z" fill="#4ab830"/>
+  <!-- Ground line -->
+  <rect x="3" y="23" width="22" height="3" rx="1.5" fill="#3d9c2f"/>
+</svg>TouchGrass</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html">Feed</a></li>
