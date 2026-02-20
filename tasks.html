@@ -3,365 +3,1124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Your Profile</title>
+    <title>TouchGrass · Tasks</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            background: linear-gradient(135deg, #3d9c2f 0%, #2d7a22 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        .task-container {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .setup-container {
-            background: white;
-            border-radius: 24px;
-            padding: 48px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        .task-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 32px;
+            margin-top: 32px;
         }
 
-        .setup-header {
-            text-align: center;
-            margin-bottom: 40px;
+        /* Daily Tasks Sidebar */
+        .daily-section {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
         }
 
-        .setup-header h1 {
-            font-size: 32px;
-            font-weight: 700;
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
             color: #1a1a1a;
-            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .setup-header p {
-            color: #666;
-            font-size: 16px;
+        .archive-day-btn {
+            padding: 6px 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .profile-picture-upload {
-            text-align: center;
-            margin-bottom: 32px;
+        .archive-day-btn:hover {
+            background: #218838;
         }
 
-        .profile-picture-preview {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 0 auto 16px;
-            background: #f0f0f0;
+        .daily-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 24px;
+        }
+
+        .daily-input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .daily-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .daily-time-input {
+            width: 100px;
+            padding: 10px 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .daily-input:focus,
+        .daily-time-input:focus {
+            outline: none;
+            border-color: #3d9c2f;
+        }
+
+        .add-daily-btn {
+            padding: 10px 16px;
+            background: #3d9c2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .add-daily-btn:hover {
+            background: #348a26;
+        }
+
+        .daily-list {
+            list-style: none;
+        }
+
+        .daily-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 4px solid #3d9c2f;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .daily-item:last-child {
+            border-bottom: none;
+        }
+
+        .daily-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            accent-color: #3d9c2f;
         }
 
-        .profile-picture-preview:hover {
-            border-color: #348a26;
-            transform: scale(1.05);
+        .task-time {
+            font-size: 12px;
+            color: #3d9c2f;
+            font-weight: 600;
+            margin-right: 12px;
+            min-width: 60px;
         }
 
-        .profile-picture-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .daily-text {
+            flex: 1;
+            font-size: 14px;
+            color: #1a1a1a;
         }
 
-        .profile-picture-placeholder {
-            font-size: 64px;
-            color: #ccc;
+        .daily-item.completed .daily-text {
+            text-decoration: line-through;
+            color: #999;
         }
 
-        .upload-btn {
+        .daily-item.completed .task-time {
+            color: #999;
+        }
+
+        .delete-daily-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 18px;
+        }
+
+        .delete-daily-btn:hover {
+            color: #dc3545;
+        }
+
+        .daily-empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Past Tasks Section */
+        .past-tasks-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .past-tasks-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .past-days-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .past-day-item {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #f0f0f0;
+        }
+
+        .past-day-item:hover {
+            background: #e9ecef;
+            border-color: #3d9c2f;
+        }
+
+        .past-day-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .past-day-count {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .past-tasks-empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Past Tasks Modal */
+        .past-tasks-modal .modal-content {
+            max-width: 700px;
+        }
+
+        .past-task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+
+        .past-task-item.completed {
+            opacity: 0.6;
+        }
+
+        .past-task-item.completed .daily-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        /* Extended Goals Section */
+        .goals-section {
+            min-height: 400px;
+        }
+
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .create-goal-btn {
             padding: 12px 24px;
             background: #3d9c2f;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
             font-size: 14px;
+            font-weight: 600;
         }
 
-        .upload-btn:hover { background: #348a26; }
+        .create-goal-btn:hover {
+            background: #348a26;
+        }
 
-        .form-group { margin-bottom: 24px; }
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
 
-        .form-label {
-            display: block;
+        .goal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--priority-color);
+        }
+
+        .goal-card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .goal-title {
+            font-size: 18px;
             font-weight: 600;
             color: #1a1a1a;
             margin-bottom: 8px;
-            font-size: 14px;
         }
 
-        .form-input {
+        .goal-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .goal-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-not-started {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .status-in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .priority-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .priority-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .priority-low {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .goal-action-btn {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .goal-action-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .delete-goal-btn {
+            padding: 8px 16px;
+            border: 1px solid #dc3545;
+            background: white;
+            color: #dc3545;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .delete-goal-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
             width: 100%;
-            padding: 12px 16px;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 12px;
             border: 2px solid #f0f0f0;
             border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.2s;
+            font-size: 14px;
+            font-family: inherit;
         }
 
-        .form-input:focus {
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
             outline: none;
             border-color: #3d9c2f;
         }
 
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
+        .btn-primary {
             background: #3d9c2f;
             color: white;
             border: none;
+            padding: 12px 32px;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
+            width: 100%;
+            margin-top: 8px;
         }
 
-        .submit-btn:hover { background: #348a26; }
-        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-primary:hover {
+            background: #348a26;
+        }
 
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            padding: 12px 32px;
             border-radius: 8px;
-            margin-bottom: 16px;
-            display: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
         }
 
-        .required { color: #dc3545; }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .goals-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .sync-status {
+            text-align: center;
+            font-size: 12px;
+            color: #28a745;
+            margin-top: 16px;
+        }
+
+        .sync-status.syncing {
+            color: #ffc107;
+        }
+
+        @media (max-width: 1024px) {
+            .task-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .daily-section {
+                position: relative;
+                top: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="setup-container">
-        <div class="setup-header">
-            <h1>Complete Your Profile</h1>
-            <p>Let's get you set up! Add a profile picture and some info.</p>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand"><svg class="nav-brand-logo" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left blade -->
+  <path d="M7 24 C7 24 5 16 9 8 C9 8 10 14 8 24 Z" fill="#4ab830"/>
+  <!-- Center blade (tallest) -->
+  <path d="M14 24 C14 24 11 12 14 2 C14 2 17 12 14 24 Z" fill="#6dd832"/>
+  <!-- Right blade -->
+  <path d="M21 24 C21 24 18 16 19 8 C19 8 23 14 21 24 Z" fill="#4ab830"/>
+  <!-- Ground line -->
+  <rect x="3" y="23" width="22" height="3" rx="1.5" fill="#3d9c2f"/>
+</svg>TouchGrass</a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="feed.html">Feed</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
+            </ul>
         </div>
+    </nav>
 
-        <div class="error-message" id="errorMessage"></div>
-
-        <div class="profile-picture-upload">
-            <div class="profile-picture-preview" id="profilePicturePreview" onclick="document.getElementById('profilePictureInput').click()">
-                <div class="profile-picture-placeholder" id="picturePlaceholder">📷</div>
-                <img id="picturePreviewImg" style="display: none;">
+    <div class="container">
+        <div class="task-container">
+            <div class="page-header">
+                <h1>Tasks & Goals</h1>
+                <p class="date" id="currentDate"></p>
             </div>
-            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
-            <button class="upload-btn" onclick="document.getElementById('profilePictureInput').click()">
-                Choose Profile Picture <span class="required">*</span>
-            </button>
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">Display Name <span class="required">*</span></label>
-            <input type="text" id="displayNameInput" class="form-input" placeholder="How should we call you?" maxlength="50">
-        </div>
+            <div class="task-layout">
+                <!-- Daily Tasks Sidebar -->
+                <div class="daily-section">
+                    <div class="section-header">
+                        <span>Today's Tasks</span>
+                        <button class="archive-day-btn" id="archiveDayBtn">End Day</button>
+                    </div>
+                    <div class="daily-card">
+                        <div class="daily-input-section">
+                            <div class="input-row">
+                                <input type="text" class="daily-input" id="dailyInput" placeholder="Add a task...">
+                                <input type="time" class="daily-time-input" id="dailyTimeInput">
+                            </div>
+                            <button class="add-daily-btn" id="addDailyBtn">+ Add Task</button>
+                        </div>
+                        <ul class="daily-list" id="dailyList"></ul>
+                        <div class="sync-status" id="dailySync">✓ Synced</div>
+                    </div>
 
-        <div class="form-group">
-            <label class="form-label">Introduce Yourself (Voice Memo) <span class="required">*</span></label>
-            <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                <button type="button" id="recordBtn" style="width: 80px; height: 80px; border-radius: 50%; border: none; background: #3d9c2f; color: white; font-size: 32px; cursor: pointer; margin-bottom: 12px; transition: all 0.3s;">
-                    🎤
-                </button>
-                <div id="recordingStatus" style="font-size: 14px; color: #666; margin-bottom: 8px;">Click to start recording</div>
-                <div id="recordingTimer" style="font-size: 24px; font-weight: 600; color: #1a1a1a; display: none;">0:00</div>
-                <audio id="audioPlayback" controls style="width: 100%; margin-top: 12px; display: none;"></audio>
+                    <!-- Past Tasks -->
+                    <div class="past-tasks-section">
+                        <div class="past-tasks-header">Past Tasks</div>
+                        <div class="past-days-list" id="pastDaysList"></div>
+                    </div>
+                </div>
+
+                <!-- Extended Goals Section -->
+                <div class="goals-section">
+                    <div class="goals-header">
+                        <div class="section-header">Extended Goals</div>
+                        <button class="create-goal-btn" id="createGoalBtn">+ New Goal</button>
+                    </div>
+                    <div class="goals-grid" id="goalsGrid"></div>
+                    <div class="sync-status" id="goalsSync">✓ Synced</div>
+                </div>
             </div>
-            <div style="font-size: 12px; color: #999; margin-top: 8px; text-align: center;">Record a 5-60 second voice introduction</div>
         </div>
+    </div>
 
-        <button class="submit-btn" id="submitBtn">Complete Profile</button>
+    <!-- Create/Edit Goal Modal -->
+    <div class="modal" id="goalModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Create New Goal</div>
+            
+            <div class="form-group">
+                <label class="form-label">Goal Title</label>
+                <input type="text" class="form-input" id="goalTitleInput" placeholder="e.g., Launch new website">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="goalDescInput" placeholder="Add details about this goal..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-input" id="goalDueDateInput">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Priority</label>
+                <select class="form-select" id="goalPriorityInput">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="goalStatusInput">
+                    <option value="not-started" selected>Not Started</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" id="saveGoalBtn">Save Goal</button>
+            <button class="btn-secondary" id="cancelGoalBtn">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Past Tasks Modal -->
+    <div class="modal past-tasks-modal" id="pastTasksModal">
+        <div class="modal-content">
+            <div class="modal-header" id="pastTasksModalTitle">Past Tasks</div>
+            <div id="pastTasksModalContent"></div>
+            <button class="btn-secondary" id="closePastTasksBtn">Close</button>
+        </div>
+    </div>
+
+    <!-- Bottom Tab Bar (Mobile) -->
+    <div class="bottom-tab-bar">
+        <div class="bottom-tabs">
+            <a href="index.html" class="bottom-tab active">
+                <span class="bottom-tab-icon">🏠</span>
+                <span class="bottom-tab-label">Home</span>
+            </a>
+            <a href="feed.html" class="bottom-tab">
+                <span class="bottom-tab-icon">📸</span>
+                <span class="bottom-tab-label">Feed</span>
+            </a>
+            <a href="#" class="bottom-tab" id="mobileProfileTab">
+                <span class="bottom-tab-icon">👤</span>
+                <span class="bottom-tab-label">Profile</span>
+            </a>
+        </div>
     </div>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
     <script>
-        let selectedFile = null;
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let recordingTimer = null;
-        let recordingSeconds = 0;
-        let audioBlob = null;
+        // Firebase is initialized in auth.js
 
-        auth.onAuthStateChanged(async (user) => {
+        // Auth Gate
+        auth.onAuthStateChanged((user) => {
             if (!user) {
-                window.location.href = '/task-tracker/index.html';
+                window.location.href = '/task-tracker/landing.html';
                 return;
-            }
-            const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
-            if (profileDoc.exists) {
-                window.location.href = '/task-tracker/index.html';
-            }
-            if (user.displayName) {
-                document.getElementById('displayNameInput').value = user.displayName;
             }
         });
 
-        document.getElementById('profilePictureInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('picturePlaceholder').style.display = 'none';
-                    const img = document.getElementById('picturePreviewImg');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
+        // Get elements
+        const dateElement = document.getElementById('currentDate');
+        const dailyInput = document.getElementById('dailyInput');
+        const dailyTimeInput = document.getElementById('dailyTimeInput');
+        const addDailyBtn = document.getElementById('addDailyBtn');
+        const archiveDayBtn = document.getElementById('archiveDayBtn');
+        const dailyList = document.getElementById('dailyList');
+        const dailySync = document.getElementById('dailySync');
+        const pastDaysList = document.getElementById('pastDaysList');
+        const goalsGrid = document.getElementById('goalsGrid');
+        const goalsSync = document.getElementById('goalsSync');
+        const createGoalBtn = document.getElementById('createGoalBtn');
+        const goalModal = document.getElementById('goalModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const goalTitleInput = document.getElementById('goalTitleInput');
+        const goalDescInput = document.getElementById('goalDescInput');
+        const goalDueDateInput = document.getElementById('goalDueDateInput');
+        const goalPriorityInput = document.getElementById('goalPriorityInput');
+        const goalStatusInput = document.getElementById('goalStatusInput');
+        const saveGoalBtn = document.getElementById('saveGoalBtn');
+        const cancelGoalBtn = document.getElementById('cancelGoalBtn');
+        const pastTasksModal = document.getElementById('pastTasksModal');
+        const pastTasksModalTitle = document.getElementById('pastTasksModalTitle');
+        const pastTasksModalContent = document.getElementById('pastTasksModalContent');
+        const closePastTasksBtn = document.getElementById('closePastTasksBtn');
+
+        // Display current date
+        const today = new Date();
+        dateElement.textContent = today.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
         });
 
-        const recordBtn = document.getElementById('recordBtn');
-        const recordingStatus = document.getElementById('recordingStatus');
-        const recordingTimerDisplay = document.getElementById('recordingTimer');
-        const audioPlayback = document.getElementById('audioPlayback');
+        const todayId = today.toISOString().split('T')[0];
 
-        recordBtn.addEventListener('click', async () => {
-            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    recordingSeconds = 0;
+        // References
+        const dailyTasksRef = db.collection('dailyTasks').doc(todayId);
+        const archivedTasksRef = db.collection('archivedTasks');
+        const goalsRef = db.collection('goals');
 
-                    mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
+        // State
+        let editingGoalId = null;
 
-                    mediaRecorder.onstop = () => {
-                        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        audioPlayback.src = audioUrl;
-                        audioPlayback.style.display = 'block';
-                        recordingStatus.textContent = 'Recording saved! Play to listen';
-                        recordBtn.textContent = '🎤';
-                        recordBtn.style.background = '#3d9c2f';
-                        stream.getTracks().forEach(track => track.stop());
-                    };
+        // Daily Tasks Functions
+        function updateDailySync(status, message) {
+            dailySync.className = 'sync-status ' + status;
+            dailySync.textContent = message;
+        }
 
-                    mediaRecorder.start();
-                    recordBtn.textContent = '⏹️';
-                    recordBtn.style.background = '#dc3545';
-                    recordingStatus.textContent = 'Recording... (click to stop)';
-                    recordingTimerDisplay.style.display = 'block';
+        function formatTime(timeString) {
+            if (!timeString) return '';
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
 
-                    recordingTimer = setInterval(() => {
-                        recordingSeconds++;
-                        const mins = Math.floor(recordingSeconds / 60);
-                        const secs = recordingSeconds % 60;
-                        recordingTimerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-                        if (recordingSeconds >= 60) recordBtn.click();
-                    }, 1000);
-
-                } catch (error) {
-                    alert('Could not access microphone. Please allow microphone access.');
-                }
-            } else {
-                mediaRecorder.stop();
-                clearInterval(recordingTimer);
-                recordingTimerDisplay.style.display = 'none';
-            }
-        });
-
-        document.getElementById('submitBtn').addEventListener('click', async () => {
-            const errorMessage = document.getElementById('errorMessage');
-            const displayName = document.getElementById('displayNameInput').value.trim();
-
-            if (!selectedFile) {
-                errorMessage.textContent = 'Please upload a profile picture';
-                errorMessage.style.display = 'block';
+        function renderDailyTasks(tasks) {
+            if (!tasks || tasks.length === 0) {
+                dailyList.innerHTML = '<div class="daily-empty">No tasks for today</div>';
                 return;
             }
 
-            if (!displayName) {
-                errorMessage.textContent = 'Please enter a display name';
-                errorMessage.style.display = 'block';
-                return;
-            }
+            // Sort by time
+            const sortedTasks = [...tasks].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
 
-            if (!audioBlob) {
-                errorMessage.textContent = 'Please record a voice introduction';
-                errorMessage.style.display = 'block';
-                return;
-            }
+            dailyList.innerHTML = '';
+            sortedTasks.forEach((task, originalIndex) => {
+                const index = tasks.indexOf(task);
+                const li = document.createElement('li');
+                li.className = 'daily-item' + (task.completed ? ' completed' : '');
+                li.innerHTML = `
+                    <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''}>
+                    ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
+                    <span class="daily-text">${task.text}</span>
+                    <button class="delete-daily-btn">×</button>
+                `;
 
-            if (recordingSeconds < 5) {
-                errorMessage.textContent = 'Voice memo must be at least 5 seconds';
-                errorMessage.style.display = 'block';
-                return;
-            }
-
-            errorMessage.style.display = 'none';
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = 'Creating Profile...';
-
-            try {
-                const user = auth.currentUser;
-
-                const fileName = `profile-pictures/${user.uid}/${Date.now()}_${selectedFile.name}`;
-                const storageRef = storage.ref(fileName);
-                await storageRef.put(selectedFile);
-                const photoURL = await storageRef.getDownloadURL();
-
-                const voiceFileName = `voice-memos/${user.uid}/${Date.now()}.webm`;
-                const voiceRef = storage.ref(voiceFileName);
-                await voiceRef.put(audioBlob);
-                const voiceURL = await voiceRef.getDownloadURL();
-
-                await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
-                    displayName: displayName,
-                    bio: 'Listen to my voice intro!',
-                    voiceMemoURL: voiceURL,
-                    voiceMemoDuration: recordingSeconds,
-                    photoURL: photoURL,
-                    email: user.email,
-                    createdAt: new Date().toISOString()
+                li.querySelector('.daily-checkbox').addEventListener('change', async () => {
+                    updateDailySync('syncing', 'Syncing...');
+                    task.completed = !task.completed;
+                    await dailyTasksRef.set({ tasks: tasks });
                 });
 
-                // Notify all users a new member joined
-                try {
-                    const allUsersSnap = await db.collection('users').get();
-                    const batch = db.batch();
-                    allUsersSnap.docs.forEach(userDoc => {
-                        if (userDoc.id === user.uid) return; // don't notify yourself
-                        const ref = db.collection('users').doc(userDoc.id)
-                            .collection('notifications').doc();
-                        batch.set(ref, {
-                            type: 'new_user',
-                            icon: '👋',
-                            message: `${displayName} just joined!`,
-                            actorId: user.uid,
-                            actorName: displayName,
-                            actorPhoto: photoURL,
-                            read: false,
-                            createdAt: new Date().toISOString()
-                        });
-                    });
-                    await batch.commit();
-                } catch(e) { console.warn('Notification error:', e); }
+                li.querySelector('.delete-daily-btn').addEventListener('click', async () => {
+                    updateDailySync('syncing', 'Syncing...');
+                    tasks.splice(index, 1);
+                    await dailyTasksRef.set({ tasks: tasks });
+                });
 
-                window.location.href = '/task-tracker/index.html';
+                dailyList.appendChild(li);
+            });
+        }
+
+        async function addDailyTask() {
+            const text = dailyInput.value.trim();
+            if (!text) return;
+
+            updateDailySync('syncing', 'Adding...');
+
+            try {
+                const doc = await dailyTasksRef.get();
+                const currentTasks = doc.exists ? doc.data().tasks || [] : [];
+
+                currentTasks.push({
+                    text: text,
+                    time: dailyTimeInput.value || null,
+                    completed: false,
+                    timestamp: new Date().toISOString()
+                });
+
+                await dailyTasksRef.set({ tasks: currentTasks });
+                dailyInput.value = '';
+                dailyTimeInput.value = '';
             } catch (error) {
-                console.error('Error creating profile:', error);
-                errorMessage.textContent = 'Error creating profile. Please try again.';
-                errorMessage.style.display = 'block';
-                document.getElementById('submitBtn').disabled = false;
-                document.getElementById('submitBtn').textContent = 'Complete Profile';
+                console.error('Error adding task:', error);
             }
+        }
+
+        async function archiveDay() {
+            const doc = await dailyTasksRef.get();
+            if (!doc.exists || !doc.data().tasks || doc.data().tasks.length === 0) {
+                alert('No tasks to archive for today!');
+                return;
+            }
+
+            if (!confirm('Archive today\'s tasks? This will move them to Past Tasks.')) {
+                return;
+            }
+
+            updateDailySync('syncing', 'Archiving...');
+
+            try {
+                const tasks = doc.data().tasks;
+                
+                // Save to archived collection
+                await archivedTasksRef.doc(todayId).set({
+                    date: todayId,
+                    tasks: tasks,
+                    archivedAt: new Date().toISOString()
+                });
+
+                // Clear today's tasks
+                await dailyTasksRef.delete();
+
+                updateDailySync('', '✓ Archived');
+            } catch (error) {
+                console.error('Error archiving:', error);
+                updateDailySync('error', 'Error archiving');
+            }
+        }
+
+        function renderPastDays(archivedDays) {
+            if (archivedDays.length === 0) {
+                pastDaysList.innerHTML = '<div class="past-tasks-empty">No past tasks yet</div>';
+                return;
+            }
+
+            pastDaysList.innerHTML = '';
+            archivedDays.forEach(day => {
+                const item = document.createElement('div');
+                item.className = 'past-day-item';
+                
+                const date = new Date(day.date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+
+                const completedCount = day.tasks.filter(t => t.completed).length;
+                const totalCount = day.tasks.length;
+
+                item.innerHTML = `
+                    <div class="past-day-date">${formattedDate}</div>
+                    <div class="past-day-count">${completedCount}/${totalCount} completed</div>
+                `;
+
+                item.addEventListener('click', () => viewPastDay(day));
+                pastDaysList.appendChild(item);
+            });
+        }
+
+        function viewPastDay(day) {
+            const date = new Date(day.date);
+            const formattedDate = date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+
+            pastTasksModalTitle.textContent = formattedDate;
+
+            const sortedTasks = [...day.tasks].sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+
+            let html = '';
+            sortedTasks.forEach(task => {
+                html += `
+                    <div class="past-task-item ${task.completed ? 'completed' : ''}">
+                        <input type="checkbox" class="daily-checkbox" ${task.completed ? 'checked' : ''} disabled>
+                        ${task.time ? `<span class="task-time">${formatTime(task.time)}</span>` : ''}
+                        <span class="daily-text">${task.text}</span>
+                    </div>
+                `;
+            });
+
+            pastTasksModalContent.innerHTML = html;
+            pastTasksModal.classList.add('active');
+        }
+
+        addDailyBtn.addEventListener('click', addDailyTask);
+        dailyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addDailyTask();
+        });
+        archiveDayBtn.addEventListener('click', archiveDay);
+        closePastTasksBtn.addEventListener('click', () => {
+            pastTasksModal.classList.remove('active');
+        });
+
+        // Daily tasks listener
+        dailyTasksRef.onSnapshot((doc) => {
+            if (doc.exists) {
+                renderDailyTasks(doc.data().tasks || []);
+                updateDailySync('', '✓ Synced');
+            } else {
+                renderDailyTasks([]);
+                updateDailySync('', '✓ Ready');
+            }
+        });
+
+        // Past tasks listener
+        archivedTasksRef.orderBy('date', 'desc').limit(30).onSnapshot((snapshot) => {
+            const archivedDays = [];
+            snapshot.forEach(doc => {
+                archivedDays.push(doc.data());
+            });
+            renderPastDays(archivedDays);
+        });
+
+        // Goals Functions
+        function updateGoalsSync(status, message) {
+            goalsSync.className = 'sync-status ' + status;
+            goalsSync.textContent = message;
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                high: '#dc3545',
+                medium: '#ffc107',
+                low: '#17a2b8'
+            };
+            return colors[priority] || colors.medium;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'No due date';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderGoals(goals) {
+            if (goals.length === 0) {
+                goalsGrid.innerHTML = `
+                    <div class="goals-empty">
+                        <div class="empty-icon">🎯</div>
+                        <p>No goals yet. Create one to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            goalsGrid.innerHTML = '';
+            goals.forEach(goal => {
+                const card = document.createElement('div');
+                card.className = 'goal-card';
+                card.style.setProperty('--priority-color', getPriorityColor(goal.priority));
+
+                const statusClass = `status-${goal.status}`;
+                const priorityClass = `priority-${goal.priority}`;
+                const statusText = goal.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const priorityText = goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1);
+
+                card.innerHTML = `
+                    <div class="goal-header">
+                        <div style="flex: 1;">
+                            <div class="goal-title">${goal.title}</div>
+                            ${goal.description ? `<div class="goal-description">${goal.description}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="goal-meta">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <span class="priority-badge ${priorityClass}">${priorityText}</span>
+                        ${goal.dueDate ? `<div class="meta-item">📅 ${formatDate(goal.dueDate)}</div>` : ''}
+                    </div>
+                    <div class="goal-actions">
+                        <button class="goal-action-btn edit-btn">Edit</button>
+                        <button class="delete-goal-btn">Delete</button>
+                    </div>
+                `;
+
+                card.querySelector('.edit-btn').addEventListener('click', () => openEditGoal(goal));
+                card.querySelector('.delete-goal-btn').addEventListener('click', () => deleteGoal(goal.id));
+
+                goalsGrid.appendChild(card);
+            });
+        }
+
+        function openCreateGoal() {
+            editingGoalId = null;
+            modalTitle.textContent = 'Create New Goal';
+            goalTitleInput.value = '';
+            goalDescInput.value = '';
+            goalDueDateInput.value = '';
+            goalPriorityInput.value = 'medium';
+            goalStatusInput.value = 'not-started';
+            goalModal.classList.add('active');
+        }
+
+        function openEditGoal(goal) {
+            editingGoalId = goal.id;
+            modalTitle.textContent = 'Edit Goal';
+            goalTitleInput.value = goal.title;
+            goalDescInput.value = goal.description || '';
+            goalDueDateInput.value = goal.dueDate || '';
+            goalPriorityInput.value = goal.priority;
+            goalStatusInput.value = goal.status;
+            goalModal.classList.add('active');
+        }
+
+        async function saveGoal() {
+            const title = goalTitleInput.value.trim();
+            if (!title) {
+                alert('Please enter a goal title');
+                return;
+            }
+
+            updateGoalsSync('syncing', 'Saving...');
+
+            const goalData = {
+                title: title,
+                description: goalDescInput.value.trim(),
+                dueDate: goalDueDateInput.value,
+                priority: goalPriorityInput.value,
+                status: goalStatusInput.value,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                if (editingGoalId) {
+                    await goalsRef.doc(editingGoalId).update(goalData);
+                } else {
+                    goalData.createdAt = new Date().toISOString();
+                    await goalsRef.add(goalData);
+                }
+                goalModal.classList.remove('active');
+            } catch (error) {
+                console.error('Error saving goal:', error);
+            }
+        }
+
+        async function deleteGoal(goalId) {
+            if (!confirm('Delete this goal?')) return;
+
+            updateGoalsSync('syncing', 'Deleting...');
+
+            try {
+                await goalsRef.doc(goalId).delete();
+            } catch (error) {
+                console.error('Error deleting goal:', error);
+            }
+        }
+
+        createGoalBtn.addEventListener('click', openCreateGoal);
+        saveGoalBtn.addEventListener('click', saveGoal);
+        cancelGoalBtn.addEventListener('click', () => goalModal.classList.remove('active'));
+
+        // Goals listener
+        goalsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            const goals = [];
+            snapshot.forEach(doc => {
+                goals.push({ id: doc.id, ...doc.data() });
+            });
+            renderGoals(goals);
+            updateGoalsSync('', '✓ Synced');
+        });
+    </script>
+    <script>
+        // Mobile profile tab link
+        auth.onAuthStateChanged((user) => {
+            const tab = document.getElementById("mobileProfileTab");
+            if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
         });
     </script>
 </body>
