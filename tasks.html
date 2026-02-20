@@ -89,12 +89,12 @@
         .daily-input:focus,
         .daily-time-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3d9c2f;
         }
 
         .add-daily-btn {
             padding: 10px 16px;
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
             border: none;
             border-radius: 8px;
@@ -104,7 +104,7 @@
         }
 
         .add-daily-btn:hover {
-            background: #5568d3;
+            background: #348a26;
         }
 
         .daily-list {
@@ -127,12 +127,12 @@
             height: 18px;
             margin-right: 12px;
             cursor: pointer;
-            accent-color: #667eea;
+            accent-color: #3d9c2f;
         }
 
         .task-time {
             font-size: 12px;
-            color: #667eea;
+            color: #3d9c2f;
             font-weight: 600;
             margin-right: 12px;
             min-width: 60px;
@@ -207,7 +207,7 @@
 
         .past-day-item:hover {
             background: #e9ecef;
-            border-color: #667eea;
+            border-color: #3d9c2f;
         }
 
         .past-day-date {
@@ -266,7 +266,7 @@
 
         .create-goal-btn {
             padding: 12px 24px;
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
             border: none;
             border-radius: 8px;
@@ -276,7 +276,7 @@
         }
 
         .create-goal-btn:hover {
-            background: #5568d3;
+            background: #348a26;
         }
 
         .goals-grid {
@@ -492,11 +492,11 @@
         .form-textarea:focus,
         .form-select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3d9c2f;
         }
 
         .btn-primary {
-            background: #667eea;
+            background: #3d9c2f;
             color: white;
             border: none;
             padding: 12px 32px;
@@ -509,7 +509,7 @@
         }
 
         .btn-primary:hover {
-            background: #5568d3;
+            background: #348a26;
         }
 
         .btn-secondary {
@@ -566,7 +566,16 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">TouchGrass</a>
+            <a href="index.html" class="nav-brand"><svg class="nav-brand-logo" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left blade -->
+  <path d="M7 24 C7 24 5 16 9 8 C9 8 10 14 8 24 Z" fill="#4ab830"/>
+  <!-- Center blade (tallest) -->
+  <path d="M14 24 C14 24 11 12 14 2 C14 2 17 12 14 24 Z" fill="#6dd832"/>
+  <!-- Right blade -->
+  <path d="M21 24 C21 24 18 16 19 8 C19 8 23 14 21 24 Z" fill="#4ab830"/>
+  <!-- Ground line -->
+  <rect x="3" y="23" width="22" height="3" rx="1.5" fill="#3d9c2f"/>
+</svg>TouchGrass</a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html">Feed</a></li>
