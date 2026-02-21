@@ -35,23 +35,43 @@ body {
 }
 
 .nav-brand {
-    font-size: 22px;
-    font-weight: 900;
     text-decoration: none;
-    letter-spacing: -1px;
-    font-style: italic;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    color: #3d9c2f;
+    gap: 8px;
+}
+
+/* TG badge — compact on inner pages */
+.nav-brand-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #2d7a22, #7ec832);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: -0.5px;
+    font-style: italic;
+    flex-shrink: 0;
 }
 
 .nav-brand-text {
+    font-size: 18px;
+    font-weight: 900;
+    font-style: italic;
     background: linear-gradient(135deg, #2d7a22, #7ec832);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    letter-spacing: -0.5px;
 }
+
+/* Hide the full text on inner pages — show badge only */
+.nav-brand .nav-brand-text { display: none; }
+.nav-brand .nav-brand-logo { display: none; }
 
 .nav-brand-logo {
     display: inline-block;
