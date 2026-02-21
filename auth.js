@@ -51,6 +51,11 @@ auth.onAuthStateChanged(async (user) => {
         }
     } else {
         userProfile = null;
+        // Redirect to landing unless already there or on setup page
+        const path = window.location.pathname;
+        if (!path.includes('landing.html') && !path.includes('profile-setup.html')) {
+            window.location.href = '/task-tracker/landing.html';
+        }
         updateUIForAuthState();
     }
 });
@@ -77,7 +82,7 @@ async function signInWithGoogle() {
 async function signOut() {
     try {
         await auth.signOut();
-        window.location.href = '/task-tracker/index.html';
+        window.location.href = '/task-tracker/landing.html';
     } catch (error) {
         console.error('Sign out error:', error);
     }
