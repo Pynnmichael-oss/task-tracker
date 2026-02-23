@@ -547,8 +547,10 @@
 
         // ── Notifications ──
         async function getAllUserIds() {
-            const snapshot = await db.collection('users').get();
-            return snapshot.docs.map(d => d.id);
+            const snapshot = await db.collectionGroup('profile').get();
+            return snapshot.docs
+                .filter(d => d.id === 'info')
+                .map(d => d.ref.parent.parent.id);
         }
 
         async function sendNotifToAll(notif) {
@@ -758,7 +760,7 @@
                             actorName: globalUserProfile.displayName,
                             actorPhoto: globalUserProfile.photoURL,
                         });
-                    } catch(e) { console.warn('Notification error:', e); }
+                    } catch(e) { console.error('Notification error:', e); }
 
                     // Save to Feed Moments album
                     const albumsSnapshot = await db.collection('users').doc(user.uid).collection('albums')
