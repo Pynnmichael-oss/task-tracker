@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="TouchGrass">
     <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
-    <title>TouchGrass · Calendar</title>
+    <title>Calendar - Michael Pynn</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .calendar-container {
@@ -223,11 +223,62 @@
         @media (max-width: 768px) {
             .calendar-header-section {
                 flex-direction: column;
-                gap: 16px;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .calendar-controls {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            .month-nav-btn {
+                flex: 1;
+                font-size: 12px;
+                padding: 8px 4px;
+            }
+
+            .current-month {
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .calendar-grid {
+                padding: 12px 8px;
+            }
+
+            .calendar-days-header {
+                gap: 2px;
+                margin-bottom: 8px;
+            }
+
+            .day-header {
+                font-size: 10px;
+                padding: 6px 0;
+            }
+
+            .calendar-days {
+                gap: 2px;
+            }
+
+            .calendar-day {
+                padding: 4px 2px;
+                border-radius: 6px;
+                min-height: 0;
+            }
+
+            .day-number {
+                font-size: 11px;
+                font-weight: 600;
             }
 
             .day-events {
                 display: none;
+            }
+
+            .event-list-section {
+                padding: 0 8px;
             }
         }
     </style>
@@ -524,15 +575,6 @@
             const tab = document.getElementById("mobileProfileTab");
             if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
         });
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW error:', err));
-            });
-        }
     </script>
 </body>
 </html>
