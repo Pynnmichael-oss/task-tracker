@@ -538,8 +538,13 @@
             }
 
             .photo-carousel {
-                height: 300px;
-                display: none; /* Hide carousel on mobile for performance */
+                height: 260px;
+            }
+
+            .carousel-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
             }
         }
     </style>
@@ -612,10 +617,10 @@
                     <!-- Tasks Widget -->
                     <div class="dashboard-card">
                         <div class="card-header">
-                            <h2 class="card-title">Today's Tasks</h2>
+                            <h2 class="card-title">💡 Suggestions</h2>
                         </div>
                         <ul class="widget-list" id="tasksList"></ul>
-                        <a href="tasks.html" class="view-all-link">View all tasks →</a>
+                        <a href="suggestions.html" class="view-all-link">View all suggestions →</a>
                     </div>
 
                     <!-- Calendar Widget -->
@@ -940,7 +945,7 @@
         window.prevSlide = prevSlide;
         window.goToSlide = goToSlide;
 
-        // Load Today's Tasks from dailyTasks/{YYYY-MM-DD}
+        // Load 💡 Suggestions from dailyTasks/{YYYY-MM-DD}
         async function loadTodayTasks() {
             const tasksList = document.getElementById('tasksList');
             try {
