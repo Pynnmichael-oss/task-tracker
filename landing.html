@@ -3,275 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/task-tracker/manifest.json">
-    <meta name="theme-color" content="#3d9c2f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="TouchGrass">
-    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
-    <title>TouchGrass</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,900&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Welcome - Michael Pynn</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: 'DM Sans', sans-serif;
-            background: #f0faf0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
+            padding: 20px;
         }
 
-        /* Animated grass background */
-        .bg-blades {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .blade {
-            position: absolute;
-            bottom: 0;
-            transform-origin: bottom center;
-            animation: sway 3s ease-in-out infinite;
-        }
-
-        @keyframes sway {
-            0%, 100% { transform: rotate(-4deg); }
-            50% { transform: rotate(4deg); }
-        }
-
-        /* Stagger sway per blade */
-        .blade:nth-child(2) { animation-delay: 0.3s; }
-        .blade:nth-child(3) { animation-delay: 0.6s; }
-        .blade:nth-child(4) { animation-delay: 0.9s; }
-        .blade:nth-child(5) { animation-delay: 1.2s; }
-        .blade:nth-child(6) { animation-delay: 0.15s; }
-        .blade:nth-child(7) { animation-delay: 0.45s; }
-        .blade:nth-child(8) { animation-delay: 0.75s; }
-
-        /* Main card */
-        .landing-card {
-            position: relative;
-            z-index: 10;
+        .landing-container {
             text-align: center;
-            padding: 60px 48px;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(16px);
-            border-radius: 32px;
-            border: 1px solid rgba(255,255,255,0.9);
-            box-shadow: 0 24px 80px rgba(45,122,34,0.12);
-            max-width: 420px;
-            width: 90%;
-            animation: rise 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            max-width: 500px;
+            width: 100%;
         }
 
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Big logo */
-        .logo-wrap {
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
-            margin-bottom: 12px;
+            font-size: 48px;
+            font-weight: 700;
+            color: #667eea;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
 
-        .logo-svg {
-            width: 64px;
-            height: 64px;
-            filter: drop-shadow(0 4px 12px rgba(61,156,47,0.3));
-        }
-
-        .logo-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 52px;
-            font-weight: 900;
-            font-style: italic;
-            background: linear-gradient(135deg, #1e6b14, #6dd832);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -2px;
-            line-height: 1;
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
         }
 
         .tagline {
-            font-size: 15px;
-            color: #888;
-            font-weight: 300;
-            margin-bottom: 40px;
-            letter-spacing: 0.2px;
+            font-size: 20px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 48px;
+            line-height: 1.6;
         }
 
-        .tagline em {
-            color: #3d9c2f;
-            font-style: normal;
-            font-weight: 600;
-        }
-
-        /* Sign in button */
-        .signin-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 32px;
+        .sign-in-box {
             background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 14px;
+            border-radius: 16px;
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .sign-in-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .sign-in-description {
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .sign-in-btn {
+            width: 100%;
+            padding: 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
-            color: #1a1a1a;
             cursor: pointer;
             transition: all 0.2s;
-            width: 100%;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            font-family: 'DM Sans', sans-serif;
+            gap: 12px;
         }
 
-        .signin-btn:hover {
-            border-color: #3d9c2f;
-            box-shadow: 0 4px 16px rgba(61,156,47,0.15);
-            transform: translateY(-1px);
+        .sign-in-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
         }
-
-        .signin-btn:active { transform: translateY(0); }
 
         .google-icon {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 4px;
+            padding: 4px;
         }
 
-        .signin-note {
-            font-size: 12px;
-            color: #bbb;
-            margin-top: 16px;
+        .features {
+            margin-top: 32px;
+            text-align: left;
         }
 
-        /* Error */
-        .error-msg {
-            background: #fee;
-            color: #c33;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 13px;
+        .feature {
+            display: flex;
+            align-items: start;
+            gap: 12px;
             margin-bottom: 16px;
+            color: #666;
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .spinner {
             display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .sign-in-btn.loading .spinner {
+            display: block;
+        }
+
+        .sign-in-btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .tagline {
+                font-size: 18px;
+            }
+
+            .sign-in-box {
+                padding: 32px 24px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="landing-container">
+        <div class="logo">MP</div>
+        <h1>Welcome</h1>
+        <p class="tagline">Connect, share, and stay organized with friends</p>
 
-    <!-- Animated grass blades in background -->
-    <div class="bg-blades">
-        <svg class="blade" style="left:5%; width:60px; height:220px;" viewBox="0 0 60 220">
-            <path d="M30 220 C30 220 10 140 20 20 C20 20 30 100 40 220 Z" fill="#6dd83260"/>
-        </svg>
-        <svg class="blade" style="left:12%; width:40px; height:160px;" viewBox="0 0 40 160">
-            <path d="M20 160 C20 160 5 100 12 10 C12 10 20 80 28 160 Z" fill="#3d9c2f50"/>
-        </svg>
-        <svg class="blade" style="left:20%; width:50px; height:200px;" viewBox="0 0 50 200">
-            <path d="M25 200 C25 200 8 120 15 15 C15 15 25 90 35 200 Z" fill="#4ab83055"/>
-        </svg>
-        <svg class="blade" style="right:5%; width:60px; height:230px;" viewBox="0 0 60 230">
-            <path d="M30 230 C30 230 10 145 22 18 C22 18 32 105 42 230 Z" fill="#6dd83260"/>
-        </svg>
-        <svg class="blade" style="right:13%; width:45px; height:170px;" viewBox="0 0 45 170">
-            <path d="M22 170 C22 170 6 105 14 12 C14 12 22 85 30 170 Z" fill="#3d9c2f50"/>
-        </svg>
-        <svg class="blade" style="right:22%; width:55px; height:195px;" viewBox="0 0 55 195">
-            <path d="M27 195 C27 195 9 118 18 14 C18 14 27 88 37 195 Z" fill="#4ab83055"/>
-        </svg>
-        <svg class="blade" style="left:50%; transform:translateX(-50%); width:70px; height:140px; bottom:0; opacity:0.3;" viewBox="0 0 70 140">
-            <path d="M35 140 C35 140 12 85 22 8 C22 8 35 65 48 140 Z" fill="#7ec832"/>
-        </svg>
-    </div>
+        <div class="sign-in-box">
+            <h2 class="sign-in-title">Get Started</h2>
+            <p class="sign-in-description">Create an account to join the community and start sharing</p>
+            
+            <button class="sign-in-btn" id="signInBtn">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span class="btn-text">Continue with Google</span>
+                <div class="spinner"></div>
+            </button>
 
-    <div class="landing-card">
-        <!-- Logo -->
-        <div class="logo-wrap">
-            <svg class="logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Left blade -->
-                <path d="M16 56 C16 56 10 36 20 10 C20 10 24 30 18 56 Z" fill="#4ab830"/>
-                <!-- Center blade -->
-                <path d="M32 56 C32 56 24 26 32 2 C32 2 40 26 32 56 Z" fill="#6dd832"/>
-                <!-- Right blade -->
-                <path d="M48 56 C48 56 40 36 44 10 C44 10 54 30 48 56 Z" fill="#4ab830"/>
-                <!-- Ground -->
-                <rect x="6" y="54" width="52" height="7" rx="3.5" fill="#2d7a22"/>
-            </svg>
-            <div class="logo-text">TouchGrass</div>
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">📸</span>
+                    <span>Share photos and create albums</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">💬</span>
+                    <span>Connect with friends and comment</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✨</span>
+                    <span>Personalize your profile and dashboard</span>
+                </div>
+            </div>
         </div>
-
-        <p class="tagline">chronically online, <em>occasionally outside</em></p>
-
-        <div class="error-msg" id="errorMsg"></div>
-
-        <button class="signin-btn" onclick="handleSignIn()">
-            <!-- Google G icon -->
-            <svg class="google-icon" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Continue with Google
-        </button>
-
-        <p class="signin-note">No account needed — just your Google account</p>
     </div>
 
-    <!-- Firebase -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
     <script>
-        // If already logged in, redirect to home
-        auth.onAuthStateChanged(async (user) => {
+        const signInBtn = document.getElementById('signInBtn');
+
+        // Check if already logged in
+        auth.onAuthStateChanged((user) => {
             if (user) {
-                const profileDoc = await db.collection('users').doc(user.uid)
-                    .collection('profile').doc('info').get();
-                if (profileDoc.exists) {
-                    window.location.href = '/task-tracker/index.html';
-                } else {
-                    window.location.href = '/task-tracker/profile-setup.html';
-                }
+                // Already logged in - redirect to home
+                window.location.href = '/task-tracker/home.html';
             }
         });
 
-        async function handleSignIn() {
-            const errorMsg = document.getElementById('errorMsg');
+        // Sign in handler
+        signInBtn.addEventListener('click', async () => {
+            signInBtn.classList.add('loading');
+            signInBtn.disabled = true;
+
             try {
-                errorMsg.style.display = 'none';
                 await signInWithGoogle();
-            } catch(e) {
-                errorMsg.textContent = 'Sign in failed. Please try again.';
-                errorMsg.style.display = 'block';
+                // Auth state listener will redirect
+            } catch (error) {
+                console.error('Sign in error:', error);
+                alert('Sign in failed. Please try again.');
+                signInBtn.classList.remove('loading');
+                signInBtn.disabled = false;
             }
-        }
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW error:', err));
-            });
-        }
+        });
     </script>
 </body>
 </html>
