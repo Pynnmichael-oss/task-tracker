@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/task-tracker/manifest.json">
+    <meta name="theme-color" content="#3d9c2f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TouchGrass">
+    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
     <title>TouchGrass · Feed</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -295,16 +302,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand"><svg class="nav-brand-logo" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Left blade -->
-  <path d="M7 24 C7 24 5 16 9 8 C9 8 10 14 8 24 Z" fill="#4ab830"/>
-  <!-- Center blade (tallest) -->
-  <path d="M14 24 C14 24 11 12 14 2 C14 2 17 12 14 24 Z" fill="#6dd832"/>
-  <!-- Right blade -->
-  <path d="M21 24 C21 24 18 16 19 8 C19 8 23 14 21 24 Z" fill="#4ab830"/>
-  <!-- Ground line -->
-  <rect x="3" y="23" width="22" height="3" rx="1.5" fill="#3d9c2f"/>
-</svg><span class="nav-brand-text">TouchGrass</span></a>
+            <a href="index.html" class="nav-brand"><span class="nav-brand-badge">TG</span></a>
             <ul class="nav-menu">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="feed.html" class="active">Feed</a></li>
@@ -818,6 +816,15 @@
             const tab = document.getElementById("mobileProfileTab");
             if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
         });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/task-tracker/sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW error:', err));
+            });
+        }
     </script>
 </body>
 </html>
