@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/task-tracker/manifest.json">
+    <meta name="theme-color" content="#3d9c2f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TouchGrass">
+    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
+    <title>TouchGrass · Suggestions</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .suggestions-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            color: #888;
+            font-size: 15px;
+            margin-bottom: 32px;
+        }
+
+        /* Submit box */
+        .submit-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .submit-card h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+            min-height: 80px;
+            color: #1a1a1a;
+        }
+
+        .suggestion-input:focus { border-color: #3d9c2f; }
+        .suggestion-input::placeholder { color: #bbb; }
+
+        .submit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            gap: 12px;
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .submit-btn {
+            padding: 10px 24px;
+            background: #3d9c2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+
+        .submit-btn:hover { background: #2d7a22; }
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Filter tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 1.5px solid #e8e8e8;
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .filter-tab.active {
+            background: #3d9c2f;
+            border-color: #3d9c2f;
+            color: white;
+        }
+
+        /* Suggestion cards */
+        .suggestions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .suggestion-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1.5px solid #f0f0f0;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .suggestion-card:hover {
+            border-color: #d0ecc8;
+            box-shadow: 0 4px 16px rgba(61,156,47,0.06);
+        }
+
+        /* Vote button */
+        .vote-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 40px;
+        }
+
+        .vote-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1.5px solid #e8e8e8;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .vote-btn:hover { border-color: #3d9c2f; background: #f0faf0; }
+
+        .vote-btn.voted {
+            background: #3d9c2f;
+            border-color: #3d9c2f;
+            color: white;
+        }
+
+        .vote-count {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Card body */
+        .suggestion-body { flex: 1; min-width: 0; }
+
+        .suggestion-text {
+            font-size: 15px;
+            color: #1a1a1a;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-author {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .author-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .suggestion-time {
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: auto;
+        }
+
+        .status-open { background: #e8f5e9; color: #2d7a22; }
+        .status-planned { background: #fff3e0; color: #e65100; }
+        .status-done { background: #e3f2fd; color: #1565c0; }
+
+        /* Delete button (own suggestions) */
+        .delete-suggestion-btn {
+            background: none;
+            border: none;
+            color: #ddd;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .delete-suggestion-btn:hover { color: #dc3545; }
+
+        /* Empty state */
+        .suggestions-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #bbb;
+        }
+
+        .suggestions-empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .suggestions-empty p { font-size: 15px; }
+
+        /* Admin status controls */
+        .admin-controls {
+            display: none;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .admin-controls.visible { display: flex; flex-wrap: wrap; }
+
+        .status-btn {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .status-btn.open { background: #e8f5e9; color: #2d7a22; }
+        .status-btn.planned { background: #fff3e0; color: #e65100; }
+        .status-btn.done { background: #e3f2fd; color: #1565c0; }
+
+        @media (max-width: 768px) {
+            .suggestions-container { padding: 20px 16px 80px; }
+            .page-title { font-size: 26px; }
+            .submit-card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand"><span class="nav-brand-badge">TG</span></a>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="feed.html">Feed</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Bottom tab bar -->
+    <div class="bottom-tab-bar">
+        <div class="bottom-tabs">
+            <a href="index.html" class="bottom-tab">
+                <span class="bottom-tab-icon">🏠</span>
+                <span class="bottom-tab-label">Home</span>
+            </a>
+            <a href="feed.html" class="bottom-tab">
+                <span class="bottom-tab-icon">📸</span>
+                <span class="bottom-tab-label">Feed</span>
+            </a>
+            <a href="suggestions.html" class="bottom-tab active">
+                <span class="bottom-tab-icon">💡</span>
+                <span class="bottom-tab-label">Ideas</span>
+            </a>
+            <a href="#" class="bottom-tab" id="mobileProfileTab">
+                <span class="bottom-tab-icon">👤</span>
+                <span class="bottom-tab-label">Profile</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="suggestions-container">
+            <h1 class="page-title">💡 Suggestions</h1>
+            <p class="page-subtitle">Got an idea to make TouchGrass better? Drop it here. Vote on what you want to see built.</p>
+
+            <!-- Submit box -->
+            <div class="submit-card">
+                <h2>Share an idea</h2>
+                <textarea
+                    class="suggestion-input"
+                    id="suggestionInput"
+                    placeholder="What would make TouchGrass better? (be as weird as you want)"
+                    maxlength="280"
+                ></textarea>
+                <div class="submit-row">
+                    <span class="char-count"><span id="charCount">0</span> / 280</span>
+                    <button class="submit-btn" id="submitBtn">Drop It 🌿</button>
+                </div>
+            </div>
+
+            <!-- Filter tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">All</button>
+                <button class="filter-tab" data-filter="open">Open</button>
+                <button class="filter-tab" data-filter="planned">Planned</button>
+                <button class="filter-tab" data-filter="done">Done ✅</button>
+            </div>
+
+            <!-- List -->
+            <div class="suggestions-list" id="suggestionsList">
+                <div class="suggestions-empty">
+                    <div class="suggestions-empty-icon">💡</div>
+                    <p>No suggestions yet. Be the first weirdo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="auth.js"></script>
+
+    <script>
+        let currentFilter = 'all';
+        let currentUid = null;
+        let isAdminUser = false;
+
+        // Profile tab link
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUid = user.uid;
+                isAdminUser = user.email === 'mpynn15@gmail.com';
+                const tab = document.getElementById('mobileProfileTab');
+                if (tab) tab.href = '/task-tracker/profile.html?user=' + user.uid;
+            }
+        });
+
+        // Char counter
+        const input = document.getElementById('suggestionInput');
+        const charCount = document.getElementById('charCount');
+        input.addEventListener('input', () => {
+            charCount.textContent = input.value.length;
+        });
+
+        // Submit
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const text = input.value.trim();
+            if (!text) return;
+            if (!currentUid) { alert('Sign in to submit a suggestion'); return; }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Dropping...';
+
+            try {
+                const profileDoc = await db.collection('users').doc(currentUid)
+                    .collection('profile').doc('info').get();
+                const profile = profileDoc.exists ? profileDoc.data() : {};
+
+                await db.collection('suggestions').add({
+                    text,
+                    userId: currentUid,
+                    userName: profile.displayName || 'Anonymous',
+                    userPhoto: profile.photoURL || '',
+                    votes: 0,
+                    votedBy: [],
+                    status: 'open',
+                    createdAt: new Date().toISOString()
+                });
+
+                input.value = '';
+                charCount.textContent = '0';
+            } catch(e) {
+                console.error(e);
+                alert('Failed to submit. Try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Drop It 🌿';
+            }
+        });
+
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentFilter = tab.dataset.filter;
+                loadSuggestions();
+            });
+        });
+
+        // Load & render
+        function loadSuggestions() {
+            let query = db.collection('suggestions').orderBy('votes', 'desc').orderBy('createdAt', 'desc');
+
+            query.onSnapshot(snapshot => {
+                let suggestions = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                if (currentFilter !== 'all') {
+                    suggestions = suggestions.filter(s => s.status === currentFilter);
+                }
+
+                renderSuggestions(suggestions);
+            });
+        }
+
+        function timeAgo(iso) {
+            const diff = Date.now() - new Date(iso).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+
+        function renderSuggestions(suggestions) {
+            const list = document.getElementById('suggestionsList');
+
+            if (suggestions.length === 0) {
+                list.innerHTML = `
+                    <div class="suggestions-empty">
+                        <div class="suggestions-empty-icon">💡</div>
+                        <p>${currentFilter === 'all' ? 'No suggestions yet. Be the first weirdo.' : 'Nothing here yet.'}</p>
+                    </div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            suggestions.forEach(s => {
+                const hasVoted = s.votedBy && s.votedBy.includes(currentUid);
+                const isOwn = s.userId === currentUid;
+
+                const statusLabels = { open: 'Open', planned: '🛠 Planned', done: '✅ Done' };
+                const statusClass = { open: 'status-open', planned: 'status-planned', done: 'status-done' };
+
+                const card = document.createElement('div');
+                card.className = 'suggestion-card';
+                card.innerHTML = `
+                    <div class="vote-col">
+                        <button class="vote-btn ${hasVoted ? 'voted' : ''}" data-id="${s.id}" title="${hasVoted ? 'Remove vote' : 'Upvote'}">▲</button>
+                        <span class="vote-count">${s.votes || 0}</span>
+                    </div>
+                    <div class="suggestion-body">
+                        <div class="suggestion-text">${s.text}</div>
+                        <div class="suggestion-meta">
+                            <span class="suggestion-author">
+                                ${s.userPhoto ? `<img class="author-avatar" src="${s.userPhoto}" alt="">` : ''}
+                                ${s.userName}
+                            </span>
+                            <span class="suggestion-time">${timeAgo(s.createdAt)}</span>
+                            <span class="status-badge ${statusClass[s.status] || 'status-open'}">${statusLabels[s.status] || 'Open'}</span>
+                        </div>
+                        ${isAdminUser ? `
+                        <div class="admin-controls visible">
+                            <button class="status-btn open" data-id="${s.id}" data-status="open">Open</button>
+                            <button class="status-btn planned" data-id="${s.id}" data-status="planned">Planned</button>
+                            <button class="status-btn done" data-id="${s.id}" data-status="done">Done</button>
+                        </div>` : ''}
+                    </div>
+                    ${isOwn || isAdminUser ? `<button class="delete-suggestion-btn" data-id="${s.id}" title="Delete">✕</button>` : ''}
+                `;
+
+                // Vote
+                card.querySelector('.vote-btn').addEventListener('click', async () => {
+                    if (!currentUid) return;
+                    const ref = db.collection('suggestions').doc(s.id);
+                    if (hasVoted) {
+                        await ref.update({
+                            votes: firebase.firestore.FieldValue.increment(-1),
+                            votedBy: firebase.firestore.FieldValue.arrayRemove(currentUid)
+                        });
+                    } else {
+                        await ref.update({
+                            votes: firebase.firestore.FieldValue.increment(1),
+                            votedBy: firebase.firestore.FieldValue.arrayUnion(currentUid)
+                        });
+                    }
+                });
+
+                // Delete
+                const delBtn = card.querySelector('.delete-suggestion-btn');
+                if (delBtn) {
+                    delBtn.addEventListener('click', async () => {
+                        if (!confirm('Delete this suggestion?')) return;
+                        await db.collection('suggestions').doc(s.id).delete();
+                    });
+                }
+
+                // Admin status buttons
+                card.querySelectorAll('.status-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        await db.collection('suggestions').doc(btn.dataset.id)
+                            .update({ status: btn.dataset.status });
+                    });
+                });
+
+                list.appendChild(card);
+            });
+        }
+
+        // Start loading once auth is ready
+        auth.onAuthStateChanged(user => {
+            if (user) loadSuggestions();
+        });
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/task-tracker/sw.js');
+            });
+        }
+    </script>
+</body>
+</html>
