@@ -211,12 +211,17 @@
         const signInBtn = document.getElementById('signInBtn');
 
         // Check if already logged in
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // Already logged in - redirect to home
-                window.location.href = '/task-tracker/home.html';
-            }
-        });
+       auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        const profileDoc = await db.collection('users').doc(user.uid)
+            .collection('profile').doc('info').get();
+        if (profileDoc.exists) {
+            window.location.href = '/task-tracker/index.html';
+        } else {
+            window.location.href = '/task-tracker/profile-setup.html';
+        }
+    }
+});
 
         // Sign in handler
         signInBtn.addEventListener('click', async () => {
