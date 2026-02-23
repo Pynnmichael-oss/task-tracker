@@ -147,6 +147,143 @@
         }
 
         .required { color: #dc3545; }
+
+        /* ── Install Popup ── */
+        .install-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .install-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .install-sheet {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 28px 28px;
+            max-width: 420px;
+            width: 100%;
+            transform: translateY(40px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .install-overlay.active .install-sheet {
+            transform: translateY(0);
+        }
+
+        .install-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2d7a22, #7ec832);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .install-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .install-subtitle {
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .install-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .install-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f0faf0;
+            color: #3d9c2f;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .step-text strong { color: #1a1a1a; }
+
+        .step-icon {
+            display: inline-block;
+            font-size: 16px;
+            vertical-align: middle;
+            margin: 0 2px;
+        }
+
+        .install-close-btn {
+            width: 100%;
+            padding: 14px;
+            background: #3d9c2f;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+
+        .install-close-btn:hover { background: #2d7a22; }
+
+        .install-skip {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #bbb;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .install-skip:hover { color: #888; }
+
     </style>
 </head>
 <body>
@@ -361,7 +498,7 @@
                     await batch.commit();
                 } catch(e) { console.warn('Notification error:', e); }
 
-                window.location.href = '/task-tracker/index.html';
+                showInstallPopup();
             } catch (error) {
                 console.error('Error creating profile:', error);
                 errorMessage.textContent = 'Error creating profile. Please try again.';
@@ -370,6 +507,27 @@
                 document.getElementById('submitBtn').textContent = 'Complete Profile';
             }
         });
+
+        function showInstallPopup() {
+            const ua = navigator.userAgent;
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            const isAndroid = /Android/.test(ua);
+
+            document.getElementById('iosSteps').style.display = isIOS ? 'flex' : 'none';
+            document.getElementById('androidSteps').style.display = isAndroid ? 'flex' : 'none';
+            document.getElementById('desktopSteps').style.display = (!isIOS && !isAndroid) ? 'flex' : 'none';
+
+            document.getElementById('installOverlay').classList.add('active');
+        }
+
+        function closeInstall() {
+            document.getElementById('installOverlay').classList.remove('active');
+            setTimeout(() => {
+                window.location.href = '/task-tracker/index.html';
+            }, 300); // wait for fade out
+        }
+        window.closeInstall = closeInstall;
+
     </script>
     <script>
         if ('serviceWorker' in navigator) {
@@ -380,5 +538,72 @@
             });
         }
     </script>
+
+    <!-- Install App Popup -->
+    <div class="install-overlay" id="installOverlay">
+        <div class="install-sheet">
+            <div class="install-icon">
+                <svg width="36" height="36" viewBox="0 0 64 64" fill="none">
+                    <path d="M16 56 C16 56 10 36 20 10 C20 10 24 30 18 56 Z" fill="white" opacity="0.8"/>
+                    <path d="M32 56 C32 56 24 26 32 2 C32 2 40 26 32 56 Z" fill="white"/>
+                    <path d="M48 56 C48 56 40 36 44 10 C44 10 54 30 48 56 Z" fill="white" opacity="0.8"/>
+                </svg>
+            </div>
+            <div class="install-title">Add TouchGrass to your home screen</div>
+            <div class="install-subtitle">Get the full app experience — no App Store needed</div>
+
+            <!-- iOS steps -->
+            <div class="install-steps" id="iosSteps" style="display:none;">
+                <div class="install-step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Tap the <strong>Share</strong> button <span class="step-icon">⬆️</span> at the bottom of Safari</div>
+                </div>
+                <div class="install-step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Scroll down and tap <strong>"Add to Home Screen"</strong></div>
+                </div>
+                <div class="install-step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Tap <strong>"Add"</strong> in the top right — done! 🌿</div>
+                </div>
+            </div>
+
+            <!-- Android steps -->
+            <div class="install-steps" id="androidSteps" style="display:none;">
+                <div class="install-step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Tap the <strong>menu</strong> <span class="step-icon">⋮</span> in the top right of Chrome</div>
+                </div>
+                <div class="install-step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></div>
+                </div>
+                <div class="install-step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Tap <strong>"Add"</strong> to confirm — you're in! 🌿</div>
+                </div>
+            </div>
+
+            <!-- Desktop / unknown -->
+            <div class="install-steps" id="desktopSteps" style="display:none;">
+                <div class="install-step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Open TouchGrass on your <strong>phone</strong> for the best experience</div>
+                </div>
+                <div class="install-step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">On <strong>iPhone</strong>: tap Share <span class="step-icon">⬆️</span> → "Add to Home Screen"</div>
+                </div>
+                <div class="install-step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">On <strong>Android</strong>: tap ⋮ → "Install app"</div>
+                </div>
+            </div>
+
+            <button class="install-close-btn" onclick="closeInstall()">Got it 👍</button>
+            <button class="install-skip" onclick="closeInstall()">Maybe later</button>
+        </div>
+    </div>
+
 </body>
 </html>
