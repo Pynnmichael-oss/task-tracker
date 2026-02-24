@@ -64,19 +64,31 @@ auth.onAuthStateChanged(async (user) => {
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
-        const result = await auth.signInWithPopup(provider);
-        const user = result.user;
-
-        // Check if profile exists — redirect to setup if new user
-        const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
-        if (!profileDoc.exists) {
-            window.location.href = '/task-tracker/profile-setup.html';
-        }
+        // Use redirect instead of popup — more reliable on mobile Safari
+        await auth.signInWithRedirect(provider);
     } catch (error) {
         console.error('Sign in error:', error);
         alert('Sign in failed. Please try again.');
     }
 }
+
+// Handle redirect result on page load
+auth.getRedirectResult().then(async (result) => {
+    if (result && result.user) {
+        const user = result.user;
+        const profileDoc = await db.collection('users').doc(user.uid)
+            .collection('profile').doc('info').get();
+        if (!profileDoc.exists) {
+            window.location.href = '/task-tracker/profile-setup.html';
+        } else {
+            window.location.href = '/task-tracker/index.html';
+        }
+    }
+}).catch((error) => {
+    if (error.code !== 'auth/no-auth-event') {
+        console.error('Redirect result error:', error);
+    }
+});
 
 // Sign out
 async function signOut() {
