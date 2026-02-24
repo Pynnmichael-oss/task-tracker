@@ -9,7 +9,6 @@ const firebaseConfig = {
     measurementId: "G-8R2FKQ3XMN"
 };
 
-// Initialize Firebase (only if not already initialized)
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -18,53 +17,64 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
 
-// Admin email
 const ADMIN_EMAIL = 'mpynn15@gmail.com';
 
-// Current user state
 let currentUser = null;
 let userProfile = null;
 let isAdmin = false;
 
-// Auth state listener
+// Which page are we on?
+const PATH = window.location.pathname;
+const ON_LANDING = PATH.includes('landing.html');
+const ON_SETUP   = PATH.includes('profile-setup.html');
+const ON_APP     = !ON_LANDING && !ON_SETUP;
+
+// ── Auth State ──────────────────────────────────────────────
 auth.onAuthStateChanged(async (user) => {
     currentUser = user;
-    
-    if (user) {
-        isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-        
-        // Load user profile
-        try {
-            const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
-            
-            if (profileDoc.exists) {
-                userProfile = profileDoc.data();
-                updateUIForAuthState();
-            } else {
-                // No profile - redirect to setup unless already on setup page
-                if (!window.location.pathname.includes('profile-setup.html')) {
-                    window.location.href = '/task-tracker/profile-setup.html';
-                }
-            }
-        } catch (error) {
-            console.error('Error loading profile:', error);
-        }
-    } else {
+
+    if (!user) {
         userProfile = null;
-        // Redirect to landing unless already there or on setup page
-        const path = window.location.pathname;
-        if (!path.includes('landing.html') && !path.includes('profile-setup.html')) {
+        if (ON_APP) {
             window.location.href = '/task-tracker/landing.html';
+        } else {
+            updateUIForAuthState();
         }
+        return;
+    }
+
+    isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+    try {
+        const profileDoc = await db.collection('users').doc(user.uid)
+            .collection('profile').doc('info').get();
+
+        if (profileDoc.exists) {
+            userProfile = profileDoc.data();
+            if (ON_LANDING || ON_SETUP) {
+                window.location.href = '/task-tracker/index.html';
+                return;
+            }
+            updateUIForAuthState();
+        } else {
+            userProfile = null;
+            if (!ON_SETUP) {
+                window.location.href = '/task-tracker/profile-setup.html';
+                return;
+            }
+            updateUIForAuthState();
+        }
+    } catch (error) {
+        console.error('Error loading profile:', error);
         updateUIForAuthState();
     }
 });
 
-// Sign in with Google
+// ── Sign In ──────────────────────────────────────────────────
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
     try {
-        // Use redirect instead of popup — more reliable on mobile Safari
         await auth.signInWithRedirect(provider);
     } catch (error) {
         console.error('Sign in error:', error);
@@ -72,25 +82,16 @@ async function signInWithGoogle() {
     }
 }
 
-// Handle redirect result on page load
-auth.getRedirectResult().then(async (result) => {
-    if (result && result.user) {
-        const user = result.user;
-        const profileDoc = await db.collection('users').doc(user.uid)
-            .collection('profile').doc('info').get();
-        if (!profileDoc.exists) {
-            window.location.href = '/task-tracker/profile-setup.html';
-        } else {
-            window.location.href = '/task-tracker/index.html';
+// Handle redirect result on landing page only
+if (ON_LANDING) {
+    auth.getRedirectResult().catch((error) => {
+        if (error.code && error.code !== 'auth/no-auth-event') {
+            console.error('Redirect result error:', error);
         }
-    }
-}).catch((error) => {
-    if (error.code !== 'auth/no-auth-event') {
-        console.error('Redirect result error:', error);
-    }
-});
+    });
+}
 
-// Sign out
+// ── Sign Out ─────────────────────────────────────────────────
 async function signOut() {
     try {
         await auth.signOut();
@@ -100,83 +101,56 @@ async function signOut() {
     }
 }
 
-// Update UI based on auth state
+// ── Update UI ────────────────────────────────────────────────
 function updateUIForAuthState() {
-    // Update auth button
     const authBtn = document.getElementById('authButton');
     if (authBtn) {
         if (currentUser && userProfile) {
             authBtn.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <a href="profile.html?user=${currentUser.uid}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #1a1a1a;">
-                        <img src="${userProfile.photoURL}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid #667eea;">
-                        <span style="font-weight: 600;">${userProfile.displayName}</span>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <a href="/task-tracker/profile.html?user=${currentUser.uid}" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#1a1a1a;">
+                        <img src="${userProfile.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid #3d9c2f;">
+                        <span style="font-weight:600;">${userProfile.displayName}</span>
                     </a>
-                    <button onclick="signOut()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Sign Out</button>
-                </div>
-            `;
+                    <button onclick="signOut()" style="padding:8px 16px;background:#dc3545;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Sign Out</button>
+                </div>`;
         } else if (currentUser && !userProfile) {
-            authBtn.innerHTML = `
-                <button onclick="signOut()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Sign Out</button>
-            `;
+            authBtn.innerHTML = `<button onclick="signOut()" style="padding:8px 16px;background:#dc3545;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Sign Out</button>`;
         } else {
-            authBtn.innerHTML = `
-                <button onclick="signInWithGoogle()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">Sign In</button>
-            `;
+            authBtn.innerHTML = `<button onclick="signInWithGoogle()" style="padding:8px 16px;background:#3d9c2f;color:white;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Sign In</button>`;
         }
     }
 
-    // Show/hide logged-in content
-    const loggedInContent = document.querySelectorAll('.logged-in-only');
-    loggedInContent.forEach(el => {
+    document.querySelectorAll('.logged-in-only').forEach(el => {
         el.style.display = currentUser && userProfile ? 'block' : 'none';
     });
-
-    const loggedInInline = document.querySelectorAll('.logged-in-only-inline');
-    loggedInInline.forEach(el => {
+    document.querySelectorAll('.logged-in-only-inline').forEach(el => {
         el.style.display = currentUser && userProfile ? 'inline-block' : 'none';
     });
-
-    // Show/hide admin controls
-    const adminControls = document.querySelectorAll('.admin-only');
-    adminControls.forEach(control => {
-        control.style.display = isAdmin ? 'block' : 'none';
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = isAdmin ? 'block' : 'none';
     });
-
-    const adminInline = document.querySelectorAll('.admin-only-inline');
-    adminInline.forEach(control => {
-        control.style.display = isAdmin ? 'inline-block' : 'none';
+    document.querySelectorAll('.admin-only-inline').forEach(el => {
+        el.style.display = isAdmin ? 'inline-block' : 'none';
     });
 }
 
-// Check if user is admin
+// ── Helpers ──────────────────────────────────────────────────
 function requireAdmin(callback) {
-    if (!isAdmin) {
-        alert('You must be signed in as an admin to perform this action.');
-        return false;
-    }
+    if (!isAdmin) { alert('Admin only.'); return false; }
     return callback();
 }
+function getCurrentUserId() { return currentUser ? currentUser.uid : null; }
+function getUserProfile()    { return userProfile; }
 
-// Get current user ID
-function getCurrentUserId() {
-    return currentUser ? currentUser.uid : null;
-}
-
-// Get user profile
-function getUserProfile() {
-    return userProfile;
-}
-
-// Export for use in other scripts
-window.auth = auth;
-window.db = db;
-window.storage = storage;
-window.currentUser = () => currentUser;
-window.userProfile = () => userProfile;
-window.isAdmin = () => isAdmin;
+window.auth             = auth;
+window.db               = db;
+window.storage          = storage;
+window.currentUser      = () => currentUser;
+window.userProfile      = () => userProfile;
+window.isAdmin          = () => isAdmin;
 window.signInWithGoogle = signInWithGoogle;
-window.signOut = signOut;
-window.requireAdmin = requireAdmin;
+window.signOut          = signOut;
+window.requireAdmin     = requireAdmin;
 window.getCurrentUserId = getCurrentUserId;
-window.getUserProfile = getUserProfile;
+window.getUserProfile   = getUserProfile;
