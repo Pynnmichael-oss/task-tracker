@@ -417,13 +417,11 @@
 
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const errorMessage = document.getElementById('errorMessage');
+            const btn = document.getElementById('submitBtn');
             const displayName = document.getElementById('displayNameInput').value.trim();
 
-            if (!selectedFile) {
-                errorMessage.textContent = 'Please upload a profile picture';
-                errorMessage.style.display = 'block';
-                return;
-            }
+            // Fix 5: always clear old error on new attempt
+            errorMessage.style.display = 'none';
 
             if (!displayName) {
                 errorMessage.textContent = 'Please enter a display name';
@@ -431,19 +429,33 @@
                 return;
             }
 
-            errorMessage.style.display = 'none';
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = 'Creating Profile...';
+            // Fix 2: verify auth before doing anything
+            const user = auth.currentUser;
+            if (!user) {
+                errorMessage.textContent = 'Not signed in. Please go back and sign in again.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
 
             try {
-                const user = auth.currentUser;
+                let photoURL = null;
 
-                const fileName = `profile-pictures/${user.uid}/${Date.now()}_${selectedFile.name}`;
-                const storageRef = storage.ref(fileName);
-                await storageRef.put(selectedFile);
-                const photoURL = await storageRef.getDownloadURL();
+                if (selectedFile) {
+                    // Upload chosen photo
+                    btn.textContent = 'Uploading photo...';
+                    const fileName = `profile-pictures/${user.uid}/${Date.now()}_${selectedFile.name}`;
+                    const storageRef = storage.ref(fileName);
+                    await storageRef.put(selectedFile);
+                    photoURL = await storageRef.getDownloadURL();
+                } else {
+                    // Fix 1: fall back to Google profile photo if no upload
+                    photoURL = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=3d9c2f&color=fff&size=200`;
+                }
 
                 // Upload voice memo only if recorded
+                btn.textContent = 'Saving profile...';
                 let voiceURL = null;
                 if (audioBlob && recordingSeconds >= 5) {
                     const voiceFileName = `voice-memos/${user.uid}/${Date.now()}.webm`;
@@ -451,6 +463,9 @@
                     await voiceRef.put(audioBlob);
                     voiceURL = await voiceRef.getDownloadURL();
                 }
+
+                // Block auth.js from redirecting while we finish setup
+                window._savingProfile = true;
 
                 await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
                     displayName: displayName,
@@ -461,13 +476,16 @@
                     createdAt: new Date().toISOString()
                 });
 
-                // Notify all users a new member joined
+                // Fix 3: use collectionGroup instead of users.get() for notifications
                 try {
-                    const allUsersSnap = await db.collection('users').get();
+                    btn.textContent = 'Almost done...';
+                    const snap = await db.collectionGroup('profile').get();
                     const batch = db.batch();
-                    allUsersSnap.docs.forEach(userDoc => {
-                        if (userDoc.id === user.uid) return; // don't notify yourself
-                        const ref = db.collection('users').doc(userDoc.id)
+                    snap.docs.forEach(doc => {
+                        if (doc.id !== 'info') return;
+                        const uid = doc.ref.parent.parent.id;
+                        if (uid === user.uid) return;
+                        const ref = db.collection('users').doc(uid)
                             .collection('notifications').doc();
                         batch.set(ref, {
                             type: 'new_user',
@@ -484,12 +502,20 @@
                 } catch(e) { console.warn('Notification error:', e); }
 
                 showInstallPopup();
+
             } catch (error) {
                 console.error('Error creating profile:', error);
-                errorMessage.textContent = 'Error creating profile. Please try again.';
+                // Fix 4 + 5: specific error messages, always reset button
+                if (error.code === 'storage/unauthorized') {
+                    errorMessage.textContent = 'Photo upload failed — storage permission error. Try a different photo.';
+                } else if (error.code === 'storage/canceled') {
+                    errorMessage.textContent = 'Upload was cancelled. Please try again.';
+                } else {
+                    errorMessage.textContent = `Error: ${error.message || 'Something went wrong. Please try again.'}`;
+                }
                 errorMessage.style.display = 'block';
-                document.getElementById('submitBtn').disabled = false;
-                document.getElementById('submitBtn').textContent = 'Complete Profile';
+                btn.disabled = false;
+                btn.textContent = 'Complete Profile';
             }
         });
 
