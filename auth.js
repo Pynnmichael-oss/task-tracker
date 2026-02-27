@@ -51,7 +51,7 @@ auth.onAuthStateChanged(async (user) => {
 
         if (profileDoc.exists) {
             userProfile = profileDoc.data();
-            if (ON_LANDING || ON_SETUP) {
+            if (ON_LANDING || (ON_SETUP && !window._savingProfile)) {
                 window.location.href = '/task-tracker/index.html';
                 return;
             }
