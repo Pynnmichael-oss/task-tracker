@@ -464,9 +464,6 @@
                     voiceURL = await voiceRef.getDownloadURL();
                 }
 
-                // Block auth.js from redirecting while we finish setup
-                window._savingProfile = true;
-
                 await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
                     displayName: displayName,
                     bio: '',
