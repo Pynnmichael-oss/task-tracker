@@ -1,4 +1,3 @@
-// Firebase Auth Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
     authDomain: "michael-new-website.firebaseapp.com",
@@ -23,7 +22,6 @@ let currentUser = null;
 let userProfile = null;
 let isAdmin = false;
 
-// Which page are we on?
 const PATH = window.location.pathname;
 const ON_LANDING = PATH.includes('landing.html');
 const ON_SETUP   = PATH.includes('profile-setup.html');
@@ -45,24 +43,48 @@ auth.onAuthStateChanged(async (user) => {
 
     isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
+    // If profile-setup just saved, skip the check entirely
+    // The setup page handles its own redirect via closeInstall()
+    if (ON_SETUP) {
+        updateUIForAuthState();
+        return;
+    }
+
     try {
         const profileDoc = await db.collection('users').doc(user.uid)
             .collection('profile').doc('info').get();
 
         if (profileDoc.exists) {
             userProfile = profileDoc.data();
-            if (ON_LANDING || (ON_SETUP && !window._savingProfile)) {
+
+            // On landing, redirect into the app
+            if (ON_LANDING) {
                 window.location.href = '/task-tracker/index.html';
                 return;
             }
+
             updateUIForAuthState();
+
         } else {
             userProfile = null;
-            if (!ON_SETUP) {
-                window.location.href = '/task-tracker/profile-setup.html';
-                return;
+
+            // No profile yet — send to setup
+            // But add a small delay to avoid race condition on first write
+            if (ON_APP) {
+                setTimeout(() => {
+                    // Re-check before redirecting in case profile just got written
+                    db.collection('users').doc(user.uid)
+                        .collection('profile').doc('info').get()
+                        .then(doc => {
+                            if (!doc.exists) {
+                                window.location.href = '/task-tracker/profile-setup.html';
+                            } else {
+                                userProfile = doc.data();
+                                updateUIForAuthState();
+                            }
+                        });
+                }, 1500);
             }
-            updateUIForAuthState();
         }
     } catch (error) {
         console.error('Error loading profile:', error);
@@ -82,7 +104,6 @@ async function signInWithGoogle() {
     }
 }
 
-// Handle redirect result on landing page only
 if (ON_LANDING) {
     auth.getRedirectResult().catch((error) => {
         if (error.code && error.code !== 'auth/no-auth-event') {
@@ -135,7 +156,6 @@ function updateUIForAuthState() {
     });
 }
 
-// ── Helpers ──────────────────────────────────────────────────
 function requireAdmin(callback) {
     if (!isAdmin) { alert('Admin only.'); return false; }
     return callback();
