@@ -11,228 +11,682 @@
     <meta name="apple-mobile-web-app-title" content="TouchGrass">
     <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
     <title>TouchGrass</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,900&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background: #f0faf0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
+        .home-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
 
-        /* Animated grass background */
-        .bg-blades {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .blade {
-            position: absolute;
-            bottom: 0;
-            transform-origin: bottom center;
-            animation: sway 3s ease-in-out infinite;
-        }
-
-        @keyframes sway {
-            0%, 100% { transform: rotate(-4deg); }
-            50% { transform: rotate(4deg); }
-        }
-
-        /* Stagger sway per blade */
-        .blade:nth-child(2) { animation-delay: 0.3s; }
-        .blade:nth-child(3) { animation-delay: 0.6s; }
-        .blade:nth-child(4) { animation-delay: 0.9s; }
-        .blade:nth-child(5) { animation-delay: 1.2s; }
-        .blade:nth-child(6) { animation-delay: 0.15s; }
-        .blade:nth-child(7) { animation-delay: 0.45s; }
-        .blade:nth-child(8) { animation-delay: 0.75s; }
-
-        /* Main card */
-        .landing-card {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            padding: 60px 48px;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(16px);
-            border-radius: 32px;
-            border: 1px solid rgba(255,255,255,0.9);
-            box-shadow: 0 24px 80px rgba(45,122,34,0.12);
-            max-width: 420px;
-            width: 90%;
-            animation: rise 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-        }
-
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Big logo */
-        .logo-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 12px;
-        }
-
-        .logo-svg {
-            width: 64px;
-            height: 64px;
-            filter: drop-shadow(0 4px 12px rgba(61,156,47,0.3));
-        }
-
-        .logo-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 52px;
-            font-weight: 900;
-            font-style: italic;
-            background: linear-gradient(135deg, #1e6b14, #6dd832);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -2px;
-            line-height: 1;
-        }
-
-        .tagline {
-            font-size: 15px;
-            color: #888;
-            font-weight: 300;
+        .welcome-header {
             margin-bottom: 40px;
-            letter-spacing: 0.2px;
         }
 
-        .tagline em {
-            color: #3d9c2f;
-            font-style: normal;
+        .welcome-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .btn-edit {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-weight: 600;
+            font-size: 14px;
         }
 
-        /* Sign in button */
-        .signin-btn {
-            display: inline-flex;
+        .btn-edit:hover {
+            background: #e0e0e0;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .social-link {
+            display: flex;
             align-items: center;
             gap: 12px;
-            padding: 16px 32px;
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-decoration: none;
             color: #1a1a1a;
-            cursor: pointer;
             transition: all 0.2s;
-            width: 100%;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            font-family: 'DM Sans', sans-serif;
         }
 
-        .signin-btn:hover {
-            border-color: #3d9c2f;
-            box-shadow: 0 4px 16px rgba(61,156,47,0.15);
-            transform: translateY(-1px);
+        .social-link:hover {
+            background: #3d9c2f;
+            color: white;
+            transform: translateY(-2px);
         }
 
-        .signin-btn:active { transform: translateY(0); }
-
-        .google-icon {
-            width: 22px;
-            height: 22px;
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 20px;
         }
 
-        .signin-note {
+        .social-info {
+            flex: 1;
+        }
+
+        .social-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .social-username {
             font-size: 12px;
-            color: #bbb;
+            opacity: 0.7;
+        }
+
+        .social-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        /* Photo Carousel */
+        .photo-carousel {
+            position: relative;
+            height: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f0f0f0;
+        }
+
+        .carousel-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .carousel-dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 5px;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .carousel-btn:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .carousel-btn.prev {
+            left: 20px;
+        }
+
+        .carousel-btn.next {
+            right: 20px;
+        }
+
+        /* Widgets */
+        .widget-list {
+            list-style: none;
+        }
+
+        .widget-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .widget-item:last-child {
+            border-bottom: none;
+        }
+
+        .widget-text {
+            color: #1a1a1a;
+        }
+
+        .widget-meta {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .widget-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .view-all-link {
+            display: inline-block;
+            color: #3d9c2f;
+            text-decoration: none;
+            font-weight: 600;
             margin-top: 16px;
         }
 
-        /* Error */
-        .error-msg {
-            background: #fee;
-            color: #c33;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 16px;
+        .view-all-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal */
+        .modal {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3d9c2f;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: #3d9c2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: #348a26;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+
+        /* ── Members Widget ── */
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .member-list::-webkit-scrollbar { width: 4px; }
+        .member-list::-webkit-scrollbar-track { background: transparent; }
+        .member-list::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
+
+        .member-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+            text-decoration: none;
+            transition: background 0.15s;
+            border-radius: 8px;
+        }
+
+        .member-card:last-child { border-bottom: none; }
+
+        .member-card:hover {
+            background: #f8fdf8;
+            padding-left: 8px;
+            margin: 0 -8px;
+            padding-right: 8px;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #f0f0f0;
+            flex-shrink: 0;
+            background: #f0f0f0;
+        }
+
+        .member-card.is-you .member-avatar {
+            border-color: #3d9c2f;
+        }
+
+        .member-info { flex: 1; min-width: 0; }
+
+        .member-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member-you-badge {
+            font-size: 11px;
+            color: #3d9c2f;
+            font-weight: 600;
+        }
+
+        .member-arrow {
+            font-size: 14px;
+            color: #ccc;
+            flex-shrink: 0;
+        }
+
+        /* ── Notifications Widget ── */
+        .notif-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .notif-list::-webkit-scrollbar { width: 4px; }
+        .notif-list::-webkit-scrollbar-track { background: transparent; }
+        .notif-list::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 4px; }
+
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+            transition: background 0.15s;
+        }
+
+        .notif-item:last-child { border-bottom: none; }
+
+        .notif-item.unread {
+            background: #f8f7ff;
+            margin: 0 -16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .notif-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #f0f0f0;
+        }
+
+        .notif-avatar-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3d9c2f, #7ec832);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .notif-body { flex: 1; min-width: 0; }
+
+        .notif-message {
+            font-size: 14px;
+            color: #1a1a1a;
+            line-height: 1.4;
+            margin-bottom: 3px;
+        }
+
+        .notif-time {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .notif-unread-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3d9c2f;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+
+        .notif-empty {
+            text-align: center;
+            padding: 32px 0;
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        .notif-empty-icon { font-size: 36px; margin-bottom: 8px; }
+
+        .notif-mark-all {
+            background: none;
+            border: none;
+            color: #3d9c2f;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .notif-mark-all:hover { text-decoration: underline; }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .home-container {
+                padding: 20px 16px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .dashboard-card {
+                padding: 20px;
+            }
+
+            .social-links {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-carousel {
+                height: 260px;
+            }
+
+            .carousel-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-
-    <!-- Animated grass blades in background -->
-    <div class="bg-blades">
-        <svg class="blade" style="left:5%; width:60px; height:220px;" viewBox="0 0 60 220">
-            <path d="M30 220 C30 220 10 140 20 20 C20 20 30 100 40 220 Z" fill="#6dd83260"/>
-        </svg>
-        <svg class="blade" style="left:12%; width:40px; height:160px;" viewBox="0 0 40 160">
-            <path d="M20 160 C20 160 5 100 12 10 C12 10 20 80 28 160 Z" fill="#3d9c2f50"/>
-        </svg>
-        <svg class="blade" style="left:20%; width:50px; height:200px;" viewBox="0 0 50 200">
-            <path d="M25 200 C25 200 8 120 15 15 C15 15 25 90 35 200 Z" fill="#4ab83055"/>
-        </svg>
-        <svg class="blade" style="right:5%; width:60px; height:230px;" viewBox="0 0 60 230">
-            <path d="M30 230 C30 230 10 145 22 18 C22 18 32 105 42 230 Z" fill="#6dd83260"/>
-        </svg>
-        <svg class="blade" style="right:13%; width:45px; height:170px;" viewBox="0 0 45 170">
-            <path d="M22 170 C22 170 6 105 14 12 C14 12 22 85 30 170 Z" fill="#3d9c2f50"/>
-        </svg>
-        <svg class="blade" style="right:22%; width:55px; height:195px;" viewBox="0 0 55 195">
-            <path d="M27 195 C27 195 9 118 18 14 C18 14 27 88 37 195 Z" fill="#4ab83055"/>
-        </svg>
-        <svg class="blade" style="left:50%; transform:translateX(-50%); width:70px; height:140px; bottom:0; opacity:0.3;" viewBox="0 0 70 140">
-            <path d="M35 140 C35 140 12 85 22 8 C22 8 35 65 48 140 Z" fill="#7ec832"/>
-        </svg>
-    </div>
-
-    <div class="landing-card">
-        <!-- Logo -->
-        <div class="logo-wrap">
-            <svg class="logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Left blade -->
-                <path d="M16 56 C16 56 10 36 20 10 C20 10 24 30 18 56 Z" fill="#4ab830"/>
-                <!-- Center blade -->
-                <path d="M32 56 C32 56 24 26 32 2 C32 2 40 26 32 56 Z" fill="#6dd832"/>
-                <!-- Right blade -->
-                <path d="M48 56 C48 56 40 36 44 10 C44 10 54 30 48 56 Z" fill="#4ab830"/>
-                <!-- Ground -->
-                <rect x="6" y="54" width="52" height="7" rx="3.5" fill="#2d7a22"/>
-            </svg>
-            <div class="logo-text">TouchGrass</div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand"><span class="nav-brand-badge">TG</span></a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="feed.html">Feed</a></li>
+                <li id="authButton" style="margin-left: auto;"></li>
+            </ul>
         </div>
+    </nav>
 
-        <p class="tagline">chronically online, <em>occasionally outside</em></p>
+    <div class="container">
+        <div class="home-container">
+            <!-- Welcome Header -->
+            <div class="welcome-header">
+                <h1 class="welcome-title">Welcome back, <span id="userName">User</span>!</h1>
+                <p class="welcome-subtitle">Your personalized dashboard</p>
+            </div>
 
-        <div class="error-msg" id="errorMsg"></div>
+            <!-- Notifications — full width row -->
+            <div class="dashboard-card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h2 class="card-title">🔔 Notifications <span id="notifBadge" style="display:none; background:#3d9c2f; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
+                    <button class="notif-mark-all" id="markAllReadBtn">Mark all read</button>
+                </div>
+                <div class="notif-list" id="notifList">
+                    <div class="notif-empty"><div class="notif-empty-icon">🔔</div>No notifications yet</div>
+                </div>
+            </div>
 
-        <button class="signin-btn" onclick="handleSignIn()">
-            <!-- Google G icon -->
-            <svg class="google-icon" viewBox="0 0 24 24">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            Continue with Google
-        </button>
+            <!-- Members -->
+            <div class="dashboard-card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h2 class="card-title">🌿 Members <span id="memberCount" style="display:none; background:#3d9c2f; color:white; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle;"></span></h2>
+                </div>
+                <div class="member-list" id="membersList">
+                    <div class="notif-empty"><div class="notif-empty-icon">🌿</div>No members yet</div>
+                </div>
+            </div>
 
-        <p class="signin-note">No account needed — just your Google account</p>
+            <!-- Main Grid -->
+            <div class="dashboard-grid">
+                <!-- Left Column -->
+                <div>
+                    <!-- Social Links Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h2 class="card-title">My Links</h2>
+                            <button class="btn-edit" id="editLinksBtn">Edit</button>
+                        </div>
+                        <div id="socialLinksContainer"></div>
+                    </div>
+
+                    <!-- Photo Carousel Card -->
+                    <div class="dashboard-card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Photos</h2>
+                        </div>
+                        <div id="photoCarouselContainer"></div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <!-- Tasks Widget -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h2 class="card-title">💡 Suggestions</h2>
+                        </div>
+                        <ul class="widget-list" id="tasksList"></ul>
+                        <a href="suggestions.html" class="view-all-link">View all suggestions →</a>
+                    </div>
+
+                    <!-- Calendar Widget -->
+                    <div class="dashboard-card" style="margin-top: 24px;">
+                        <div class="card-header">
+                            <h2 class="card-title">Upcoming Events</h2>
+                        </div>
+                        <ul class="widget-list" id="eventsList"></ul>
+                        <a href="calendar.html" class="view-all-link">View calendar →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Firebase -->
+    <!-- Edit Social Links Modal -->
+    <div class="modal" id="editLinksModal">
+        <div class="modal-content">
+            <div class="modal-header">Edit Social Links</div>
+            
+            <div class="form-group">
+                <label class="form-label">Instagram</label>
+                <input type="text" class="form-input" id="instagramInput" placeholder="@username">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">LinkedIn</label>
+                <input type="text" class="form-input" id="linkedinInput" placeholder="linkedin.com/in/username">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Twitter</label>
+                <input type="text" class="form-input" id="twitterInput" placeholder="@username">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">GitHub</label>
+                <input type="text" class="form-input" id="githubInput" placeholder="@username">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-primary" id="saveLinksBtn">Save Links</button>
+                <button class="btn-secondary" id="cancelLinksBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Tab Bar (Mobile) -->
+    <div class="bottom-tab-bar">
+        <div class="bottom-tabs">
+            <a href="index.html" class="bottom-tab active">
+                <span class="bottom-tab-icon">🏠</span>
+                <span class="bottom-tab-label">Home</span>
+            </a>
+            <a href="feed.html" class="bottom-tab">
+                <span class="bottom-tab-icon">📸</span>
+                <span class="bottom-tab-label">Feed</span>
+            </a>
+            <a href="#" class="bottom-tab" id="mobileProfileTab">
+                <span class="bottom-tab-icon">👤</span>
+                <span class="bottom-tab-label">Profile</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -240,29 +694,524 @@
     <script src="auth.js"></script>
 
     <script>
-        // If already logged in, redirect to home
+        let socialLinks = {};
+        let recentPhotos = [];
+        let currentSlide = 0;
+
+        // Auth gate and initialization
         auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                const profileDoc = await db.collection('users').doc(user.uid)
-                    .collection('profile').doc('info').get();
-                if (profileDoc.exists) {
-                    window.location.href = '/task-tracker/index.html';
+            if (!user) {
+                window.location.href = '/task-tracker/landing.html';
+                return;
+            }
+
+            currentUser = user;
+            
+            // Load user profile
+            const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
+            if (profileDoc.exists) {
+                userProfile = profileDoc.data();
+                document.getElementById('userName').textContent = userProfile.displayName;
+            }
+
+            // Mobile profile tab
+            const mobileTab = document.getElementById('mobileProfileTab');
+            if (mobileTab) mobileTab.href = '/task-tracker/profile.html?user=' + user.uid;
+
+            // Wire up Edit Links button NOW that user is loaded
+            document.getElementById('editLinksBtn').addEventListener('click', () => {
+                document.getElementById('instagramInput').value = socialLinks.instagram || '';
+                document.getElementById('linkedinInput').value = socialLinks.linkedin || '';
+                document.getElementById('twitterInput').value = socialLinks.twitter || '';
+                document.getElementById('githubInput').value = socialLinks.github || '';
+                document.getElementById('editLinksModal').classList.add('active');
+            });
+
+            // Load data
+            loadSocialLinks();
+            loadRecentPhotos();
+            loadNotifications(user.uid);
+            loadMembers(user.uid);
+            loadTodayTasks();
+            loadUpcomingEvents();
+        });
+
+        // Load Social Links
+        async function loadSocialLinks() {
+            try {
+                const linksDoc = await db.collection('users').doc(currentUser.uid).collection('profile').doc('socialLinks').get();
+                
+                if (linksDoc.exists) {
+                    socialLinks = linksDoc.data();
+                    renderSocialLinks();
                 } else {
-                    window.location.href = '/task-tracker/profile-setup.html';
+                    document.getElementById('socialLinksContainer').innerHTML = `
+                        <div class="social-placeholder">
+                            <p>No social links added yet</p>
+                            <button class="btn-edit" onclick="document.getElementById('editLinksBtn').click()">Add Links</button>
+                        </div>
+                    `;
                 }
+            } catch (error) {
+                console.error('Error loading social links:', error);
+            }
+        }
+
+        // Render Social Links
+        function renderSocialLinks() {
+            const container = document.getElementById('socialLinksContainer');
+            const links = [];
+
+            if (socialLinks.instagram) {
+                links.push({
+                    name: 'Instagram',
+                    icon: '📷',
+                    username: socialLinks.instagram,
+                    url: `https://instagram.com/${socialLinks.instagram.replace('@', '')}`
+                });
+            }
+
+            if (socialLinks.linkedin) {
+                links.push({
+                    name: 'LinkedIn',
+                    icon: '💼',
+                    username: socialLinks.linkedin,
+                    url: socialLinks.linkedin.startsWith('http') ? socialLinks.linkedin : `https://linkedin.com/in/${socialLinks.linkedin}`
+                });
+            }
+
+            if (socialLinks.twitter) {
+                links.push({
+                    name: 'Twitter',
+                    icon: '🐦',
+                    username: socialLinks.twitter,
+                    url: `https://twitter.com/${socialLinks.twitter.replace('@', '')}`
+                });
+            }
+
+            if (socialLinks.github) {
+                links.push({
+                    name: 'GitHub',
+                    icon: '💻',
+                    username: socialLinks.github,
+                    url: `https://github.com/${socialLinks.github.replace('@', '')}`
+                });
+            }
+
+            if (links.length === 0) {
+                container.innerHTML = `
+                    <div class="social-placeholder">
+                        <p>No social links added yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="social-links">
+                    ${links.map(link => `
+                        <a href="${link.url}" target="_blank" class="social-link">
+                            <div class="social-icon">${link.icon}</div>
+                            <div class="social-info">
+                                <div class="social-name">${link.name}</div>
+                                <div class="social-username">${link.username}</div>
+                            </div>
+                        </a>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        document.getElementById('cancelLinksBtn').addEventListener('click', () => {
+            document.getElementById('editLinksModal').classList.remove('active');
+        });
+
+        document.getElementById('saveLinksBtn').addEventListener('click', async () => {
+            const newLinks = {
+                instagram: document.getElementById('instagramInput').value.trim(),
+                linkedin: document.getElementById('linkedinInput').value.trim(),
+                twitter: document.getElementById('twitterInput').value.trim(),
+                github: document.getElementById('githubInput').value.trim()
+            };
+
+            try {
+                await db.collection('users').doc(currentUser.uid).collection('profile').doc('socialLinks').set(newLinks);
+                socialLinks = newLinks;
+                renderSocialLinks();
+                document.getElementById('editLinksModal').classList.remove('active');
+            } catch (error) {
+                console.error('Error saving links:', error);
+                alert('Error saving links');
             }
         });
 
-        async function handleSignIn() {
-            const errorMsg = document.getElementById('errorMsg');
+        // Load Recent Photos from Feed Moments album
+        async function loadRecentPhotos() {
             try {
-                errorMsg.style.display = 'none';
-                await signInWithGoogle();
-            } catch(e) {
-                errorMsg.textContent = 'Sign in failed. Please try again.';
-                errorMsg.style.display = 'block';
+                // Find the Feed Moments album specifically
+                const albumsSnapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('albums')
+                    .where('name', '==', 'Feed Moments')
+                    .limit(1)
+                    .get();
+
+                if (albumsSnapshot.empty) {
+                    document.getElementById('photoCarouselContainer').innerHTML = `
+                        <div class="widget-empty">
+                            <p>No feed photos yet.</p>
+                            <a href="feed.html" style="color:#3d9c2f; font-weight:600;">Share your first moment →</a>
+                        </div>`;
+                    return;
+                }
+
+                const albumId = albumsSnapshot.docs[0].id;
+                const photosSnapshot = await db.collection('users').doc(currentUser.uid)
+                    .collection('albums').doc(albumId)
+                    .collection('photos')
+                    .orderBy('uploadedAt', 'desc')
+                    .limit(10)
+                    .get();
+
+                recentPhotos = photosSnapshot.docs.map(d => d.data());
+                renderPhotoCarousel();
+            } catch (error) {
+                console.error('Error loading photos:', error);
             }
         }
+
+        // Render Photo Carousel
+        function renderPhotoCarousel() {
+            const container = document.getElementById('photoCarouselContainer');
+
+            if (recentPhotos.length === 0) {
+                container.innerHTML = '<div class="widget-empty">No photos yet. Visit your profile to add some!</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="photo-carousel">
+                    <div class="carousel-track" id="carouselTrack">
+                        ${recentPhotos.map((photo, index) => `
+                            <div class="carousel-slide">
+                                <img src="${photo.url}" alt="Photo ${index + 1}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${recentPhotos.length > 1 ? `
+                        <button class="carousel-btn prev" onclick="prevSlide()">‹</button>
+                        <button class="carousel-btn next" onclick="nextSlide()">›</button>
+                        <div class="carousel-nav">
+                            ${recentPhotos.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            // Auto-advance carousel
+            if (recentPhotos.length > 1) {
+                setInterval(() => {
+                    nextSlide();
+                }, 5000);
+            }
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % recentPhotos.length;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + recentPhotos.length) % recentPhotos.length;
+            updateCarousel();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const track = document.getElementById('carouselTrack');
+            if (track) {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                
+                document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentSlide);
+                });
+            }
+        }
+
+        window.nextSlide = nextSlide;
+        window.prevSlide = prevSlide;
+        window.goToSlide = goToSlide;
+
+        // Load 💡 Suggestions from dailyTasks/{YYYY-MM-DD}
+        async function loadTodayTasks() {
+            const tasksList = document.getElementById('tasksList');
+            try {
+                const todayId = new Date().toISOString().split('T')[0]; // "2026-02-19"
+                const doc = await db.collection('dailyTasks').doc(todayId).get();
+
+                if (!doc.exists || !doc.data().tasks || doc.data().tasks.length === 0) {
+                    tasksList.innerHTML = '<li class="widget-empty">No tasks for today 🎉</li>';
+                    return;
+                }
+
+                const tasks = doc.data().tasks
+                    .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+
+                tasksList.innerHTML = '';
+                tasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = 'widget-item';
+                    li.innerHTML = `
+                        <span class="widget-text" style="${task.completed ? 'text-decoration:line-through;color:#999;' : ''}">${task.text}</span>
+                        <span class="widget-meta">${task.completed ? '✅' : task.time ? task.time : '⏳'}</span>
+                    `;
+                    tasksList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+                tasksList.innerHTML = '<li class="widget-empty">Could not load tasks</li>';
+            }
+        }
+
+        // Load Upcoming Events from Google Calendar (uses token saved by calendar.html)
+        async function loadUpcomingEvents() {
+            const eventsList = document.getElementById('eventsList');
+
+            const token = localStorage.getItem('gcal_access_token');
+            const expiry = localStorage.getItem('gcal_token_expiry');
+            const lastAuth = localStorage.getItem('gcal_last_auth');
+            const tokenValid = token && expiry && Date.now() < expiry - 60000;
+            const recentAuth = lastAuth && Date.now() - lastAuth < 23 * 60 * 60 * 1000;
+
+            if (!tokenValid && !recentAuth) {
+                // Never connected — fall back to goals
+                loadUpcomingGoals();
+                return;
+            }
+
+            if (!tokenValid && recentAuth) {
+                // Token expired but user connected recently — nudge them to refresh
+                eventsList.innerHTML = '<li class="widget-empty">Calendar token expired. <a href="calendar.html" style="color:#3d9c2f;">Refresh →</a></li>';
+                return;
+            }
+
+            try {
+                const now = new Date().toISOString();
+                const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&maxResults=5&singleEvents=true&orderBy=startTime`;
+
+                const response = await fetch(url, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    // Token expired or invalid — fall back to goals
+                    localStorage.removeItem('gcal_access_token');
+                    localStorage.removeItem('gcal_token_expiry');
+                    loadUpcomingGoals();
+                    return;
+                }
+
+                const data = await response.json();
+                const events = data.items || [];
+
+                if (events.length === 0) {
+                    eventsList.innerHTML = '<li class="widget-empty">No upcoming events</li>';
+                    return;
+                }
+
+                eventsList.innerHTML = '';
+                events.forEach(event => {
+                    const start = event.start.dateTime || event.start.date;
+                    const date = new Date(start);
+                    const isAllDay = !event.start.dateTime;
+
+                    const li = document.createElement('li');
+                    li.className = 'widget-item';
+                    li.innerHTML = `
+                        <span class="widget-text">${event.summary || 'Untitled'}</span>
+                        <span class="widget-meta">${isAllDay
+                            ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                            : date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric' })
+                        }</span>
+                    `;
+                    eventsList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading calendar events:', error);
+                loadUpcomingGoals();
+            }
+        }
+
+        // Fallback: show upcoming goals if no calendar is connected
+        async function loadUpcomingGoals() {
+            const eventsList = document.getElementById('eventsList');
+            try {
+                const todayStr = new Date().toISOString().split('T')[0];
+                const snapshot = await db.collection('goals')
+                    .where('dueDate', '>=', todayStr)
+                    .orderBy('dueDate', 'asc')
+                    .limit(5)
+                    .get();
+
+                if (snapshot.empty) {
+                    eventsList.innerHTML = '<li class="widget-empty">No upcoming goals. <a href="calendar.html" style="color:#3d9c2f;">Connect Google Calendar →</a></li>';
+                    return;
+                }
+
+                eventsList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const goal = doc.data();
+                    if (goal.status === 'completed') return;
+                    const due = new Date(goal.dueDate);
+                    const li = document.createElement('li');
+                    li.className = 'widget-item';
+                    li.innerHTML = `
+                        <span class="widget-text">${goal.title}</span>
+                        <span class="widget-meta">${due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                    `;
+                    eventsList.appendChild(li);
+                });
+            } catch (error) {
+                eventsList.innerHTML = '<li class="widget-empty">Could not load events</li>';
+            }
+        }
+
+        // ── Notifications ──
+        function timeAgo(isoString) {
+            const diff = Date.now() - new Date(isoString).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            const days = Math.floor(hrs / 24);
+            return `${days}d ago`;
+        }
+
+        function loadNotifications(uid) {
+            const list = document.getElementById('notifList');
+            const badge = document.getElementById('notifBadge');
+
+            db.collection('users').doc(uid).collection('notifications')
+                .orderBy('createdAt', 'desc')
+                .limit(30)
+                .onSnapshot(snapshot => {
+                    const notifs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    const unreadCount = notifs.filter(n => !n.read).length;
+
+                    // Update badge
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount;
+                        badge.style.display = 'inline';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+
+                    if (notifs.length === 0) {
+                        list.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🔔</div>No notifications yet</div>';
+                        return;
+                    }
+
+                    list.innerHTML = '';
+                    notifs.forEach(notif => {
+                        const item = document.createElement('div');
+                        item.className = 'notif-item' + (notif.read ? '' : ' unread');
+
+                        const avatarHTML = notif.actorPhoto
+                            ? `<img class="notif-avatar" src="${notif.actorPhoto}" alt="">`
+                            : `<div class="notif-avatar-icon">${notif.icon || '🔔'}</div>`;
+
+                        item.innerHTML = `
+                            ${avatarHTML}
+                            <div class="notif-body">
+                                <div class="notif-message">${notif.message}</div>
+                                <div class="notif-time">${timeAgo(notif.createdAt)}</div>
+                            </div>
+                            ${!notif.read ? '<div class="notif-unread-dot"></div>' : ''}
+                        `;
+
+                        // Mark as read on click
+                        item.addEventListener('click', () => {
+                            if (!notif.read) {
+                                db.collection('users').doc(uid).collection('notifications')
+                                    .doc(notif.id).update({ read: true });
+                            }
+                        });
+
+                        list.appendChild(item);
+                    });
+                });
+        }
+
+        document.getElementById('markAllReadBtn').addEventListener('click', async () => {
+            const uid = auth.currentUser?.uid;
+            if (!uid) return;
+            const snap = await db.collection('users').doc(uid).collection('notifications')
+                .where('read', '==', false).get();
+            const batch = db.batch();
+            snap.docs.forEach(d => batch.update(d.ref, { read: true }));
+            await batch.commit();
+        });
+
+        // ── Members ──
+        async function loadMembers(currentUid) {
+            const container = document.getElementById('membersList');
+            const countEl = document.getElementById('memberCount');
+            try {
+                // Collection group query — finds all profile/info docs across every user
+                const profileSnap = await db.collectionGroup('profile')
+                    .get();
+                const members = [];
+
+                profileSnap.docs.forEach(doc => {
+                    // Only grab 'info' docs, skip 'banner', 'socialLinks' etc
+                    if (doc.id !== 'info') return;
+                    const uid = doc.ref.parent.parent.id;
+                    members.push({ uid, ...doc.data() });
+                });
+
+                // Update badge count
+                countEl.textContent = members.length;
+                countEl.style.display = members.length > 0 ? 'inline' : 'none';
+
+                if (members.length === 0) {
+                    container.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🌿</div>No members yet</div>';
+                    return;
+                }
+
+                // Sort: current user first, then alphabetical
+                members.sort((a, b) => {
+                    if (a.uid === currentUid) return -1;
+                    if (b.uid === currentUid) return 1;
+                    return (a.displayName || '').localeCompare(b.displayName || '');
+                });
+
+                container.innerHTML = '';
+                members.forEach(member => {
+                    const isYou = member.uid === currentUid;
+                    const card = document.createElement('a');
+                    card.href = `/task-tracker/profile.html?user=${member.uid}`;
+                    card.className = 'member-card' + (isYou ? ' is-you' : '');
+                    card.innerHTML = `
+                        <img class="member-avatar" src="${member.photoURL || ''}" alt="${member.displayName}">
+                        <div class="member-info">
+                            <div class="member-name">${member.displayName}</div>
+                            ${isYou ? '<div class="member-you-badge">✦ You</div>' : ''}
+                        </div>
+                        <span class="member-arrow">›</span>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch(err) {
+                console.error('Error loading members:', err);
+                container.innerHTML = '<div class="notif-empty"><div class="notif-empty-icon">🌿</div>Could not load members</div>';
+            }
+        }
+
     </script>
     <script>
         if ('serviceWorker' in navigator) {
