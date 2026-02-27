@@ -21,14 +21,21 @@ const ADMIN_EMAIL = 'mpynn15@gmail.com';
 let currentUser = null;
 let userProfile = null;
 let isAdmin = false;
+let authHandled = false; // prevent multiple redirects
 
 const PATH = window.location.pathname;
 const ON_LANDING = PATH.includes('landing.html');
 const ON_SETUP   = PATH.includes('profile-setup.html');
 const ON_APP     = !ON_LANDING && !ON_SETUP;
 
-// ── Auth State ──────────────────────────────────────────────
 auth.onAuthStateChanged(async (user) => {
+    // Only handle routing once per page load
+    if (authHandled) {
+        currentUser = user;
+        updateUIForAuthState();
+        return;
+    }
+    authHandled = true;
     currentUser = user;
 
     if (!user) {
@@ -43,8 +50,7 @@ auth.onAuthStateChanged(async (user) => {
 
     isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
-    // If profile-setup just saved, skip the check entirely
-    // The setup page handles its own redirect via closeInstall()
+    // Setup page handles its own flow — don't interfere
     if (ON_SETUP) {
         updateUIForAuthState();
         return;
@@ -56,36 +62,17 @@ auth.onAuthStateChanged(async (user) => {
 
         if (profileDoc.exists) {
             userProfile = profileDoc.data();
-
-            // On landing, redirect into the app
             if (ON_LANDING) {
                 window.location.href = '/task-tracker/index.html';
                 return;
             }
-
             updateUIForAuthState();
-
         } else {
             userProfile = null;
-
-            // No profile yet — wait and retry before sending to setup
-            // Firestore needs time to propagate a freshly written doc
             if (ON_APP) {
-                let attempts = 0;
-                const checkProfile = async () => {
-                    attempts++;
-                    const doc = await db.collection('users').doc(user.uid)
-                        .collection('profile').doc('info').get();
-                    if (doc.exists) {
-                        userProfile = doc.data();
-                        updateUIForAuthState();
-                    } else if (attempts < 5) {
-                        setTimeout(checkProfile, 1000);
-                    } else {
-                        window.location.href = '/task-tracker/profile-setup.html';
-                    }
-                };
-                setTimeout(checkProfile, 1000);
+                window.location.href = '/task-tracker/profile-setup.html';
+            } else {
+                updateUIForAuthState();
             }
         }
     } catch (error) {
@@ -94,7 +81,7 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-// ── Sign In ──────────────────────────────────────────────────
+// Sign In
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
@@ -114,7 +101,7 @@ if (ON_LANDING) {
     });
 }
 
-// ── Sign Out ─────────────────────────────────────────────────
+// Sign Out
 async function signOut() {
     try {
         await auth.signOut();
@@ -124,7 +111,7 @@ async function signOut() {
     }
 }
 
-// ── Update UI ────────────────────────────────────────────────
+// Update UI
 function updateUIForAuthState() {
     const authBtn = document.getElementById('authButton');
     if (authBtn) {
