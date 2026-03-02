@@ -111,6 +111,10 @@ async function signOut() {
     }
 }
 
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+
 // Update UI
 function updateUIForAuthState() {
     const authBtn = document.getElementById('authButton');
