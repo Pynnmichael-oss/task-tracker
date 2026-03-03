@@ -88,7 +88,7 @@ async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
-        await auth.signInWithPopup(provider);
+        await auth.signInWithRedirect(provider);
         // onAuthStateChanged above will handle the redirect after popup closes
     } catch (error) {
         console.error('Sign in error:', error);
