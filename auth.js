@@ -1,4 +1,4 @@
-const USE_FIREBASE_HOSTING = false; // flip to true when switching to Firebase Hosting
+const USE_FIREBASE_HOSTING = true; // set to false if switching to GitHub Pages
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
@@ -25,7 +25,7 @@ const ADMIN_EMAIL = 'mpynn15@gmail.com';
 let currentUser = null;
 let userProfile = null;
 let isAdmin = false;
-let authHandled = false; // prevent multiple redirects
+let authHandled = false;
 
 const PATH = window.location.pathname;
 const ON_LANDING = PATH.includes('landing.html');
@@ -113,7 +113,7 @@ async function signOut() {
     }
 }
 
-// Register Service Worker at correct path
+// Register Service Worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/task-tracker/sw.js');
 }
