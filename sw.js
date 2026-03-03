@@ -39,6 +39,8 @@ self.addEventListener("fetch", event => {
     url.hostname.includes("gstatic")
   ) return;
 
+  if (url.pathname.includes('auth.js') || url.pathname.includes('landing.html')) return;
+  
   event.respondWith(
     fetch(event.request)
       .then(response => {
