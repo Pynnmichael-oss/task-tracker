@@ -1,4 +1,4 @@
-const USE_FIREBASE_HOSTING = true; // set to false if switching to GitHub Pages
+const USE_FIREBASE_HOSTING = false; // flip to true when switching to Firebase Hosting
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
@@ -83,24 +83,17 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-// Sign In
+// Sign In — uses popup (works on GitHub Pages, no Firebase Hosting needed)
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
-        await auth.signInWithRedirect(provider);
+        await auth.signInWithPopup(provider);
+        // onAuthStateChanged above will handle the redirect after popup closes
     } catch (error) {
         console.error('Sign in error:', error);
-        alert('Sign in failed. Please try again.');
+        alert('Sign in failed: ' + error.message);
     }
-}
-
-if (ON_LANDING) {
-    auth.getRedirectResult().catch((error) => {
-        if (error.code && error.code !== 'auth/no-auth-event') {
-            console.error('Redirect result error:', error);
-        }
-    });
 }
 
 // Sign Out
