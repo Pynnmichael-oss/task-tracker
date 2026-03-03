@@ -112,7 +112,7 @@ async function signOut() {
 }
 
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js');
+    navigator.serviceWorker.register('/task-tracker/sw.js');
   }
 
 // Update UI
