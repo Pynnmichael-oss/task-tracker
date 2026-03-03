@@ -3,13 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/task-tracker/manifest.json">
-    <meta name="theme-color" content="#3d9c2f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="TouchGrass">
-    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
     <title>TouchGrass · Feed</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -19,10 +12,7 @@
             padding: 40px 20px;
         }
 
-        /* Camera Section */
-        .camera-section {
-            margin-bottom: 24px;
-        }
+        .camera-section { margin-bottom: 24px; }
 
         .camera-button {
             width: 100%;
@@ -39,24 +29,10 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .camera-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .camera-button:active {
-            transform: translateY(0);
-        }
-
-        .camera-icon {
-            font-size: 32px;
-        }
-
-        .camera-text {
-            color: white;
-            font-size: 18px;
-            font-weight: 700;
-        }
+        .camera-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+        .camera-button:active { transform: translateY(0); }
+        .camera-icon { font-size: 32px; }
+        .camera-text { color: white; font-size: 18px; font-weight: 700; }
 
         .feed-post {
             background: white;
@@ -74,228 +50,53 @@
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .post-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #3d9c2f;
-        }
+        .post-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #3d9c2f; }
+        .post-user-info { flex: 1; }
+        .post-username { font-weight: 600; color: #1a1a1a; font-size: 15px; text-decoration: none; }
+        .post-username:hover { color: #3d9c2f; }
+        .post-album { font-size: 13px; color: #666; }
+        .post-timestamp { font-size: 12px; color: #999; }
+        .post-image { width: 100%; max-height: 600px; object-fit: contain; background: #000; cursor: pointer; }
+        .post-caption { padding: 16px 20px; color: #1a1a1a; line-height: 1.5; }
+        .post-stats { padding: 0 20px; color: #666; font-size: 14px; display: flex; gap: 16px; }
 
-        .post-user-info {
-            flex: 1;
-        }
+        .comments-section { padding: 16px 20px; border-top: 1px solid #f0f0f0; }
 
-        .post-username {
-            font-weight: 600;
-            color: #1a1a1a;
-            font-size: 15px;
-            text-decoration: none;
-        }
+        .comment { display: flex; gap: 12px; margin-bottom: 12px; }
+        .comment-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .comment-content { flex: 1; }
+        .comment-username { font-weight: 600; font-size: 14px; color: #1a1a1a; margin-right: 8px; }
+        .comment-text { font-size: 14px; color: #1a1a1a; line-height: 1.4; }
+        .comment-timestamp { font-size: 12px; color: #999; margin-top: 4px; }
 
-        .post-username:hover {
-            color: #3d9c2f;
-        }
+        .add-comment { display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
 
-        .post-album {
-            font-size: 13px;
-            color: #666;
-        }
+        .comment-input { flex: 1; padding: 8px 12px; border: 1px solid #e0e0e0; border-radius: 20px; font-size: 14px; }
+        .comment-input:focus { outline: none; border-color: #3d9c2f; }
 
-        .post-timestamp {
-            font-size: 12px;
-            color: #999;
-        }
+        .comment-btn { padding: 8px 20px; background: #3d9c2f; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .comment-btn:hover { background: #348a26; }
+        .comment-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .post-image {
-            width: 100%;
-            max-height: 600px;
-            object-fit: contain;
-            background: #000;
-            cursor: pointer;
-        }
+        .empty-feed { text-align: center; padding: 80px 20px; color: #999; }
+        .empty-feed-icon { font-size: 64px; margin-bottom: 16px; }
 
-        .post-caption {
-            padding: 16px 20px;
-            color: #1a1a1a;
-            line-height: 1.5;
-        }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f0f0f0; border-top-color: #3d9c2f; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .post-stats {
-            padding: 0 20px;
-            color: #666;
-            font-size: 14px;
-            display: flex;
-            gap: 16px;
-        }
+        .loading-feed { text-align: center; padding: 80px 20px; color: #999; }
 
-        .comments-section {
-            padding: 16px 20px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .comment {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .comment-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .comment-content {
-            flex: 1;
-        }
-
-        .comment-username {
-            font-weight: 600;
-            font-size: 14px;
-            color: #1a1a1a;
-            margin-right: 8px;
-        }
-
-        .comment-text {
-            font-size: 14px;
-            color: #1a1a1a;
-            line-height: 1.4;
-        }
-
-        .comment-timestamp {
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
-        }
-
-        .add-comment {
-            display: flex;
-            gap: 12px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .comment-input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .comment-input:focus {
-            outline: none;
-            border-color: #3d9c2f;
-        }
-
-        .comment-btn {
-            padding: 8px 20px;
-            background: #3d9c2f;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .comment-btn:hover {
-            background: #348a26;
-        }
-
-        .comment-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .empty-feed {
-            text-align: center;
-            padding: 80px 20px;
-            color: #999;
-        }
-
-        .empty-feed-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f0f0f0;
-            border-top-color: #3d9c2f;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-feed {
-            text-align: center;
-            padding: 80px 20px;
-            color: #999;
-        }
-
-        .image-modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-        }
-
-        .image-modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .image-modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 40px;
-            color: white;
-            font-size: 40px;
-            cursor: pointer;
-        }
+        .image-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); }
+        .image-modal.active { display: flex; align-items: center; justify-content: center; }
+        .image-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        .modal-close { position: absolute; top: 20px; right: 40px; color: white; font-size: 40px; cursor: pointer; }
 
         @media (max-width: 768px) {
-            .feed-container {
-                padding: 20px 12px;
-            }
-
-            .feed-post {
-                margin-bottom: 24px;
-            }
-
-            .post-image {
-                max-height: 400px;
-            }
-
-            .comment-input {
-                font-size: 16px; /* Prevents zoom on iOS */
-            }
-
-            .modal-close {
-                right: 20px;
-                font-size: 32px;
-            }
+            .feed-container { padding: 20px 12px; }
+            .feed-post { margin-bottom: 24px; }
+            .post-image { max-height: 400px; }
+            .comment-input { font-size: 16px; }
+            .modal-close { right: 20px; font-size: 32px; }
         }
     </style>
 </head>
@@ -318,7 +119,6 @@
                 <p>See what everyone is sharing</p>
             </div>
 
-            <!-- Camera Button -->
             <div class="camera-section">
                 <button class="camera-button" id="cameraButton">
                     <span class="camera-icon">📷</span>
@@ -331,23 +131,18 @@
         </div>
     </div>
 
-    <!-- Camera Preview Modal -->
     <div class="modal" id="cameraModal" style="display: none;">
         <div class="modal-content" style="max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header" style="font-size: 20px; margin-bottom: 16px;">Share Your Moment</div>
-            
             <img id="cameraPreview" style="width: 100%; border-radius: 12px; margin-bottom: 16px; display: block;">
-            
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Caption</label>
                 <textarea id="captionInput" style="width: 100%; padding: 12px; border: 2px solid #f0f0f0; border-radius: 8px; min-height: 80px; font-family: inherit; font-size: 16px;" placeholder="What's happening?"></textarea>
             </div>
-
             <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #666;">
                 <div id="locationInfo">📍 Getting location...</div>
                 <div id="timeInfo"></div>
             </div>
-
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <button id="postPhotoBtn" style="width: 100%; padding: 18px; background: #3d9c2f; color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 18px; cursor: pointer; min-height: 56px;">Post to Feed</button>
                 <button id="cancelPhotoBtn" style="width: 100%; padding: 18px; background: #f0f0f0; color: #1a1a1a; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; min-height: 56px;">Cancel</button>
@@ -355,13 +150,11 @@
         </div>
     </div>
 
-    <!-- Image Modal -->
     <div class="image-modal" id="imageModal">
         <span class="modal-close" id="imageModalClose">&times;</span>
         <img id="modalImage" src="" alt="Full size photo">
     </div>
 
-    <!-- Bottom Tab Bar (Mobile) -->
     <div class="bottom-tab-bar">
         <div class="bottom-tabs">
             <a href="index.html" class="bottom-tab">
@@ -379,14 +172,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
-    
-    <!-- Mobile Console (tap 3 times in corner to open) -->
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <script>eruda.init();</script>
 
@@ -395,126 +185,81 @@
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
         const imageModalClose = document.getElementById('imageModalClose');
-        
         let globalUserProfile = null;
 
-        // Load feed posts
         async function loadFeed() {
             feedPosts.innerHTML = '<div class="loading-feed"><div class="spinner"></div><p>Loading feed...</p></div>';
-            
             try {
                 const postsSnapshot = await db.collection('feed').orderBy('timestamp', 'desc').limit(50).get();
-                
                 if (postsSnapshot.empty) {
-                    feedPosts.innerHTML = `
-                        <div class="empty-feed">
-                            <div class="empty-feed-icon">📷</div>
-                            <div>No posts yet. Be the first to share!</div>
-                        </div>
-                    `;
+                    feedPosts.innerHTML = `<div class="empty-feed"><div class="empty-feed-icon">📷</div><div>No posts yet. Be the first to share!</div></div>`;
                     return;
                 }
-
                 feedPosts.innerHTML = '';
-                
                 for (const doc of postsSnapshot.docs) {
                     const post = { id: doc.id, ...doc.data() };
                     await renderPost(post);
                 }
-            } catch (error) {
-                console.error('Error loading feed:', error);
-                feedPosts.innerHTML = '<div class="empty-feed"><div>Error loading feed. Please refresh.</div></div>';
-            }
+            } catch (error) { console.error('Error loading feed:', error); feedPosts.innerHTML = '<div class="empty-feed"><div>Error loading feed. Please refresh.</div></div>'; }
         }
 
-        // Render a single post
         async function renderPost(post) {
             const postDiv = document.createElement('div');
             postDiv.className = 'feed-post';
-            
-            // Format timestamp
             const timestamp = new Date(post.timestamp);
             const timeAgo = getTimeAgo(timestamp);
-
             postDiv.innerHTML = `
                 <div class="post-header">
                     <img src="${post.userPhotoURL}" class="post-avatar" alt="${post.userName}">
                     <div class="post-user-info">
                         <a href="profile.html?user=${post.userId}" class="post-username">${post.userName}</a>
-                        <div class="post-album">${post.albumName}</div>
+                        <div class="post-album">${post.albumName || ''}</div>
                     </div>
                     <div class="post-timestamp">${timeAgo}</div>
                 </div>
                 <img src="${post.photoURL}" class="post-image" alt="Post photo" onclick="openImageModal('${post.photoURL}')">
                 ${post.caption ? `<div class="post-caption">${post.caption}</div>` : ''}
                 <div class="comments-section">
-                    <div class="post-stats">
-                        <span id="commentCount-${post.id}">0 comments</span>
-                    </div>
+                    <div class="post-stats"><span id="commentCount-${post.id}">0 comments</span></div>
                     <div id="comments-${post.id}"></div>
                     <div class="add-comment">
                         <input type="text" class="comment-input" id="commentInput-${post.id}" placeholder="Add a comment...">
                         <button class="comment-btn" onclick="addComment('${post.id}')">Post</button>
                     </div>
-                </div>
-            `;
-
+                </div>`;
             feedPosts.appendChild(postDiv);
-
-            // Load comments
             loadComments(post.id);
         }
 
-        // Load comments for a post
         function loadComments(postId) {
-            db.collection('feed').doc(postId).collection('comments')
-                .orderBy('timestamp', 'asc')
-                .onSnapshot((snapshot) => {
-                    const commentsDiv = document.getElementById(`comments-${postId}`);
-                    const commentCount = document.getElementById(`commentCount-${postId}`);
-                    
-                    commentCount.textContent = `${snapshot.size} comment${snapshot.size !== 1 ? 's' : ''}`;
-                    
-                    commentsDiv.innerHTML = '';
-                    snapshot.forEach(doc => {
-                        const comment = doc.data();
-                        const commentDiv = document.createElement('div');
-                        commentDiv.className = 'comment';
-                        
-                        const timeAgo = getTimeAgo(new Date(comment.timestamp));
-                        
-                        commentDiv.innerHTML = `
-                            <img src="${comment.userPhotoURL}" class="comment-avatar" alt="${comment.userName}">
-                            <div class="comment-content">
-                                <div>
-                                    <span class="comment-username">${comment.userName}</span>
-                                    <span class="comment-text">${comment.text}</span>
-                                </div>
-                                <div class="comment-timestamp">${timeAgo}</div>
-                            </div>
-                        `;
-                        commentsDiv.appendChild(commentDiv);
-                    });
+            db.collection('feed').doc(postId).collection('comments').orderBy('timestamp', 'asc').onSnapshot((snapshot) => {
+                const commentsDiv = document.getElementById(`comments-${postId}`);
+                const commentCount = document.getElementById(`commentCount-${postId}`);
+                commentCount.textContent = `${snapshot.size} comment${snapshot.size !== 1 ? 's' : ''}`;
+                commentsDiv.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const comment = doc.data();
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'comment';
+                    commentDiv.innerHTML = `
+                        <img src="${comment.userPhotoURL}" class="comment-avatar" alt="${comment.userName}">
+                        <div class="comment-content">
+                            <div><span class="comment-username">${comment.userName}</span><span class="comment-text">${comment.text}</span></div>
+                            <div class="comment-timestamp">${getTimeAgo(new Date(comment.timestamp))}</div>
+                        </div>`;
+                    commentsDiv.appendChild(commentDiv);
                 });
+            });
         }
 
-        // Add comment
         async function addComment(postId) {
             const input = document.getElementById(`commentInput-${postId}`);
             const text = input.value.trim();
-            
             if (!text) return;
-            
-            if (!globalUserProfile) {
-                alert('Profile not loaded. Please refresh the page.');
-                return;
-            }
-
+            if (!globalUserProfile) { alert('Profile not loaded. Please refresh the page.'); return; }
             try {
-                // Get post owner before adding comment
                 const postDoc = await db.collection('feed').doc(postId).get();
                 const postOwnerId = postDoc.exists ? postDoc.data().userId : null;
-
                 await db.collection('feed').doc(postId).collection('comments').add({
                     userId: auth.currentUser.uid,
                     userName: globalUserProfile.displayName,
@@ -522,107 +267,63 @@
                     text: text,
                     timestamp: new Date().toISOString()
                 });
-
                 input.value = '';
-
-                // Notify post owner (not if commenting on own post)
                 if (postOwnerId && postOwnerId !== auth.currentUser.uid) {
                     try {
                         await sendNotifToUser(postOwnerId, {
-                            type: 'new_comment',
-                            icon: '💬',
+                            type: 'new_comment', icon: '💬',
                             message: `${globalUserProfile.displayName} commented on your photo: "${text.slice(0, 50)}${text.length > 50 ? '…' : ''}"`,
-                            actorId: auth.currentUser.uid,
-                            actorName: globalUserProfile.displayName,
-                            actorPhoto: globalUserProfile.photoURL,
-                            postId: postId,
+                            actorId: auth.currentUser.uid, actorName: globalUserProfile.displayName, actorPhoto: globalUserProfile.photoURL, postId: postId,
                         });
                     } catch(e) { console.warn('Notification error:', e); }
                 }
-            } catch (error) {
-                console.error('Error adding comment:', error);
-                alert('Error adding comment');
-            }
+            } catch (error) { console.error('Error adding comment:', error); alert('Error adding comment'); }
         }
 
-        // ── Notifications ──
         async function getAllUserIds() {
             const snapshot = await db.collectionGroup('profile').get();
-            return snapshot.docs
-                .filter(d => d.id === 'info')
-                .map(d => d.ref.parent.parent.id);
+            return snapshot.docs.filter(d => d.id === 'info').map(d => d.ref.parent.parent.id);
         }
 
         async function sendNotifToAll(notif) {
             const uids = await getAllUserIds();
             const batch = db.batch();
             uids.forEach(uid => {
-                const ref = db.collection('users').doc(uid)
-                    .collection('notifications').doc();
+                const ref = db.collection('users').doc(uid).collection('notifications').doc();
                 batch.set(ref, { ...notif, read: false, createdAt: new Date().toISOString() });
             });
             await batch.commit();
         }
 
         async function sendNotifToUser(uid, notif) {
-            await db.collection('users').doc(uid)
-                .collection('notifications').add({ ...notif, read: false, createdAt: new Date().toISOString() });
+            await db.collection('users').doc(uid).collection('notifications').add({ ...notif, read: false, createdAt: new Date().toISOString() });
         }
 
-        // Get time ago string
         function getTimeAgo(date) {
             const seconds = Math.floor((new Date() - date) / 1000);
-            
             if (seconds < 60) return 'just now';
             if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
             if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
             if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-            
             return date.toLocaleDateString();
         }
 
-        // Open image modal
-        function openImageModal(url) {
-            modalImage.src = url;
-            imageModal.classList.add('active');
-        }
+        function openImageModal(url) { modalImage.src = url; imageModal.classList.add('active'); }
+        imageModalClose.addEventListener('click', () => imageModal.classList.remove('active'));
+        imageModal.addEventListener('click', (e) => { if (e.target === imageModal) imageModal.classList.remove('active'); });
 
-        // Close modal
-        imageModalClose.addEventListener('click', () => {
-            imageModal.classList.remove('active');
-        });
-
-        imageModal.addEventListener('click', (e) => {
-            if (e.target === imageModal) {
-                imageModal.classList.remove('active');
-            }
-        });
-
-        // Load feed on auth
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.href = '/task-tracker/landing.html';
-                return;
-            }
-            
-            // Load user profile
+            if (!user) { window.location.href = '/task-tracker/landing.html'; return; }
             const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
-            if (profileDoc.exists) {
-                globalUserProfile = profileDoc.data();
-            }
-            
+            if (profileDoc.exists) globalUserProfile = profileDoc.data();
             setTimeout(loadFeed, 500);
             setupCamera(user);
         });
 
-        // Camera Setup
         let capturedPhoto = null;
         let capturedPhotoFile = null;
 
         function setupCamera(user) {
-            console.log('=== SETUP CAMERA CALLED ===');
-            console.log('User:', user.uid);
-            
             const cameraButton = document.getElementById('cameraButton');
             const cameraInput = document.getElementById('cameraInput');
             const cameraModal = document.getElementById('cameraModal');
@@ -632,55 +333,22 @@
             const timeInfo = document.getElementById('timeInfo');
             const postPhotoBtn = document.getElementById('postPhotoBtn');
             const cancelPhotoBtn = document.getElementById('cancelPhotoBtn');
-            
-            console.log('Elements found:', {
-                cameraButton: !!cameraButton,
-                cameraInput: !!cameraInput,
-                cameraModal: !!cameraModal,
-                postPhotoBtn: !!postPhotoBtn,
-                cancelPhotoBtn: !!cancelPhotoBtn
-            });
-
-            if (!postPhotoBtn) {
-                console.error('POST BUTTON NOT FOUND!');
-                alert('ERROR: Post button not found on page');
-                return;
-            }
 
             cameraButton.onclick = () => cameraInput.click();
 
             cameraInput.onchange = (e) => {
                 const file = e.target.files[0];
-                if (!file) {
-                    console.log('No file selected');
-                    return;
-                }
-
-                console.log('Photo selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+                if (!file) return;
                 capturedPhotoFile = file;
-                
-                // Use setTimeout to break out of the input event context
                 setTimeout(() => {
                     const reader = new FileReader();
-                    
-                    reader.onerror = (error) => {
-                        console.error('FileReader error:', error);
-                        alert('Error reading file: ' + error);
-                    };
-                    
+                    reader.onerror = (error) => { console.error('FileReader error:', error); alert('Error reading file: ' + error); };
                     reader.onload = (e) => {
-                        console.log('FileReader loaded successfully');
                         capturedPhoto = e.target.result;
-                        console.log('Setting preview image...');
                         cameraPreview.src = capturedPhoto;
-                        
-                        // Set time and location
                         const now = new Date();
                         timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
                         locationInfo.textContent = '📍 Shared from mobile';
-
-                        // Show modal with explicit styles (needed for mobile)
-                        console.log('Opening modal now...');
                         cameraModal.style.display = 'flex';
                         cameraModal.style.position = 'fixed';
                         cameraModal.style.top = '0';
@@ -691,142 +359,64 @@
                         cameraModal.style.background = 'rgba(0,0,0,0.8)';
                         cameraModal.style.justifyContent = 'center';
                         cameraModal.style.alignItems = 'center';
-                        console.log('Modal opened successfully');
                     };
-                    
-                    console.log('Starting FileReader...');
                     reader.readAsDataURL(file);
-                    console.log('FileReader readAsDataURL called');
                 }, 10);
             };
 
-            cancelPhotoBtn.onclick = () => {
-                cameraModal.style.display = 'none';
-                cameraInput.value = '';
-                captionInput.value = '';
-            };
+            cancelPhotoBtn.onclick = () => { cameraModal.style.display = 'none'; cameraInput.value = ''; captionInput.value = ''; };
 
             postPhotoBtn.onclick = async () => {
-                console.log('=== POST BUTTON CLICKED ===');
-                console.log('Captured file:', capturedPhotoFile);
-                console.log('Global profile:', globalUserProfile);
-                console.log('User:', user);
-                
-                if (!capturedPhotoFile) {
-                    console.error('No photo file');
-                    alert('ERROR: No photo selected');
-                    return;
-                }
-                
-                if (!globalUserProfile) {
-                    console.error('No profile loaded');
-                    alert('ERROR: Profile not loaded. Please refresh the page.');
-                    return;
-                }
-
+                if (!capturedPhotoFile) { alert('ERROR: No photo selected'); return; }
+                if (!globalUserProfile) { alert('ERROR: Profile not loaded. Please refresh the page.'); return; }
                 postPhotoBtn.disabled = true;
                 postPhotoBtn.textContent = 'Posting...';
-                console.log('Starting upload...');
-
                 try {
-                    // Upload photo
                     const fileName = `feed-moments/${user.uid}/${Date.now()}_${capturedPhotoFile.name}`;
-                    console.log('Uploading to:', fileName);
                     const storageRef = storage.ref(fileName);
                     await storageRef.put(capturedPhotoFile);
                     const photoURL = await storageRef.getDownloadURL();
-                    console.log('Photo uploaded:', photoURL);
-
-                    // Post to feed
-                    console.log('Creating feed post...');
                     await db.collection('feed').add({
-                        userId: user.uid,
-                        userName: globalUserProfile.displayName,
-                        userPhotoURL: globalUserProfile.photoURL,
-                        photoURL: photoURL,
-                        caption: captionInput.value.trim(),
-                        location: locationInfo.textContent,
+                        userId: user.uid, userName: globalUserProfile.displayName, userPhotoURL: globalUserProfile.photoURL,
+                        photoURL: photoURL, caption: captionInput.value.trim(), location: locationInfo.textContent,
                         timestamp: new Date().toISOString()
                     });
-                    console.log('Feed post created');
-
-                    // Notify all users of new feed post
-                    try {
-                        await sendNotifToAll({
-                            type: 'new_post',
-                            icon: '📸',
-                            message: `${globalUserProfile.displayName} shared a new photo`,
-                            actorId: user.uid,
-                            actorName: globalUserProfile.displayName,
-                            actorPhoto: globalUserProfile.photoURL,
-                        });
-                    } catch(e) { console.error('Notification error:', e); }
-
-                    // Save to Feed Moments album
-                    const albumsSnapshot = await db.collection('users').doc(user.uid).collection('albums')
-                        .where('name', '==', 'Feed Moments').get();
-
+                    try { await sendNotifToAll({ type: 'new_post', icon: '📸', message: `${globalUserProfile.displayName} shared a new photo`, actorId: user.uid, actorName: globalUserProfile.displayName, actorPhoto: globalUserProfile.photoURL }); } catch(e) { console.error('Notification error:', e); }
+                    const albumsSnapshot = await db.collection('users').doc(user.uid).collection('albums').where('name', '==', 'Feed Moments').get();
                     let feedMomentsAlbumId;
                     if (albumsSnapshot.empty) {
-                        // Create Feed Moments album
-                        const newAlbum = await db.collection('users').doc(user.uid).collection('albums').add({
-                            name: 'Feed Moments',
-                            coverUrl: photoURL,
-                            coverFileName: fileName,
-                            photoCount: 1,
-                            createdAt: new Date().toISOString()
-                        });
+                        const newAlbum = await db.collection('users').doc(user.uid).collection('albums').add({ name: 'Feed Moments', coverUrl: photoURL, coverFileName: fileName, photoCount: 1, createdAt: new Date().toISOString() });
                         feedMomentsAlbumId = newAlbum.id;
                     } else {
                         feedMomentsAlbumId = albumsSnapshot.docs[0].id;
                         const currentCount = albumsSnapshot.docs[0].data().photoCount || 0;
-                        await db.collection('users').doc(user.uid).collection('albums').doc(feedMomentsAlbumId).update({
-                            photoCount: currentCount + 1
-                        });
+                        await db.collection('users').doc(user.uid).collection('albums').doc(feedMomentsAlbumId).update({ photoCount: currentCount + 1 });
                     }
-
-                    // Add photo to album
-                    await db.collection('users').doc(user.uid).collection('albums')
-                        .doc(feedMomentsAlbumId).collection('photos').add({
-                            url: photoURL,
-                            fileName: fileName,
-                            uploadedAt: new Date().toISOString()
-                        });
-
-                    // Reset and close
+                    await db.collection('users').doc(user.uid).collection('albums').doc(feedMomentsAlbumId).collection('photos').add({ url: photoURL, fileName: fileName, uploadedAt: new Date().toISOString() });
                     cameraModal.style.display = 'none';
                     cameraInput.value = '';
                     captionInput.value = '';
                     postPhotoBtn.disabled = false;
                     postPhotoBtn.textContent = 'Post to Feed';
-
-                    // Reload feed
                     loadFeed();
-
-                } catch (error) {
-                    console.error('Error posting photo:', error);
-                    alert('Error posting photo: ' + error.message);
-                    postPhotoBtn.disabled = false;
-                    postPhotoBtn.textContent = 'Post to Feed';
-                }
+                } catch (error) { console.error('Error posting photo:', error); alert('Error posting photo: ' + error.message); postPhotoBtn.disabled = false; postPhotoBtn.textContent = 'Post to Feed'; }
             };
         }
     </script>
     <script>
-        // Mobile profile tab link
         auth.onAuthStateChanged((user) => {
             const tab = document.getElementById("mobileProfileTab");
             if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
         });
     </script>
+
+    <!-- ✅ Unregister old service workers -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW error:', err));
-            });
-        }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(r => r.unregister());
+        });
+      }
     </script>
 </body>
 </html>
