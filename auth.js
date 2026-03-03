@@ -1,4 +1,4 @@
-const USE_FIREBASE_HOSTING = false; // flip to true when switching to Firebase Hosting
+const USE_FIREBASE_HOSTING = true; // flip to true when switching to Firebase Hosting
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
