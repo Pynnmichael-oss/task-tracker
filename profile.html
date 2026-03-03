@@ -3,28 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/task-tracker/manifest.json">
-    <meta name="theme-color" content="#3d9c2f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="TouchGrass">
-    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
     <title>TouchGrass · Profile</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* ── Base ── */
         body { font-family: 'DM Sans', sans-serif; }
 
-        .profile-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 0 60px;
-        }
+        .profile-container { max-width: 900px; margin: 0 auto; padding: 0 0 60px; }
 
-        /* ── Hero Banner ── */
         .profile-hero {
             position: relative;
             background: linear-gradient(135deg, #1e6b14 0%, #3d9c2f 45%, #6dd832 80%, #c8f032 100%);
@@ -33,7 +20,6 @@
             overflow: hidden;
         }
 
-        /* Subtle noise texture overlay */
         .profile-hero::before {
             content: '';
             position: absolute;
@@ -43,449 +29,90 @@
             pointer-events: none;
         }
 
-        /* Decorative orbs */
         .profile-hero::after {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
+            width: 400px; height: 400px;
             border-radius: 50%;
             background: rgba(255,255,255,0.06);
-            top: -150px;
-            right: -100px;
+            top: -150px; right: -100px;
             pointer-events: none;
         }
 
-        .hero-orb {
-            position: absolute;
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.05);
-            bottom: -80px;
-            left: -60px;
-            pointer-events: none;
-        }
+        .hero-orb { position: absolute; width: 250px; height: 250px; border-radius: 50%; background: rgba(255,255,255,0.05); bottom: -80px; left: -60px; pointer-events: none; }
 
-        /* ── Avatar ── */
-        .avatar-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
+        .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 20px; cursor: pointer; }
 
-        .profile-picture {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid rgba(255,255,255,0.9);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-            display: block;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
+        .profile-picture { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(255,255,255,0.9); box-shadow: 0 8px 32px rgba(0,0,0,0.25); display: block; transition: transform 0.3s, box-shadow 0.3s; }
+        .avatar-wrapper:hover .profile-picture { transform: scale(1.04); box-shadow: 0 12px 40px rgba(0,0,0,0.35); }
 
-        .avatar-wrapper:hover .profile-picture {
-            transform: scale(1.04);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-        }
+        .avatar-upload-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; font-size: 28px; }
+        .avatar-wrapper.own-profile:hover .avatar-upload-overlay { opacity: 1; }
 
-        /* Camera icon overlay (own profile) */
-        .avatar-upload-overlay {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.45);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-size: 28px;
-        }
+        .profile-name { font-family: 'Playfair Display', serif; font-size: 36px; color: white; margin-bottom: 6px; letter-spacing: -0.5px; text-shadow: 0 2px 12px rgba(0,0,0,0.2); position: relative; }
+        .profile-bio { color: rgba(255,255,255,0.85); font-size: 15px; font-weight: 300; max-width: 440px; margin: 0 auto 20px; line-height: 1.6; position: relative; }
 
-        .avatar-wrapper.own-profile:hover .avatar-upload-overlay {
-            opacity: 1;
-        }
+        .voice-memo-btn { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.25); color: white; padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 20px; transition: all 0.2s; position: relative; }
+        .voice-memo-btn:hover { background: rgba(255,255,255,0.25); }
 
-        /* ── Hero Text ── */
-        .profile-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 36px;
-            color: white;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.2);
-            position: relative;
-        }
+        .voice-dot { width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; animation: pulse-dot 1.5s ease-in-out infinite; }
+        @keyframes pulse-dot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
 
-        .profile-bio {
-            color: rgba(255,255,255,0.85);
-            font-size: 15px;
-            font-weight: 300;
-            max-width: 440px;
-            margin: 0 auto 20px;
-            line-height: 1.6;
-            position: relative;
-        }
-
-        /* ── Voice Memo Button ── */
-        .voice-memo-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.25);
-            color: white;
-            padding: 7px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .voice-memo-btn:hover {
-            background: rgba(255,255,255,0.25);
-        }
-
-        .voice-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ff6b6b;
-            animation: pulse-dot 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-        }
-
-        /* Inline audio player (hidden by default) */
-        .voice-player {
-            display: none;
-            margin-bottom: 16px;
-            position: relative;
-        }
-
+        .voice-player { display: none; margin-bottom: 16px; position: relative; }
         .voice-player.visible { display: block; }
+        .voice-player audio { height: 36px; border-radius: 20px; filter: brightness(1.1); }
 
-        .voice-player audio {
-            height: 36px;
-            border-radius: 20px;
-            filter: brightness(1.1);
-        }
+        .social-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; position: relative; margin-top: 4px; }
+        .social-icon-link { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; color: white; font-size: 13px; font-weight: 500; text-decoration: none; transition: all 0.2s; }
+        .social-icon-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
 
-        /* ── Social Links Row ── */
-        .social-row {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            position: relative;
-            margin-top: 4px;
-        }
-
-        .social-icon-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 14px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            color: white;
-            font-size: 13px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .social-icon-link:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-1px);
-        }
-
-        /* ── Stats strip (pulled down over hero) ── */
-        .stats-strip {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-            background: white;
-            border-radius: 16px;
-            margin: -28px 24px 0;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
-            position: relative;
-            z-index: 10;
-            overflow: hidden;
-        }
-
-        .stat-item {
-            flex: 1;
-            text-align: center;
-            padding: 20px 16px;
-            border-right: 1px solid #f0f0f0;
-        }
-
+        .stats-strip { display: flex; justify-content: center; gap: 0; background: white; border-radius: 16px; margin: -28px 24px 0; box-shadow: 0 4px 24px rgba(0,0,0,0.1); position: relative; z-index: 10; overflow: hidden; }
+        .stat-item { flex: 1; text-align: center; padding: 20px 16px; border-right: 1px solid #f0f0f0; }
         .stat-item:last-child { border-right: none; }
+        .stat-number { font-size: 26px; font-weight: 700; color: #3d9c2f; font-family: 'Playfair Display', serif; }
+        .stat-label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
-        .stat-number {
-            font-size: 26px;
-            font-weight: 700;
-            color: #3d9c2f;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-        }
-
-        /* ── Edit own profile button ── */
-        .edit-profile-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 7px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
+        .edit-profile-btn { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
         .edit-profile-btn:hover { background: rgba(255,255,255,0.3); }
 
-        /* ── About Section ── */
-        .about-section {
-            background: white;
-            border-radius: 16px;
-            padding: 28px 32px;
-            margin: 24px 24px 0;
-            border: 1px solid #f0f0f0;
-        }
-
-        .about-section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .about-section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            color: #1a1a1a;
-        }
-
-        .about-text {
-            color: #444;
-            line-height: 1.8;
-            font-size: 15px;
-            white-space: pre-wrap;
-        }
-
-        .btn-edit-subtle {
-            padding: 6px 14px;
-            background: #f0f0f0;
-            color: #666;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
+        .about-section { background: white; border-radius: 16px; padding: 28px 32px; margin: 24px 24px 0; border: 1px solid #f0f0f0; }
+        .about-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .about-section-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #1a1a1a; }
+        .about-text { color: #444; line-height: 1.8; font-size: 15px; white-space: pre-wrap; }
+        .btn-edit-subtle { padding: 6px 14px; background: #f0f0f0; color: #666; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s; }
         .btn-edit-subtle:hover { background: #e0e0e0; }
 
-        /* ── Albums Section ── */
-        .albums-section {
-            margin: 24px 24px 0;
-        }
+        .albums-section { margin: 24px 24px 0; }
+        .content-section { background: white; border-radius: 16px; padding: 28px 32px; border: 1px solid #f0f0f0; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 20px; color: #1a1a1a; }
 
-        .content-section {
-            background: white;
-            border-radius: 16px;
-            padding: 28px 32px;
-            border: 1px solid #f0f0f0;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            color: #1a1a1a;
-        }
-
-        /* ── Album Grid — Instagram style, 3-col squares ── */
-        .album-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
-        }
-
-        /* Every cell is a perfect square */
-        .album-grid-cell {
-            position: relative;
-            width: 100%;
-            padding-bottom: 100%;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .create-album-card {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed #d0d0d0;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #fafafa;
-            color: #3d9c2f;
-            font-weight: 600;
-            font-size: 13px;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .create-album-card:hover {
-            border-color: #3d9c2f;
-            background: white;
-        }
-
+        .album-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+        .album-grid-cell { position: relative; width: 100%; padding-bottom: 100%; overflow: hidden; cursor: pointer; }
+        .create-album-card { position: absolute; inset: 0; border: 2px dashed #d0d0d0; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fafafa; color: #3d9c2f; font-weight: 600; font-size: 13px; gap: 6px; transition: all 0.2s; }
+        .create-album-card:hover { border-color: #3d9c2f; background: white; }
         .create-icon { font-size: 28px; }
-
-        .album-card {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
+        .album-card { position: absolute; inset: 0; overflow: hidden; cursor: pointer; border-radius: 4px; }
         .album-card:hover .album-cover { transform: scale(1.05); }
         .album-card:hover .album-overlay { opacity: 1; }
-
-        .album-cover {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: #f0f0f0;
-            transition: transform 0.3s;
-            display: block;
-        }
-
-        /* Name overlay on hover (desktop) / always visible bottom strip (mobile) */
-        .album-overlay {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.65));
-            padding: 20px 8px 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .album-name {
-            font-weight: 600;
-            color: white;
-            font-size: 12px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
+        .album-cover { width: 100%; height: 100%; object-fit: cover; background: #f0f0f0; transition: transform 0.3s; display: block; }
+        .album-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.65)); padding: 20px 8px 8px; opacity: 0; transition: opacity 0.2s; }
+        .album-name { font-weight: 600; color: white; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .photo-count { font-size: 11px; color: rgba(255,255,255,0.8); }
+        @media (max-width: 768px) { .album-overlay { opacity: 1; } }
 
-        @media (max-width: 768px) {
-            .album-overlay { opacity: 1; } /* Always show on mobile */
-        }
-
-        /* ── Album Detail ── */
-        .album-detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .album-detail-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            color: #1a1a1a;
-        }
-
+        .album-detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .album-detail-title { font-family: 'Playfair Display', serif; font-size: 24px; color: #1a1a1a; }
         .album-photo-count { color: #888; font-size: 13px; margin-top: 2px; }
 
-        /* ── Photo Grid ── */
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .photo-item {
-            position: relative;
-            aspect-ratio: 1;
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .photo-item img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
-        }
-
+        .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+        .photo-item { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; cursor: pointer; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
         .photo-item:hover img { transform: scale(1.06); }
-
-        .photo-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
+        .photo-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
         .photo-item:hover .photo-overlay { opacity: 1; }
 
-        /* ── Buttons ── */
-        .btn {
-            padding: 9px 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
-            font-family: 'DM Sans', sans-serif;
-        }
-
+        .btn { padding: 9px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
         .btn-primary { background: #3d9c2f; color: white; }
         .btn-primary:hover { background: #348a26; }
         .btn-secondary { background: #f0f0f0; color: #1a1a1a; }
@@ -493,211 +120,50 @@
         .btn-danger { background: #dc3545; color: white; font-size: 13px; padding: 7px 14px; }
         .btn-danger:hover { background: #c82333; }
 
-        /* ── Modals ── */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            margin-bottom: 24px;
-            color: #1a1a1a;
-        }
-
+        .modal-content { background: white; border-radius: 20px; padding: 32px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .modal-header { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 24px; color: #1a1a1a; }
         .form-group { margin-bottom: 20px; }
-
-        .form-label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #1a1a1a;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #f0f0f0;
-            border-radius: 10px;
-            font-size: 15px;
-            font-family: 'DM Sans', sans-serif;
-            transition: border-color 0.2s;
-        }
-
+        .form-label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #1a1a1a; }
+        .form-input { width: 100%; padding: 12px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 15px; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s; }
         .form-input:focus { outline: none; border-color: #3d9c2f; }
-
-        .cover-upload-area {
-            border: 2px dashed #d0d0d0;
-            border-radius: 10px;
-            padding: 32px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #888;
-        }
-
+        .cover-upload-area { border: 2px dashed #d0d0d0; border-radius: 10px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; color: #888; }
         .cover-upload-area:hover { border-color: #3d9c2f; background: #f8f9fa; }
         .cover-preview { max-width: 100%; max-height: 180px; border-radius: 8px; margin-top: 12px; }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
         .modal-actions .btn { flex: 1; padding: 12px; }
 
-        /* ── Image lightbox ── */
-        .image-modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-        }
-
+        .image-modal { display: none; position: fixed; z-index: 2000; inset: 0; background: rgba(0,0,0,0.95); }
         .image-modal.active { display: flex; align-items: center; justify-content: center; }
         .image-modal img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 4px; }
+        .modal-close { position: absolute; top: 20px; right: 32px; color: white; font-size: 36px; cursor: pointer; line-height: 1; }
 
-        .modal-close {
-            position: absolute;
-            top: 20px; right: 32px;
-            color: white; font-size: 36px; cursor: pointer; line-height: 1;
-        }
-
-        /* ── States ── */
         .loading { text-align: center; padding: 60px 20px; color: #999; }
-
-        .spinner {
-            width: 36px; height: 36px;
-            border: 3px solid #f0f0f0;
-            border-top-color: #3d9c2f;
-            border-radius: 50%;
-            animation: spin 0.9s linear infinite;
-            margin: 0 auto 16px;
-        }
-
+        .spinner { width: 36px; height: 36px; border: 3px solid #f0f0f0; border-top-color: #3d9c2f; border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 16px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .empty-state { text-align: center; padding: 60px 20px; color: #999; }
         .empty-icon { font-size: 48px; margin-bottom: 16px; }
         .hidden { display: none !important; }
 
-        /* ── Delete buttons ── */
-        .album-delete-btn {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.6);
-            border: none;
-            color: white;
-            font-size: 13px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 10;
-        }
-
+        .album-delete-btn { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.6); border: none; color: white; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; z-index: 10; }
         .album-card:hover .album-delete-btn { opacity: 1; }
+        @media (max-width: 768px) { .album-delete-btn { opacity: 1; } }
 
-        @media (max-width: 768px) {
-            .album-delete-btn { opacity: 1; } /* Always show on mobile */
-        }
-
-        .photo-delete-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(220,53,69,0.85);
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
+        .photo-delete-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(220,53,69,0.85); border: none; color: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
         .photo-delete-btn:hover { background: rgba(200,35,51,1); }
 
-        /* ── Background Picker ── */
-        .bg-picker-btn {
-            position: absolute;
-            bottom: 40px;
-            right: 16px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'DM Sans', sans-serif;
-        }
-
+        .bg-picker-btn { position: absolute; bottom: 40px; right: 16px; background: rgba(255,255,255,0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
         .bg-picker-btn:hover { background: rgba(255,255,255,0.35); }
 
-        .bg-swatches {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .bg-swatch {
-            aspect-ratio: 16/7;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.2s;
-        }
-
+        .bg-swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+        .bg-swatch { aspect-ratio: 16/7; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; }
         .bg-swatch:hover { transform: scale(1.04); }
         .bg-swatch.selected { border-color: #3d9c2f; box-shadow: 0 0 0 2px white, 0 0 0 4px #3d9c2f; }
 
-        .bg-upload-area {
-            border: 2px dashed #d0d0d0;
-            border-radius: 10px;
-            padding: 24px;
-            text-align: center;
-            cursor: pointer;
-            color: #888;
-            font-size: 14px;
-            transition: all 0.2s;
-            margin-top: 8px;
-        }
-
+        .bg-upload-area { border: 2px dashed #d0d0d0; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; color: #888; font-size: 14px; transition: all 0.2s; margin-top: 8px; }
         .bg-upload-area:hover { border-color: #3d9c2f; background: #f8f9fa; color: #3d9c2f; }
+
         @media (max-width: 768px) {
             .profile-container { padding: 0 0 80px; }
             .profile-hero { padding: 48px 20px 72px; }
@@ -707,7 +173,6 @@
             .content-section { padding: 16px; }
             .about-section { padding: 16px 20px; }
             .photo-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
-            .create-album-card { min-height: 120px; }
             .album-detail-header { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; }
             .album-detail-header button { width: 100%; }
             .modal-content { padding: 20px; width: 95%; max-height: 85vh; border-radius: 16px; }
@@ -739,7 +204,6 @@
     </nav>
 
     <div class="profile-container">
-        <!-- Profile Header — rendered by JS -->
         <div id="profileHeader">
             <div class="loading" style="padding: 80px 20px;">
                 <div class="spinner"></div>
@@ -747,10 +211,8 @@
             </div>
         </div>
 
-        <!-- Albums Section -->
         <div id="albumsSection" class="albums-section hidden">
             <div class="content-section">
-                <!-- Albums Grid View -->
                 <div id="albumsView">
                     <div class="section-header">
                         <div class="section-title">Photo Albums</div>
@@ -758,8 +220,6 @@
                     </div>
                     <div class="album-grid" id="albumGrid"></div>
                 </div>
-
-                <!-- Album Detail View -->
                 <div id="albumDetailView" class="hidden">
                     <div class="album-detail-header">
                         <button class="btn btn-secondary" id="backBtn">← Back</button>
@@ -779,7 +239,6 @@
         </div>
     </div>
 
-    <!-- Background Picker Modal -->
     <div class="modal" id="bgPickerModal">
         <div class="modal-content">
             <div class="modal-header">Choose Banner Background</div>
@@ -801,10 +260,8 @@
         </div>
     </div>
 
-    <!-- Hidden file input for avatar upload -->
     <input type="file" id="avatarInput" accept="image/*" style="display:none;">
 
-    <!-- Create Album Modal -->
     <div class="modal" id="createAlbumModal">
         <div class="modal-content">
             <div class="modal-header">Create New Album</div>
@@ -827,50 +284,32 @@
         </div>
     </div>
 
-    <!-- Image Lightbox -->
     <div class="image-modal" id="imageModal">
         <span class="modal-close" id="imageModalClose">&times;</span>
         <img id="modalImage" src="" alt="Full size photo">
     </div>
 
-    <!-- Edit Profile Modal -->
     <div class="modal" id="editProfileModal">
         <div class="modal-content" style="max-width:560px;">
             <div class="modal-header">Edit Profile</div>
-
             <div class="form-group">
                 <label class="form-label">Bio</label>
                 <input type="text" class="form-input" id="editBioInput" placeholder="Short tagline under your name" maxlength="100">
             </div>
-
             <div class="form-group">
                 <label class="form-label">About Me</label>
                 <textarea id="aboutTextarea" class="form-input" style="min-height:120px; resize:vertical;" placeholder="Tell people more about yourself..."></textarea>
                 <div style="font-size:12px; color:#999; margin-top:4px;">Press Enter for new paragraphs</div>
             </div>
-
             <div class="form-group">
                 <label class="form-label">Social Links</label>
                 <div style="display:flex; flex-direction:column; gap:10px;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="width:28px; text-align:center;">📷</span>
-                        <input type="text" class="form-input" id="editInstagram" placeholder="Instagram username">
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="width:28px; text-align:center;">💼</span>
-                        <input type="text" class="form-input" id="editLinkedin" placeholder="LinkedIn username or URL">
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="width:28px; text-align:center;">🐦</span>
-                        <input type="text" class="form-input" id="editTwitter" placeholder="Twitter username">
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="width:28px; text-align:center;">💻</span>
-                        <input type="text" class="form-input" id="editGithub" placeholder="GitHub username">
-                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;"><span style="width:28px; text-align:center;">📷</span><input type="text" class="form-input" id="editInstagram" placeholder="Instagram username"></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><span style="width:28px; text-align:center;">💼</span><input type="text" class="form-input" id="editLinkedin" placeholder="LinkedIn username or URL"></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><span style="width:28px; text-align:center;">🐦</span><input type="text" class="form-input" id="editTwitter" placeholder="Twitter username"></div>
+                    <div style="display:flex; align-items:center; gap:10px;"><span style="width:28px; text-align:center;">💻</span><input type="text" class="form-input" id="editGithub" placeholder="GitHub username"></div>
                 </div>
             </div>
-
             <div class="form-group">
                 <label class="form-label">Voice Introduction</label>
                 <div style="background:#f8f9fa; border-radius:10px; padding:20px; text-align:center;">
@@ -881,7 +320,6 @@
                     <audio id="editAudioPlayback" controls style="width:100%; margin-top:10px; display:none;"></audio>
                 </div>
             </div>
-
             <div class="modal-actions">
                 <button class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
                 <button class="btn btn-secondary" id="cancelProfileBtn">Cancel</button>
@@ -890,25 +328,14 @@
     </div>
     <div id="editAboutModal" style="display:none;"></div>
 
-    <!-- Bottom Tab Bar -->
     <div class="bottom-tab-bar">
         <div class="bottom-tabs">
-            <a href="index.html" class="bottom-tab">
-                <span class="bottom-tab-icon">🏠</span>
-                <span class="bottom-tab-label">Home</span>
-            </a>
-            <a href="feed.html" class="bottom-tab">
-                <span class="bottom-tab-icon">📸</span>
-                <span class="bottom-tab-label">Feed</span>
-            </a>
-            <a href="#" class="bottom-tab active" id="mobileProfileTab">
-                <span class="bottom-tab-icon">👤</span>
-                <span class="bottom-tab-label">Profile</span>
-            </a>
+            <a href="index.html" class="bottom-tab"><span class="bottom-tab-icon">🏠</span><span class="bottom-tab-label">Home</span></a>
+            <a href="feed.html" class="bottom-tab"><span class="bottom-tab-icon">📸</span><span class="bottom-tab-label">Feed</span></a>
+            <a href="#" class="bottom-tab active" id="mobileProfileTab"><span class="bottom-tab-icon">👤</span><span class="bottom-tab-label">Profile</span></a>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -926,22 +353,17 @@
         let selectedCoverFile = null;
         let albumsRef = null;
 
-        // ── Notification helpers ──
         async function sendNotifToAll(notif) {
             const snap = await db.collectionGroup('profile').get();
-            const uids = snap.docs
-                .filter(d => d.id === 'info')
-                .map(d => d.ref.parent.parent.id);
+            const uids = snap.docs.filter(d => d.id === 'info').map(d => d.ref.parent.parent.id);
             const batch = db.batch();
             uids.forEach(uid => {
-                const ref = db.collection('users').doc(uid)
-                    .collection('notifications').doc();
+                const ref = db.collection('users').doc(uid).collection('notifications').doc();
                 batch.set(ref, { ...notif, read: false, createdAt: new Date().toISOString() });
             });
             await batch.commit();
         }
 
-        // Elements
         const profileHeader    = document.getElementById('profileHeader');
         const albumsSection    = document.getElementById('albumsSection');
         const albumsView       = document.getElementById('albumsView');
@@ -967,10 +389,7 @@
         const avatarInput      = document.getElementById('avatarInput');
 
         auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                window.location.href = '/task-tracker/landing.html';
-                return;
-            }
+            if (!user) { window.location.href = '/task-tracker/landing.html'; return; }
             isOwnProfile = user.uid === profileUserId;
             albumsRef = db.collection('users').doc(profileUserId).collection('albums');
             await loadProfile();
@@ -979,94 +398,51 @@
         async function loadProfile() {
             try {
                 const profileDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('info').get();
-                if (!profileDoc.exists) {
-                    profileHeader.innerHTML = '<div class="loading">Profile not found</div>';
-                    return;
-                }
+                if (!profileDoc.exists) { profileHeader.innerHTML = '<div class="loading">Profile not found</div>'; return; }
                 const profile = profileDoc.data();
-
-                // Count stats
                 const albumsSnapshot = await albumsRef.get();
                 let photoCount = 0;
                 for (const albumDoc of albumsSnapshot.docs) {
                     const ps = await albumsRef.doc(albumDoc.id).collection('photos').get();
                     photoCount += ps.size;
                 }
-
-                // Social links
                 let socialLinks = {};
-                try {
-                    const sd = await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').get();
-                    if (sd.exists) socialLinks = sd.data();
-                } catch(e) {}
-
-                // Extended about
+                try { const sd = await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').get(); if (sd.exists) socialLinks = sd.data(); } catch(e) {}
                 let extendedAbout = '';
-                try {
-                    const ad = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
-                    if (ad.exists) extendedAbout = ad.data().text || '';
-                } catch(e) {}
+                try { const ad = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get(); if (ad.exists) extendedAbout = ad.data().text || ''; } catch(e) {}
 
-                // Build social links HTML
                 const linkDefs = [
                     { key: 'instagram', icon: '📷', label: 'Instagram', url: u => `https://instagram.com/${u.replace('@','')}` },
                     { key: 'linkedin',  icon: '💼', label: 'LinkedIn',  url: u => u.startsWith('http') ? u : `https://linkedin.com/in/${u}` },
                     { key: 'twitter',   icon: '🐦', label: 'Twitter',   url: u => `https://twitter.com/${u.replace('@','')}` },
                     { key: 'github',    icon: '💻', label: 'GitHub',    url: u => `https://github.com/${u.replace('@','')}` },
                 ];
-                const socialHTML = linkDefs
-                    .filter(d => socialLinks[d.key])
-                    .map(d => `<a href="${d.url(socialLinks[d.key])}" target="_blank" class="social-icon-link">${d.icon} ${d.label}</a>`)
-                    .join('');
-
-                // Voice memo
+                const socialHTML = linkDefs.filter(d => socialLinks[d.key]).map(d => `<a href="${d.url(socialLinks[d.key])}" target="_blank" class="social-icon-link">${d.icon} ${d.label}</a>`).join('');
                 const voiceHTML = profile.voiceMemoURL ? `
-                    <button class="voice-memo-btn" onclick="toggleVoice(this)">
-                        <span class="voice-dot"></span> Hear my intro
-                    </button>
-                    <div class="voice-player" id="voicePlayer">
-                        <audio controls style="width:260px;">
-                            <source src="${profile.voiceMemoURL}" type="audio/webm">
-                        </audio>
-                    </div>
-                ` : '';
+                    <button class="voice-memo-btn" onclick="toggleVoice(this)"><span class="voice-dot"></span> Hear my intro</button>
+                    <div class="voice-player" id="voicePlayer"><audio controls style="width:260px;"><source src="${profile.voiceMemoURL}" type="audio/webm"></audio></div>` : '';
 
-                // Load saved banner background
                 let bannerData = { bgId: 'purple', photoURL: null };
-                try {
-                    const bd = await db.collection('users').doc(profileUserId).collection('profile').doc('banner').get();
-                    if (bd.exists) bannerData = { ...bannerData, ...bd.data() };
-                } catch(e) {}
+                try { const bd = await db.collection('users').doc(profileUserId).collection('profile').doc('banner').get(); if (bd.exists) bannerData = { ...bannerData, ...bd.data() }; } catch(e) {}
 
-                // Render hero
                 profileHeader.innerHTML = `
                     <div class="profile-hero" id="profileHero">
                         <div class="hero-orb"></div>
                         ${isOwnProfile ? `<button class="edit-profile-btn" id="editAboutBtnProfile">Edit Profile</button>` : ''}
                         ${isOwnProfile ? `<button class="bg-picker-btn" id="bgPickerBtn">🎨 Background</button>` : ''}
-
                         <div class="avatar-wrapper ${isOwnProfile ? 'own-profile' : ''}" id="avatarWrapper">
                             <img src="${profile.photoURL}" class="profile-picture" id="profilePic" alt="${profile.displayName}">
                             ${isOwnProfile ? `<div class="avatar-upload-overlay">📷</div>` : ''}
                         </div>
-
                         <h1 class="profile-name">${profile.displayName}</h1>
                         ${profile.bio ? `<p class="profile-bio">${profile.bio}</p>` : ''}
                         ${voiceHTML}
                         ${socialHTML ? `<div class="social-row">${socialHTML}</div>` : ''}
                     </div>
-
                     <div class="stats-strip">
-                        <div class="stat-item">
-                            <div class="stat-number">${albumsSnapshot.size}</div>
-                            <div class="stat-label">Albums</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">${photoCount}</div>
-                            <div class="stat-label">Photos</div>
-                        </div>
+                        <div class="stat-item"><div class="stat-number">${albumsSnapshot.size}</div><div class="stat-label">Albums</div></div>
+                        <div class="stat-item"><div class="stat-number">${photoCount}</div><div class="stat-label">Photos</div></div>
                     </div>
-
                     ${extendedAbout ? `
                         <div class="about-section">
                             <div class="about-section-header">
@@ -1074,34 +450,17 @@
                                 ${isOwnProfile ? `<button class="btn-edit-subtle" id="editAboutBtnInline">Edit</button>` : ''}
                             </div>
                             <div class="about-text">${extendedAbout}</div>
-                        </div>
-                    ` : (isOwnProfile ? `
+                        </div>` : (isOwnProfile ? `
                         <div class="about-section" style="text-align:center; color:#999;">
                             <p style="margin-bottom:16px;">Add an About section to tell people more about yourself</p>
                             <button class="btn btn-primary" id="addAboutBtn">+ Add About</button>
-                        </div>
-                    ` : '')}
-                `;
+                        </div>` : '')}`;
 
-                // Wire up avatar click
                 document.getElementById('avatarWrapper').addEventListener('click', () => {
-                    if (isOwnProfile) {
-                        avatarInput.click();
-                    } else {
-                        modalImage.src = profile.photoURL;
-                        imageModal.classList.add('active');
-                    }
+                    if (isOwnProfile) { avatarInput.click(); } else { modalImage.src = profile.photoURL; imageModal.classList.add('active'); }
                 });
-
-                // Wire up bg picker button
-                if (isOwnProfile) {
-                    document.getElementById('bgPickerBtn').addEventListener('click', openBgPicker);
-                }
-
-                // Apply saved background
+                if (isOwnProfile) document.getElementById('bgPickerBtn').addEventListener('click', openBgPicker);
                 applyHeroBg(bannerData);
-
-                // Wire up edit about buttons
                 setTimeout(() => {
                     ['editAboutBtnProfile', 'editAboutBtnInline', 'addAboutBtn'].forEach(id => {
                         const btn = document.getElementById(id);
@@ -1112,22 +471,12 @@
                 albumsSection.classList.remove('hidden');
                 if (isOwnProfile) createAlbumBtn.classList.remove('hidden');
                 loadAlbums();
-
-            } catch(error) {
-                console.error('Error loading profile:', error);
-                profileHeader.innerHTML = '<div class="loading">Error loading profile</div>';
-            }
+            } catch(error) { console.error('Error loading profile:', error); profileHeader.innerHTML = '<div class="loading">Error loading profile</div>'; }
         }
 
-        // Toggle voice player
-        function toggleVoice(btn) {
-            const player = document.getElementById('voicePlayer');
-            player.classList.toggle('visible');
-            btn.style.display = 'none';
-        }
+        function toggleVoice(btn) { const player = document.getElementById('voicePlayer'); player.classList.toggle('visible'); btn.style.display = 'none'; }
         window.toggleVoice = toggleVoice;
 
-        // Avatar upload
         avatarInput.onchange = async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -1138,13 +487,9 @@
                 const url = await ref.getDownloadURL();
                 await db.collection('users').doc(user.uid).collection('profile').doc('info').update({ photoURL: url });
                 document.getElementById('profilePic').src = url;
-            } catch(err) {
-                console.error('Avatar upload error:', err);
-                alert('Error uploading photo');
-            }
+            } catch(err) { console.error('Avatar upload error:', err); alert('Error uploading photo'); }
         };
 
-        // ── Background Picker ──
         const BG_PRESETS = [
             { id: 'grass',    css: 'linear-gradient(135deg, #1e6b14 0%, #3d9c2f 45%, #6dd832 80%, #c8f032 100%)' },
             { id: 'ocean',    css: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)' },
@@ -1158,12 +503,11 @@
 
         let selectedBgId = 'purple';
         let selectedBgCSS = BG_PRESETS[0].css;
-        let bgPhotoURL = null; // custom photo URL if uploaded
+        let bgPhotoURL = null;
 
         function initBgPicker(currentBg) {
             const swatches = document.getElementById('bgSwatches');
             if (!swatches) return;
-
             swatches.innerHTML = '';
             BG_PRESETS.forEach(preset => {
                 const swatch = document.createElement('div');
@@ -1173,14 +517,10 @@
                 swatch.addEventListener('click', () => {
                     document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('selected'));
                     swatch.classList.add('selected');
-                    selectedBgId = preset.id;
-                    selectedBgCSS = preset.css;
-                    bgPhotoURL = null; // clear custom photo if a preset is selected
+                    selectedBgId = preset.id; selectedBgCSS = preset.css; bgPhotoURL = null;
                 });
                 swatches.appendChild(swatch);
             });
-
-            // Upload area
             const uploadArea = document.getElementById('bgUploadArea');
             const bgInput = document.getElementById('bgPhotoInput');
             uploadArea.addEventListener('click', () => bgInput.click());
@@ -1193,29 +533,16 @@
                     const ref = storage.ref(`users/${user.uid}/banner/${Date.now()}_${file.name}`);
                     await ref.put(file);
                     bgPhotoURL = await ref.getDownloadURL();
-                    selectedBgId = 'photo';
-                    selectedBgCSS = null;
+                    selectedBgId = 'photo'; selectedBgCSS = null;
                     document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('selected'));
                     uploadArea.innerHTML = `<img src="${bgPhotoURL}" style="max-height:80px; border-radius:6px; display:block; margin:0 auto;">`;
-                } catch(err) {
-                    console.error('Banner upload error:', err);
-                    uploadArea.textContent = '📷 Click to upload a background photo';
-                    alert('Error uploading photo');
-                }
+                } catch(err) { console.error('Banner upload error:', err); uploadArea.textContent = '📷 Click to upload a background photo'; alert('Error uploading photo'); }
             });
         }
 
         async function openBgPicker() {
-            // Load current saved background
             let currentBgId = 'purple';
-            try {
-                const doc = await db.collection('users').doc(profileUserId).collection('profile').doc('banner').get();
-                if (doc.exists) {
-                    currentBgId = doc.data().bgId || 'purple';
-                    bgPhotoURL = doc.data().photoURL || null;
-                }
-            } catch(e) {}
-
+            try { const doc = await db.collection('users').doc(profileUserId).collection('profile').doc('banner').get(); if (doc.exists) { currentBgId = doc.data().bgId || 'purple'; bgPhotoURL = doc.data().photoURL || null; } } catch(e) {}
             selectedBgId = currentBgId;
             document.getElementById('bgPickerModal').classList.add('active');
             setTimeout(() => initBgPicker(currentBgId), 10);
@@ -1225,62 +552,36 @@
             const btn = document.getElementById('saveBgBtn');
             try {
                 btn.disabled = true; btn.textContent = 'Saving...';
-
-                const bannerData = {
-                    bgId: selectedBgId,
-                    photoURL: bgPhotoURL || null,
-                    updatedAt: new Date().toISOString()
-                };
-
+                const bannerData = { bgId: selectedBgId, photoURL: bgPhotoURL || null, updatedAt: new Date().toISOString() };
                 await db.collection('users').doc(profileUserId).collection('profile').doc('banner').set(bannerData);
-
-                // Apply immediately to the hero
                 applyHeroBg(bannerData);
                 document.getElementById('bgPickerModal').classList.remove('active');
-            } catch(err) {
-                console.error('Error saving banner:', err);
-                alert('Error saving background');
-            } finally {
-                btn.disabled = false; btn.textContent = 'Save';
-            }
+            } catch(err) { console.error('Error saving banner:', err); alert('Error saving background'); }
+            finally { btn.disabled = false; btn.textContent = 'Save'; }
         }
 
         function applyHeroBg(bannerData) {
             const hero = document.querySelector('.profile-hero');
             if (!hero) return;
-            if (bannerData.photoURL) {
-                hero.style.background = `url('${bannerData.photoURL}') center/cover no-repeat`;
-            } else {
-                const preset = BG_PRESETS.find(p => p.id === bannerData.bgId) || BG_PRESETS[0];
-                hero.style.background = preset.css;
-            }
+            if (bannerData.photoURL) { hero.style.background = `url('${bannerData.photoURL}') center/cover no-repeat`; }
+            else { const preset = BG_PRESETS.find(p => p.id === bannerData.bgId) || BG_PRESETS[0]; hero.style.background = preset.css; }
         }
 
         document.getElementById('saveBgBtn').addEventListener('click', saveBg);
-        document.getElementById('cancelBgBtn').addEventListener('click', () => {
-            document.getElementById('bgPickerModal').classList.remove('active');
-        });
+        document.getElementById('cancelBgBtn').addEventListener('click', () => document.getElementById('bgPickerModal').classList.remove('active'));
 
-        // Open full Edit Profile modal
         async function openEditAbout() {
             try {
-                // Load bio
                 const profileDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('info').get();
                 if (profileDoc.exists) {
                     document.getElementById('editBioInput').value = profileDoc.data().bio || '';
-                    // Show current voice memo if exists
                     const voiceURL = profileDoc.data().voiceMemoURL;
                     const preview = document.getElementById('currentVoicePreview');
-                    if (voiceURL) {
-                        preview.innerHTML = `<audio controls style="width:100%; border-radius:8px;"><source src="${voiceURL}" type="audio/webm"></audio>`;
-                    } else {
-                        preview.innerHTML = '<p style="color:#999; font-size:13px;">No voice intro recorded yet</p>';
-                    }
+                    if (voiceURL) { preview.innerHTML = `<audio controls style="width:100%; border-radius:8px;"><source src="${voiceURL}" type="audio/webm"></audio>`; }
+                    else { preview.innerHTML = '<p style="color:#999; font-size:13px;">No voice intro recorded yet</p>'; }
                 }
-                // Load about text
                 const ad = await db.collection('users').doc(profileUserId).collection('profile').doc('about').get();
                 document.getElementById('aboutTextarea').value = ad.exists ? (ad.data().text || '') : '';
-                // Load social links
                 const sd = await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').get();
                 if (sd.exists) {
                     const links = sd.data();
@@ -1290,18 +591,14 @@
                     document.getElementById('editGithub').value = links.github || '';
                 }
             } catch(e) { console.error('Error loading edit data:', e); }
-
-            // Reset recorder state
             editAudioBlob = null;
             document.getElementById('editAudioPlayback').style.display = 'none';
             document.getElementById('editRecordingStatus').textContent = 'Record a new intro to replace current';
             document.getElementById('editRecordBtn').textContent = '🎤';
             document.getElementById('editRecordBtn').style.background = '#3d9c2f';
-
             document.getElementById('editProfileModal').classList.add('active');
         }
 
-        // Voice recorder for edit modal
         let editMediaRecorder = null;
         let editAudioChunks = [];
         let editAudioBlob = null;
@@ -1313,50 +610,29 @@
             const status = document.getElementById('editRecordingStatus');
             const timerDisplay = document.getElementById('editRecordingTimer');
             const playback = document.getElementById('editAudioPlayback');
-
             if (!editMediaRecorder || editMediaRecorder.state === 'inactive') {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     editMediaRecorder = new MediaRecorder(stream);
-                    editAudioChunks = [];
-                    editRecordingSeconds = 0;
-
+                    editAudioChunks = []; editRecordingSeconds = 0;
                     editMediaRecorder.ondataavailable = (e) => editAudioChunks.push(e.data);
                     editMediaRecorder.onstop = () => {
                         editAudioBlob = new Blob(editAudioChunks, { type: 'audio/webm' });
-                        playback.src = URL.createObjectURL(editAudioBlob);
-                        playback.style.display = 'block';
-                        status.textContent = 'New recording ready!';
-                        btn.textContent = '🎤';
-                        btn.style.background = '#3d9c2f';
+                        playback.src = URL.createObjectURL(editAudioBlob); playback.style.display = 'block';
+                        status.textContent = 'New recording ready!'; btn.textContent = '🎤'; btn.style.background = '#3d9c2f';
                         stream.getTracks().forEach(t => t.stop());
                     };
-
-                    editMediaRecorder.start();
-                    btn.textContent = '⏹️';
-                    btn.style.background = '#dc3545';
-                    status.textContent = 'Recording... (click to stop)';
-                    timerDisplay.style.display = 'block';
-
+                    editMediaRecorder.start(); btn.textContent = '⏹️'; btn.style.background = '#dc3545'; status.textContent = 'Recording... (click to stop)'; timerDisplay.style.display = 'block';
                     editRecordingTimer = setInterval(() => {
                         editRecordingSeconds++;
-                        const m = Math.floor(editRecordingSeconds / 60);
-                        const s = editRecordingSeconds % 60;
+                        const m = Math.floor(editRecordingSeconds / 60); const s = editRecordingSeconds % 60;
                         timerDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
                         if (editRecordingSeconds >= 60) btn.click();
                     }, 1000);
-
-                } catch(err) {
-                    alert('Could not access microphone. Please allow microphone access.');
-                }
-            } else {
-                editMediaRecorder.stop();
-                clearInterval(editRecordingTimer);
-                document.getElementById('editRecordingTimer').style.display = 'none';
-            }
+                } catch(err) { alert('Could not access microphone. Please allow microphone access.'); }
+            } else { editMediaRecorder.stop(); clearInterval(editRecordingTimer); document.getElementById('editRecordingTimer').style.display = 'none'; }
         });
 
-        // Albums
         function loadAlbums() {
             albumsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
                 renderAlbums(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -1365,118 +641,58 @@
 
         function renderAlbums(albums) {
             albumGrid.innerHTML = '';
-
-            if (albums.length === 0 && !isOwnProfile) {
-                albumGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📷</div><p>No albums yet</p></div>';
-                return;
-            }
-
-            // Create album cell (own profile only)
+            if (albums.length === 0 && !isOwnProfile) { albumGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📷</div><p>No albums yet</p></div>'; return; }
             if (isOwnProfile) {
-                const cell = document.createElement('div');
-                cell.className = 'album-grid-cell';
+                const cell = document.createElement('div'); cell.className = 'album-grid-cell';
                 cell.innerHTML = `<div class="create-album-card"><div class="create-icon">＋</div><div>New Album</div></div>`;
                 cell.querySelector('.create-album-card').onclick = () => createAlbumModal.classList.add('active');
                 albumGrid.appendChild(cell);
             }
-
             albums.forEach(album => {
-                const cell = document.createElement('div');
-                cell.className = 'album-grid-cell';
-                cell.innerHTML = `
-                    <div class="album-card">
-                        <img src="${album.coverUrl}" class="album-cover" alt="${album.name}">
-                        <div class="album-overlay">
-                            <div class="album-name">${album.name}</div>
-                            <div class="photo-count">${album.photoCount || 0} photos</div>
-                        </div>
-                        ${isOwnProfile ? `<button class="album-delete-btn" title="Delete album">🗑️</button>` : ''}
-                    </div>
-                `;
-                cell.querySelector('.album-card').onclick = (e) => {
-                    if (e.target.classList.contains('album-delete-btn')) return;
-                    openAlbum(album.id, album.name, album.coverFileName);
-                };
-                if (isOwnProfile) {
-                    cell.querySelector('.album-delete-btn').onclick = (e) => {
-                        e.stopPropagation();
-                        confirmDeleteAlbum(album.id, album.name, album.coverFileName);
-                    };
-                }
+                const cell = document.createElement('div'); cell.className = 'album-grid-cell';
+                cell.innerHTML = `<div class="album-card"><img src="${album.coverUrl}" class="album-cover" alt="${album.name}"><div class="album-overlay"><div class="album-name">${album.name}</div><div class="photo-count">${album.photoCount || 0} photos</div></div>${isOwnProfile ? `<button class="album-delete-btn" title="Delete album">🗑️</button>` : ''}</div>`;
+                cell.querySelector('.album-card').onclick = (e) => { if (e.target.classList.contains('album-delete-btn')) return; openAlbum(album.id, album.name, album.coverFileName); };
+                if (isOwnProfile) cell.querySelector('.album-delete-btn').onclick = (e) => { e.stopPropagation(); confirmDeleteAlbum(album.id, album.name, album.coverFileName); };
                 albumGrid.appendChild(cell);
             });
         }
 
-        // Album Modal
         coverUploadArea.onclick = () => coverInput.click();
         coverInput.onchange = (e) => {
             const file = e.target.files[0];
-            if (file) {
-                selectedCoverFile = file;
-                const reader = new FileReader();
-                reader.onload = (e) => { coverPreview.src = e.target.result; coverPreview.style.display = 'block'; };
-                reader.readAsDataURL(file);
-            }
+            if (file) { selectedCoverFile = file; const reader = new FileReader(); reader.onload = (e) => { coverPreview.src = e.target.result; coverPreview.style.display = 'block'; }; reader.readAsDataURL(file); }
         };
 
         createAlbumBtn.onclick = () => createAlbumModal.classList.add('active');
-        cancelAlbumBtn.onclick = () => {
-            createAlbumModal.classList.remove('active');
-            albumNameInput.value = '';
-            coverPreview.style.display = 'none';
-            selectedCoverFile = null;
-        };
+        cancelAlbumBtn.onclick = () => { createAlbumModal.classList.remove('active'); albumNameInput.value = ''; coverPreview.style.display = 'none'; selectedCoverFile = null; };
 
         createAlbumConfirm.onclick = async () => {
             const name = albumNameInput.value.trim();
             if (!name || !selectedCoverFile) { alert('Please provide album name and cover photo'); return; }
             try {
-                createAlbumConfirm.disabled = true;
-                createAlbumConfirm.textContent = 'Creating...';
+                createAlbumConfirm.disabled = true; createAlbumConfirm.textContent = 'Creating...';
                 const user = auth.currentUser;
                 const coverFileName = `users/${user.uid}/covers/${Date.now()}_${selectedCoverFile.name}`;
                 const coverRef = storage.ref(coverFileName);
                 await coverRef.put(selectedCoverFile);
                 const coverUrl = await coverRef.getDownloadURL();
                 await albumsRef.add({ name, coverUrl, coverFileName, photoCount: 0, createdAt: new Date().toISOString() });
-                albumNameInput.value = '';
-                coverPreview.style.display = 'none';
-                selectedCoverFile = null;
+                albumNameInput.value = ''; coverPreview.style.display = 'none'; selectedCoverFile = null;
                 createAlbumModal.classList.remove('active');
-            } catch(error) {
-                console.error('Error creating album:', error);
-                alert('Error creating album');
-            } finally {
-                createAlbumConfirm.disabled = false;
-                createAlbumConfirm.textContent = 'Create Album';
-            }
+            } catch(error) { console.error('Error creating album:', error); alert('Error creating album'); }
+            finally { createAlbumConfirm.disabled = false; createAlbumConfirm.textContent = 'Create Album'; }
         };
 
         function openAlbum(albumId, name, coverFileName) {
-            currentAlbumId = albumId;
-            currentAlbumCoverFileName = coverFileName || null;
+            currentAlbumId = albumId; currentAlbumCoverFileName = coverFileName || null;
             albumTitle.textContent = name;
-            albumsView.classList.add('hidden');
-            albumDetailView.classList.remove('hidden');
-            if (isOwnProfile) {
-                uploadPhotosBtn.classList.remove('hidden');
-                const delBtn = document.getElementById('deleteAlbumBtn');
-                if (delBtn) delBtn.classList.remove('hidden');
-            }
+            albumsView.classList.add('hidden'); albumDetailView.classList.remove('hidden');
+            if (isOwnProfile) { uploadPhotosBtn.classList.remove('hidden'); const delBtn = document.getElementById('deleteAlbumBtn'); if (delBtn) delBtn.classList.remove('hidden'); }
             loadPhotos(albumId);
         }
 
-        backBtn.onclick = () => {
-            currentAlbumId = null;
-            currentAlbumCoverFileName = null;
-            albumDetailView.classList.add('hidden');
-            albumsView.classList.remove('hidden');
-            document.getElementById('deleteAlbumBtn').classList.add('hidden');
-        };
-
-        document.getElementById('deleteAlbumBtn').onclick = () => {
-            confirmDeleteAlbum(currentAlbumId, albumTitle.textContent, currentAlbumCoverFileName);
-        };
+        backBtn.onclick = () => { currentAlbumId = null; currentAlbumCoverFileName = null; albumDetailView.classList.add('hidden'); albumsView.classList.remove('hidden'); document.getElementById('deleteAlbumBtn').classList.add('hidden'); };
+        document.getElementById('deleteAlbumBtn').onclick = () => confirmDeleteAlbum(currentAlbumId, albumTitle.textContent, currentAlbumCoverFileName);
 
         uploadPhotosBtn.onclick = () => photoInput.click();
         photoInput.onchange = async (e) => {
@@ -1489,8 +705,7 @@
                 const fileName = `users/${user.uid}/albums/${currentAlbumId}/${Date.now()}_${file.name}`;
                 const ref = storage.ref(fileName);
                 try {
-                    await ref.put(file);
-                    const url = await ref.getDownloadURL();
+                    await ref.put(file); const url = await ref.getDownloadURL();
                     await albumsRef.doc(currentAlbumId).collection('photos').add({ url, fileName, uploadedAt: new Date().toISOString() });
                     const albumDoc = await albumsRef.doc(currentAlbumId).get();
                     await albumsRef.doc(currentAlbumId).update({ photoCount: (albumDoc.data().photoCount || 0) + 1 });
@@ -1498,20 +713,10 @@
                 } catch(err) { console.error('Upload error:', err); }
             }
             photoInput.value = '';
-
-            // Notify all users once after all uploads complete
             if (uploadCount > 0) {
                 try {
-                    const albumName = albumTitle.textContent;
-                    const photoWord = uploadCount === 1 ? 'photo' : `${uploadCount} photos`;
-                    await sendNotifToAll({
-                        type: 'gallery_update',
-                        icon: '📷',
-                        message: `${globalUserProfile.displayName} added ${photoWord} to "${albumName}"`,
-                        actorId: user.uid,
-                        actorName: globalUserProfile.displayName,
-                        actorPhoto: globalUserProfile.photoURL,
-                    });
+                    const albumName = albumTitle.textContent; const photoWord = uploadCount === 1 ? 'photo' : `${uploadCount} photos`;
+                    await sendNotifToAll({ type: 'gallery_update', icon: '📷', message: `${globalUserProfile.displayName} added ${photoWord} to "${albumName}"`, actorId: user.uid, actorName: globalUserProfile.displayName, actorPhoto: globalUserProfile.photoURL });
                 } catch(e) { console.error('Notification error:', e); }
             }
         };
@@ -1525,23 +730,12 @@
         }
 
         function renderPhotos(photos) {
-            if (photos.length === 0) {
-                photoGrid.innerHTML = `<div class="empty-state"><div class="empty-icon">📷</div><p>${isOwnProfile ? 'Click "Add Photos" to upload!' : 'No photos yet'}</p></div>`;
-                return;
-            }
+            if (photos.length === 0) { photoGrid.innerHTML = `<div class="empty-state"><div class="empty-icon">📷</div><p>${isOwnProfile ? 'Click "Add Photos" to upload!' : 'No photos yet'}</p></div>`; return; }
             photoGrid.innerHTML = '';
             photos.forEach(photo => {
-                const item = document.createElement('div');
-                item.className = 'photo-item';
-                item.innerHTML = `
-                    <img src="${photo.url}" alt="Photo">
-                    ${isOwnProfile ? `<div class="photo-overlay"><button class="photo-delete-btn" onclick="event.stopPropagation(); deletePhoto('${photo.id}', '${photo.fileName}')">🗑️</button></div>` : ''}
-                `;
-                item.onclick = (e) => {
-                    if (e.target.tagName === 'BUTTON') return;
-                    modalImage.src = photo.url;
-                    imageModal.classList.add('active');
-                };
+                const item = document.createElement('div'); item.className = 'photo-item';
+                item.innerHTML = `<img src="${photo.url}" alt="Photo">${isOwnProfile ? `<div class="photo-overlay"><button class="photo-delete-btn" onclick="event.stopPropagation(); deletePhoto('${photo.id}', '${photo.fileName}')">🗑️</button></div>` : ''}`;
+                item.onclick = (e) => { if (e.target.tagName === 'BUTTON') return; modalImage.src = photo.url; imageModal.classList.add('active'); };
                 photoGrid.appendChild(item);
             });
         }
@@ -1549,122 +743,65 @@
         async function deletePhoto(photoId, fileName) {
             if (!confirm('Delete this photo?')) return;
             try {
-                // Get the photo URL before deleting so we can match feed posts
                 const photoDoc = await albumsRef.doc(currentAlbumId).collection('photos').doc(photoId).get();
                 const photoURL = photoDoc.exists ? photoDoc.data().url : null;
-
-                // Delete from storage
                 try { await storage.ref(fileName).delete(); } catch(e) {}
-
-                // Delete from album
                 await albumsRef.doc(currentAlbumId).collection('photos').doc(photoId).delete();
                 const albumDoc = await albumsRef.doc(currentAlbumId).get();
                 await albumsRef.doc(currentAlbumId).update({ photoCount: Math.max(0, (albumDoc.data().photoCount || 1) - 1) });
-
-                // Remove matching feed post (same photo URL, same user)
                 if (photoURL) {
-                    const feedSnap = await db.collection('feed')
-                        .where('userId', '==', profileUserId)
-                        .where('photoURL', '==', photoURL)
-                        .get();
-                    const batch = db.batch();
-                    feedSnap.docs.forEach(d => batch.delete(d.ref));
-                    if (!feedSnap.empty) await batch.commit();
+                    const feedSnap = await db.collection('feed').where('userId', '==', profileUserId).where('photoURL', '==', photoURL).get();
+                    const batch = db.batch(); feedSnap.docs.forEach(d => batch.delete(d.ref)); if (!feedSnap.empty) await batch.commit();
                 }
             } catch(err) { console.error('Delete error:', err); alert('Error deleting photo'); }
         }
         window.deletePhoto = deletePhoto;
 
-        function confirmDeleteAlbum(albumId, albumName, coverFileName) {
-            if (!confirm(`Delete the album "${albumName}" and all its photos? This cannot be undone.`)) return;
-            deleteAlbum(albumId, coverFileName);
-        }
+        function confirmDeleteAlbum(albumId, albumName, coverFileName) { if (!confirm(`Delete the album "${albumName}" and all its photos? This cannot be undone.`)) return; deleteAlbum(albumId, coverFileName); }
         window.confirmDeleteAlbum = confirmDeleteAlbum;
 
         async function deleteAlbum(albumId, coverFileName) {
             try {
-                // Get all photos before deleting
                 const photosSnap = await albumsRef.doc(albumId).collection('photos').get();
                 const photoURLs = photosSnap.docs.map(d => d.data().url).filter(Boolean);
-
-                // Delete all photos from storage + firestore
                 const batch = db.batch();
-                for (const photoDoc of photosSnap.docs) {
-                    const data = photoDoc.data();
-                    try { await storage.ref(data.fileName).delete(); } catch(e) {}
-                    batch.delete(photoDoc.ref);
-                }
+                for (const photoDoc of photosSnap.docs) { try { await storage.ref(photoDoc.data().fileName).delete(); } catch(e) {} batch.delete(photoDoc.ref); }
                 await batch.commit();
-
-                // Delete cover photo from storage
-                if (coverFileName) {
-                    try { await storage.ref(coverFileName).delete(); } catch(e) {}
-                }
-
-                // Delete album document
+                if (coverFileName) { try { await storage.ref(coverFileName).delete(); } catch(e) {} }
                 await albumsRef.doc(albumId).delete();
-
-                // Remove any matching feed posts for this user
                 if (photoURLs.length > 0) {
-                    // Firestore 'in' queries max 30 items — chunk if needed
                     const chunkSize = 30;
                     for (let i = 0; i < photoURLs.length; i += chunkSize) {
                         const chunk = photoURLs.slice(i, i + chunkSize);
-                        const feedSnap = await db.collection('feed')
-                            .where('userId', '==', profileUserId)
-                            .where('photoURL', 'in', chunk)
-                            .get();
-                        const feedBatch = db.batch();
-                        feedSnap.docs.forEach(d => feedBatch.delete(d.ref));
-                        if (!feedSnap.empty) await feedBatch.commit();
+                        const feedSnap = await db.collection('feed').where('userId', '==', profileUserId).where('photoURL', 'in', chunk).get();
+                        const feedBatch = db.batch(); feedSnap.docs.forEach(d => feedBatch.delete(d.ref)); if (!feedSnap.empty) await feedBatch.commit();
                     }
                 }
-
-                // If we're inside the album detail view, go back
-                if (!albumDetailView.classList.contains('hidden')) {
-                    albumDetailView.classList.add('hidden');
-                    albumsView.classList.remove('hidden');
-                    currentAlbumId = null;
-                }
-            } catch(err) {
-                console.error('Delete album error:', err);
-                alert('Error deleting album. Try again.');
-            }
+                if (!albumDetailView.classList.contains('hidden')) { albumDetailView.classList.add('hidden'); albumsView.classList.remove('hidden'); currentAlbumId = null; }
+            } catch(err) { console.error('Delete album error:', err); alert('Error deleting album. Try again.'); }
         }
 
         imageModalClose.onclick = () => imageModal.classList.remove('active');
         imageModal.onclick = (e) => { if (e.target === imageModal) imageModal.classList.remove('active'); };
 
-        // Save full profile edits
-        document.getElementById('cancelProfileBtn').onclick = () => {
-            document.getElementById('editProfileModal').classList.remove('active');
-        };
+        document.getElementById('cancelProfileBtn').onclick = () => document.getElementById('editProfileModal').classList.remove('active');
 
         document.getElementById('saveProfileBtn').onclick = async () => {
             const btn = document.getElementById('saveProfileBtn');
             try {
                 btn.disabled = true; btn.textContent = 'Saving...';
                 const user = auth.currentUser;
-
-                // Save bio to profile/info
                 const bio = document.getElementById('editBioInput').value.trim();
                 const updates = { bio, updatedAt: new Date().toISOString() };
-
-                // Upload new voice memo if recorded
                 if (editAudioBlob) {
                     const vRef = storage.ref(`voice-memos/${user.uid}/${Date.now()}.webm`);
                     await vRef.put(editAudioBlob);
                     updates.voiceMemoURL = await vRef.getDownloadURL();
                     updates.voiceMemoDuration = editRecordingSeconds;
                 }
-
                 await db.collection('users').doc(profileUserId).collection('profile').doc('info').update(updates);
-
-                // Save about text
                 const aboutText = document.getElementById('aboutTextarea').value.trim();
                 await db.collection('users').doc(profileUserId).collection('profile').doc('about').set({ text: aboutText, updatedAt: new Date().toISOString() });
-
-                // Save social links
                 await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').set({
                     instagram: document.getElementById('editInstagram').value.trim(),
                     linkedin:  document.getElementById('editLinkedin').value.trim(),
@@ -1672,31 +809,25 @@
                     github:    document.getElementById('editGithub').value.trim(),
                     updatedAt: new Date().toISOString()
                 });
-
                 document.getElementById('editProfileModal').classList.remove('active');
-                await loadProfile(); // Refresh to show changes
-            } catch(err) {
-                console.error('Save error:', err);
-                alert('Error saving. Please try again.');
-            } finally {
-                btn.disabled = false; btn.textContent = 'Save Changes';
-            }
+                await loadProfile();
+            } catch(err) { console.error('Save error:', err); alert('Error saving. Please try again.'); }
+            finally { btn.disabled = false; btn.textContent = 'Save Changes'; }
         };
 
-        // Mobile tab
         auth.onAuthStateChanged((user) => {
             const tab = document.getElementById('mobileProfileTab');
             if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
         });
     </script>
+
+    <!-- ✅ Unregister old service workers -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW error:', err));
-            });
-        }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(r => r.unregister());
+        });
+      }
     </script>
 </body>
 </html>
