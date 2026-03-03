@@ -3,13 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/task-tracker/manifest.json">
-    <meta name="theme-color" content="#3d9c2f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="TouchGrass">
-    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
     <title>TouchGrass</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,900&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
@@ -28,7 +21,6 @@
             position: relative;
         }
 
-        /* Animated grass background */
         .bg-blades {
             position: fixed;
             inset: 0;
@@ -48,7 +40,6 @@
             50% { transform: rotate(4deg); }
         }
 
-        /* Stagger sway per blade */
         .blade:nth-child(2) { animation-delay: 0.3s; }
         .blade:nth-child(3) { animation-delay: 0.6s; }
         .blade:nth-child(4) { animation-delay: 0.9s; }
@@ -57,7 +48,6 @@
         .blade:nth-child(7) { animation-delay: 0.45s; }
         .blade:nth-child(8) { animation-delay: 0.75s; }
 
-        /* Main card */
         .landing-card {
             position: relative;
             z-index: 10;
@@ -78,7 +68,6 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* Big logo */
         .logo-wrap {
             display: flex;
             align-items: center;
@@ -120,7 +109,6 @@
             font-weight: 600;
         }
 
-        /* Sign in button */
         .signin-btn {
             display: inline-flex;
             align-items: center;
@@ -148,10 +136,7 @@
 
         .signin-btn:active { transform: translateY(0); }
 
-        .google-icon {
-            width: 22px;
-            height: 22px;
-        }
+        .google-icon { width: 22px; height: 22px; }
 
         .signin-note {
             font-size: 12px;
@@ -159,7 +144,6 @@
             margin-top: 16px;
         }
 
-        /* Error */
         .error-msg {
             background: #fee;
             color: #c33;
@@ -173,7 +157,6 @@
 </head>
 <body>
 
-    <!-- Animated grass blades in background -->
     <div class="bg-blades">
         <svg class="blade" style="left:5%; width:60px; height:220px;" viewBox="0 0 60 220">
             <path d="M30 220 C30 220 10 140 20 20 C20 20 30 100 40 220 Z" fill="#6dd83260"/>
@@ -199,16 +182,11 @@
     </div>
 
     <div class="landing-card">
-        <!-- Logo -->
         <div class="logo-wrap">
             <svg class="logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Left blade -->
                 <path d="M16 56 C16 56 10 36 20 10 C20 10 24 30 18 56 Z" fill="#4ab830"/>
-                <!-- Center blade -->
                 <path d="M32 56 C32 56 24 26 32 2 C32 2 40 26 32 56 Z" fill="#6dd832"/>
-                <!-- Right blade -->
                 <path d="M48 56 C48 56 40 36 44 10 C44 10 54 30 48 56 Z" fill="#4ab830"/>
-                <!-- Ground -->
                 <rect x="6" y="54" width="52" height="7" rx="3.5" fill="#2d7a22"/>
             </svg>
             <div class="logo-text">TouchGrass</div>
@@ -219,7 +197,6 @@
         <div class="error-msg" id="errorMsg"></div>
 
         <button class="signin-btn" onclick="handleSignIn()">
-            <!-- Google G icon -->
             <svg class="google-icon" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -232,7 +209,6 @@
         <p class="signin-note">No account needed — just your Google account</p>
     </div>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -240,14 +216,6 @@
     <script src="auth.js"></script>
 
     <script>
-  auth.getRedirectResult().then(result => {
-    console.log('REDIRECT RESULT:', result);
-  }).catch(err => {
-    console.error('REDIRECT ERROR:', err.code, err.message);
-  });
-</script>
-    
-  <script>
         async function handleSignIn() {
             const errorMsg = document.getElementById('errorMsg');
             try {
@@ -258,6 +226,15 @@
                 errorMsg.style.display = 'block';
             }
         }
+    </script>
+
+    <!-- ✅ Unregister any old service workers from the PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(r => r.unregister());
+        });
+      }
     </script>
 </body>
 </html>
