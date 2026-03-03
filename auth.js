@@ -21,7 +21,6 @@ const ADMIN_EMAIL = 'mpynn15@gmail.com';
 let currentUser = null;
 let userProfile = null;
 let isAdmin = false;
-let authHandled = false;
 
 const PATH = window.location.pathname;
 const ON_LANDING = PATH.includes('landing.html');
@@ -29,12 +28,6 @@ const ON_SETUP   = PATH.includes('profile-setup.html');
 const ON_APP     = !ON_LANDING && !ON_SETUP;
 
 auth.onAuthStateChanged(async (user) => {
-    if (authHandled) {
-        currentUser = user;
-        updateUIForAuthState();
-        return;
-    }
-    authHandled = true;
     currentUser = user;
 
     if (!user) {
@@ -100,10 +93,6 @@ async function signOut() {
     }
 }
 
-// ✅ FIXED: Correct SW path and scope for GitHub Pages subdirectory
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/task-tracker/sw.js', { scope: '/task-tracker/' });
-}
 
 function updateUIForAuthState() {
     const authBtn = document.getElementById('authButton');
