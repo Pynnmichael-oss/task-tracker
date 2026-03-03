@@ -239,20 +239,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
-    <script>
-        // If already logged in, redirect to home
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                const profileDoc = await db.collection('users').doc(user.uid)
-                    .collection('profile').doc('info').get();
-                if (profileDoc.exists) {
-                    window.location.href = '/task-tracker/index.html';
-                } else {
-                    window.location.href = '/task-tracker/profile-setup.html';
-                }
-            }
-        });
-
+  <script>
         async function handleSignIn() {
             const errorMsg = document.getElementById('errorMsg');
             try {
@@ -262,15 +249,6 @@
                 errorMsg.textContent = 'Sign in failed. Please try again.';
                 errorMsg.style.display = 'block';
             }
-        }
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW error:', err));
-            });
         }
     </script>
 </body>
