@@ -1,10 +1,6 @@
-const USE_FIREBASE_HOSTING = true; // flip to true when switching to Firebase Hosting
-
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
-    authDomain: USE_FIREBASE_HOSTING
-        ? "michael-new-website.firebaseapp.com"
-        : "pynnmichael-oss.github.io",
+    authDomain: "michael-new-website.firebaseapp.com",
     projectId: "michael-new-website",
     storageBucket: "michael-new-website.firebasestorage.app",
     messagingSenderId: "149129540182",
@@ -25,12 +21,20 @@ const ADMIN_EMAIL = 'mpynn15@gmail.com';
 let currentUser = null;
 let userProfile = null;
 let isAdmin = false;
+let authHandled = false;
+
 const PATH = window.location.pathname;
 const ON_LANDING = PATH.includes('landing.html');
 const ON_SETUP   = PATH.includes('profile-setup.html');
 const ON_APP     = !ON_LANDING && !ON_SETUP;
 
 auth.onAuthStateChanged(async (user) => {
+    if (authHandled) {
+        currentUser = user;
+        updateUIForAuthState();
+        return;
+    }
+    authHandled = true;
     currentUser = user;
 
     if (!user) {
@@ -63,7 +67,7 @@ auth.onAuthStateChanged(async (user) => {
             updateUIForAuthState();
         } else {
             userProfile = null;
-            if (ON_APP || ON_LANDING) {
+            if (ON_APP) {
                 window.location.href = '/task-tracker/profile-setup.html';
             } else {
                 updateUIForAuthState();
@@ -75,20 +79,18 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-// Sign In — uses popup (works on GitHub Pages, no Firebase Hosting needed)
+// ✅ FIXED: signInWithPopup (redirect doesn't work on GitHub Pages)
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
-        await auth.signInWithRedirect(provider);
-        // onAuthStateChanged above will handle the redirect after popup closes
+        await auth.signInWithPopup(provider);
     } catch (error) {
         console.error('Sign in error:', error);
         alert('Sign in failed: ' + error.message);
     }
 }
 
-// Sign Out
 async function signOut() {
     try {
         await auth.signOut();
@@ -98,12 +100,11 @@ async function signOut() {
     }
 }
 
-// Register Service Worker
+// ✅ FIXED: Correct SW path and scope for GitHub Pages subdirectory
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/task-tracker/sw.js');
+    navigator.serviceWorker.register('/task-tracker/sw.js', { scope: '/task-tracker/' });
 }
 
-// Update UI
 function updateUIForAuthState() {
     const authBtn = document.getElementById('authButton');
     if (authBtn) {
