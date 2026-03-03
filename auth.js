@@ -1,6 +1,10 @@
+const USE_FIREBASE_HOSTING = false; // flip to true when switching to Firebase Hosting
+
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
-    authDomain: "michael-new-website.firebaseapp.com",
+    authDomain: USE_FIREBASE_HOSTING
+        ? "michael-new-website.firebaseapp.com"
+        : "pynnmichael-oss.github.io",
     projectId: "michael-new-website",
     storageBucket: "michael-new-website.firebasestorage.app",
     messagingSenderId: "149129540182",
@@ -29,7 +33,6 @@ const ON_SETUP   = PATH.includes('profile-setup.html');
 const ON_APP     = !ON_LANDING && !ON_SETUP;
 
 auth.onAuthStateChanged(async (user) => {
-    // Only handle routing once per page load
     if (authHandled) {
         currentUser = user;
         updateUIForAuthState();
@@ -50,7 +53,6 @@ auth.onAuthStateChanged(async (user) => {
 
     isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
-    // Setup page handles its own flow — don't interfere
     if (ON_SETUP) {
         updateUIForAuthState();
         return;
@@ -111,9 +113,10 @@ async function signOut() {
     }
 }
 
+// Register Service Worker at correct path
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/task-tracker/sw.js');
-  }
+}
 
 // Update UI
 function updateUIForAuthState() {
