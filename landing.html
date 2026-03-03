@@ -239,6 +239,14 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
 
+    <script>
+  auth.getRedirectResult().then(result => {
+    console.log('REDIRECT RESULT:', result);
+  }).catch(err => {
+    console.error('REDIRECT ERROR:', err.code, err.message);
+  });
+</script>
+    
   <script>
         async function handleSignIn() {
             const errorMsg = document.getElementById('errorMsg');
