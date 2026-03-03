@@ -1,4 +1,4 @@
-const CACHE_NAME = "touchgrass-v1";
+const CACHE_NAME = "touchgrass-v2";
 
 const STATIC_ASSETS = [
   "/task-tracker/index.html",
