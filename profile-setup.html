@@ -3,13 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/task-tracker/manifest.json">
-    <meta name="theme-color" content="#3d9c2f">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="TouchGrass">
-    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
     <title>Complete Your Profile</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -31,259 +24,69 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        .setup-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+        .setup-header { text-align: center; margin-bottom: 40px; }
+        .setup-header h1 { font-size: 32px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+        .setup-header p { color: #666; font-size: 16px; }
 
-        .setup-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-        }
-
-        .setup-header p {
-            color: #666;
-            font-size: 16px;
-        }
-
-        .profile-picture-upload {
-            text-align: center;
-            margin-bottom: 32px;
-        }
+        .profile-picture-upload { text-align: center; margin-bottom: 32px; }
 
         .profile-picture-preview {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 0 auto 16px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 4px solid #3d9c2f;
-            cursor: pointer;
-            transition: all 0.3s;
+            width: 150px; height: 150px; border-radius: 50%;
+            margin: 0 auto 16px; background: #f0f0f0;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border: 4px solid #3d9c2f;
+            cursor: pointer; transition: all 0.3s;
         }
 
-        .profile-picture-preview:hover {
-            border-color: #348a26;
-            transform: scale(1.05);
-        }
+        .profile-picture-preview:hover { border-color: #348a26; transform: scale(1.05); }
+        .profile-picture-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-picture-placeholder { font-size: 64px; color: #ccc; }
 
-        .profile-picture-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-picture-placeholder {
-            font-size: 64px;
-            color: #ccc;
-        }
-
-        .upload-btn {
-            padding: 12px 24px;
-            background: #3d9c2f;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
+        .upload-btn { padding: 12px 24px; background: #3d9c2f; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
         .upload-btn:hover { background: #348a26; }
 
         .form-group { margin-bottom: 24px; }
+        .form-label { display: block; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; font-size: 14px; }
+        .form-input { width: 100%; padding: 12px 16px; border: 2px solid #f0f0f0; border-radius: 8px; font-size: 16px; transition: border-color 0.2s; }
+        .form-input:focus { outline: none; border-color: #3d9c2f; }
 
-        .form-label {
-            display: block;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #f0f0f0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: #3d9c2f;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            background: #3d9c2f;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
+        .submit-btn { width: 100%; padding: 16px; background: #3d9c2f; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
         .submit-btn:hover { background: #348a26; }
         .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            display: none;
-        }
-
+        .error-message { background: #fee; color: #c33; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: none; }
         .required { color: #dc3545; }
 
-        /* ── Install Popup ── */
         .install-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 1000;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000;
+            display: flex; align-items: flex-end; justify-content: center; padding: 20px;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
-
-        .install-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
+        .install-overlay.active { opacity: 1; pointer-events: all; }
 
         .install-sheet {
-            background: white;
-            border-radius: 24px;
-            padding: 32px 28px 28px;
-            max-width: 420px;
-            width: 100%;
-            transform: translateY(40px);
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: white; border-radius: 24px; padding: 32px 28px 28px;
+            max-width: 420px; width: 100%;
+            transform: translateY(40px); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
         }
+        .install-overlay.active .install-sheet { transform: translateY(0); }
 
-        .install-overlay.active .install-sheet {
-            transform: translateY(0);
-        }
+        .install-icon { width: 64px; height: 64px; background: linear-gradient(135deg, #2d7a22, #7ec832); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .install-title { font-size: 22px; font-weight: 800; color: #1a1a1a; text-align: center; margin-bottom: 6px; letter-spacing: -0.5px; }
+        .install-subtitle { font-size: 14px; color: #888; text-align: center; margin-bottom: 24px; }
 
-        .install-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #2d7a22, #7ec832);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-        }
-
-        .install-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: #1a1a1a;
-            text-align: center;
-            margin-bottom: 6px;
-            letter-spacing: -0.5px;
-        }
-
-        .install-subtitle {
-            font-size: 14px;
-            color: #888;
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .install-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-
-        .install-step {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .step-num {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #f0faf0;
-            color: #3d9c2f;
-            font-weight: 800;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .step-text {
-            font-size: 14px;
-            color: #333;
-            line-height: 1.5;
-        }
-
+        .install-steps { display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; }
+        .install-step { display: flex; align-items: flex-start; gap: 12px; }
+        .step-num { width: 28px; height: 28px; border-radius: 50%; background: #f0faf0; color: #3d9c2f; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+        .step-text { font-size: 14px; color: #333; line-height: 1.5; }
         .step-text strong { color: #1a1a1a; }
+        .step-icon { display: inline-block; font-size: 16px; vertical-align: middle; margin: 0 2px; }
 
-        .step-icon {
-            display: inline-block;
-            font-size: 16px;
-            vertical-align: middle;
-            margin: 0 2px;
-        }
-
-        .install-close-btn {
-            width: 100%;
-            padding: 14px;
-            background: #3d9c2f;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            transition: background 0.2s;
-        }
-
+        .install-close-btn { width: 100%; padding: 14px; background: #3d9c2f; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.2s; }
         .install-close-btn:hover { background: #2d7a22; }
-
-        .install-skip {
-            display: block;
-            text-align: center;
-            margin-top: 12px;
-            font-size: 13px;
-            color: #bbb;
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-family: inherit;
-            width: 100%;
-        }
-
+        .install-skip { display: block; text-align: center; margin-top: 12px; font-size: 13px; color: #bbb; cursor: pointer; background: none; border: none; font-family: inherit; width: 100%; }
         .install-skip:hover { color: #888; }
-
     </style>
 </head>
 <body>
@@ -314,9 +117,7 @@
         <div class="form-group">
             <label class="form-label">Introduce Yourself (Voice Memo) <span style="font-size:12px; color:#bbb; font-weight:400;">(optional)</span></label>
             <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                <button type="button" id="recordBtn" style="width: 80px; height: 80px; border-radius: 50%; border: none; background: #3d9c2f; color: white; font-size: 32px; cursor: pointer; margin-bottom: 12px; transition: all 0.3s;">
-                    🎤
-                </button>
+                <button type="button" id="recordBtn" style="width: 80px; height: 80px; border-radius: 50%; border: none; background: #3d9c2f; color: white; font-size: 32px; cursor: pointer; margin-bottom: 12px; transition: all 0.3s;">🎤</button>
                 <div id="recordingStatus" style="font-size: 14px; color: #666; margin-bottom: 8px;">Click to start recording</div>
                 <div id="recordingTimer" style="font-size: 24px; font-weight: 600; color: #1a1a1a; display: none;">0:00</div>
                 <audio id="audioPlayback" controls style="width: 100%; margin-top: 12px; display: none;"></audio>
@@ -327,7 +128,6 @@
         <button class="submit-btn" id="submitBtn">Complete Profile</button>
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -343,11 +143,8 @@
         let audioBlob = null;
 
         auth.onAuthStateChanged(async (user) => {
-            if (!user) return; // auth.js handles redirect
-            // Pre-fill display name from Google account
-            if (user.displayName) {
-                document.getElementById('displayNameInput').value = user.displayName;
-            }
+            if (!user) return;
+            if (user.displayName) document.getElementById('displayNameInput').value = user.displayName;
         });
 
         document.getElementById('profilePictureInput').addEventListener('change', (e) => {
@@ -358,8 +155,7 @@
                 reader.onload = (e) => {
                     document.getElementById('picturePlaceholder').style.display = 'none';
                     const img = document.getElementById('picturePreviewImg');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
+                    img.src = e.target.result; img.style.display = 'block';
                 };
                 reader.readAsDataURL(file);
             }
@@ -375,86 +171,47 @@
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-                    recordingSeconds = 0;
-
+                    audioChunks = []; recordingSeconds = 0;
                     mediaRecorder.ondataavailable = (event) => audioChunks.push(event.data);
-
                     mediaRecorder.onstop = () => {
                         audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        audioPlayback.src = audioUrl;
-                        audioPlayback.style.display = 'block';
+                        audioPlayback.src = URL.createObjectURL(audioBlob); audioPlayback.style.display = 'block';
                         recordingStatus.textContent = 'Recording saved! Play to listen';
-                        recordBtn.textContent = '🎤';
-                        recordBtn.style.background = '#3d9c2f';
+                        recordBtn.textContent = '🎤'; recordBtn.style.background = '#3d9c2f';
                         stream.getTracks().forEach(track => track.stop());
                     };
-
-                    mediaRecorder.start();
-                    recordBtn.textContent = '⏹️';
-                    recordBtn.style.background = '#dc3545';
-                    recordingStatus.textContent = 'Recording... (click to stop)';
-                    recordingTimerDisplay.style.display = 'block';
-
+                    mediaRecorder.start(); recordBtn.textContent = '⏹️'; recordBtn.style.background = '#dc3545';
+                    recordingStatus.textContent = 'Recording... (click to stop)'; recordingTimerDisplay.style.display = 'block';
                     recordingTimer = setInterval(() => {
                         recordingSeconds++;
-                        const mins = Math.floor(recordingSeconds / 60);
-                        const secs = recordingSeconds % 60;
+                        const mins = Math.floor(recordingSeconds / 60); const secs = recordingSeconds % 60;
                         recordingTimerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
                         if (recordingSeconds >= 60) recordBtn.click();
                     }, 1000);
-
-                } catch (error) {
-                    alert('Could not access microphone. Please allow microphone access.');
-                }
-            } else {
-                mediaRecorder.stop();
-                clearInterval(recordingTimer);
-                recordingTimerDisplay.style.display = 'none';
-            }
+                } catch (error) { alert('Could not access microphone. Please allow microphone access.'); }
+            } else { mediaRecorder.stop(); clearInterval(recordingTimer); recordingTimerDisplay.style.display = 'none'; }
         });
 
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const errorMessage = document.getElementById('errorMessage');
             const btn = document.getElementById('submitBtn');
             const displayName = document.getElementById('displayNameInput').value.trim();
-
-            // Fix 5: always clear old error on new attempt
             errorMessage.style.display = 'none';
-
-            if (!displayName) {
-                errorMessage.textContent = 'Please enter a display name';
-                errorMessage.style.display = 'block';
-                return;
-            }
-
-            // Fix 2: verify auth before doing anything
+            if (!displayName) { errorMessage.textContent = 'Please enter a display name'; errorMessage.style.display = 'block'; return; }
             const user = auth.currentUser;
-            if (!user) {
-                errorMessage.textContent = 'Not signed in. Please go back and sign in again.';
-                errorMessage.style.display = 'block';
-                return;
-            }
-
+            if (!user) { errorMessage.textContent = 'Not signed in. Please go back and sign in again.'; errorMessage.style.display = 'block'; return; }
             btn.disabled = true;
-
             try {
                 let photoURL = null;
-
                 if (selectedFile) {
-                    // Upload chosen photo
                     btn.textContent = 'Uploading photo...';
                     const fileName = `profile-pictures/${user.uid}/${Date.now()}_${selectedFile.name}`;
                     const storageRef = storage.ref(fileName);
                     await storageRef.put(selectedFile);
                     photoURL = await storageRef.getDownloadURL();
                 } else {
-                    // Fix 1: fall back to Google profile photo if no upload
                     photoURL = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=3d9c2f&color=fff&size=200`;
                 }
-
-                // Upload voice memo only if recorded
                 btn.textContent = 'Saving profile...';
                 let voiceURL = null;
                 if (audioBlob && recordingSeconds >= 5) {
@@ -463,17 +220,11 @@
                     await voiceRef.put(audioBlob);
                     voiceURL = await voiceRef.getDownloadURL();
                 }
-
                 await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
-                    displayName: displayName,
-                    bio: '',
+                    displayName: displayName, bio: '',
                     ...(voiceURL && { voiceMemoURL: voiceURL, voiceMemoDuration: recordingSeconds }),
-                    photoURL: photoURL,
-                    email: user.email,
-                    createdAt: new Date().toISOString()
+                    photoURL: photoURL, email: user.email, createdAt: new Date().toISOString()
                 });
-
-                // Fix 3: use collectionGroup instead of users.get() for notifications
                 try {
                     btn.textContent = 'Almost done...';
                     const snap = await db.collectionGroup('profile').get();
@@ -482,70 +233,33 @@
                         if (doc.id !== 'info') return;
                         const uid = doc.ref.parent.parent.id;
                         if (uid === user.uid) return;
-                        const ref = db.collection('users').doc(uid)
-                            .collection('notifications').doc();
-                        batch.set(ref, {
-                            type: 'new_user',
-                            icon: '👋',
-                            message: `${displayName} just joined!`,
-                            actorId: user.uid,
-                            actorName: displayName,
-                            actorPhoto: photoURL,
-                            read: false,
-                            createdAt: new Date().toISOString()
-                        });
+                        const ref = db.collection('users').doc(uid).collection('notifications').doc();
+                        batch.set(ref, { type: 'new_user', icon: '👋', message: `${displayName} just joined!`, actorId: user.uid, actorName: displayName, actorPhoto: photoURL, read: false, createdAt: new Date().toISOString() });
                     });
                     await batch.commit();
                 } catch(e) { console.warn('Notification error:', e); }
-
                 showInstallPopup();
-
             } catch (error) {
                 console.error('Error creating profile:', error);
-                // Fix 4 + 5: specific error messages, always reset button
-                if (error.code === 'storage/unauthorized') {
-                    errorMessage.textContent = 'Photo upload failed — storage permission error. Try a different photo.';
-                } else if (error.code === 'storage/canceled') {
-                    errorMessage.textContent = 'Upload was cancelled. Please try again.';
-                } else {
-                    errorMessage.textContent = `Error: ${error.message || 'Something went wrong. Please try again.'}`;
-                }
-                errorMessage.style.display = 'block';
-                btn.disabled = false;
-                btn.textContent = 'Complete Profile';
+                if (error.code === 'storage/unauthorized') { errorMessage.textContent = 'Photo upload failed — storage permission error. Try a different photo.'; }
+                else if (error.code === 'storage/canceled') { errorMessage.textContent = 'Upload was cancelled. Please try again.'; }
+                else { errorMessage.textContent = `Error: ${error.message || 'Something went wrong. Please try again.'}`; }
+                errorMessage.style.display = 'block'; btn.disabled = false; btn.textContent = 'Complete Profile';
             }
         });
 
         function showInstallPopup() {
-            const ua = navigator.userAgent;
-            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-            const isAndroid = /Android/.test(ua);
-
-            document.getElementById('iosSteps').style.display = isIOS ? 'flex' : 'none';
-            document.getElementById('androidSteps').style.display = isAndroid ? 'flex' : 'none';
-            document.getElementById('desktopSteps').style.display = (!isIOS && !isAndroid) ? 'flex' : 'none';
-
+            document.getElementById('iosSteps').style.display = 'none';
+            document.getElementById('androidSteps').style.display = 'none';
+            document.getElementById('desktopSteps').style.display = 'flex';
             document.getElementById('installOverlay').classList.add('active');
         }
 
         function closeInstall() {
             document.getElementById('installOverlay').classList.remove('active');
-            setTimeout(() => {
-                // Use replace so auth.js onAuthStateChanged sees the profile on arrival
-                window.location.replace('/task-tracker/index.html');
-            }, 300);
+            setTimeout(() => { window.location.replace('/task-tracker/index.html'); }, 300);
         }
         window.closeInstall = closeInstall;
-
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW error:', err));
-            });
-        }
     </script>
 
     <!-- Install App Popup -->
@@ -558,61 +272,33 @@
                     <path d="M48 56 C48 56 40 36 44 10 C44 10 54 30 48 56 Z" fill="white" opacity="0.8"/>
                 </svg>
             </div>
-            <div class="install-title">Add TouchGrass to your home screen</div>
-            <div class="install-subtitle">Get the full app experience — no App Store needed</div>
-
-            <!-- iOS steps -->
+            <div class="install-title">Welcome to TouchGrass! 🌿</div>
+            <div class="install-subtitle">Your profile is all set up</div>
             <div class="install-steps" id="iosSteps" style="display:none;">
-                <div class="install-step">
-                    <div class="step-num">1</div>
-                    <div class="step-text">Tap the <strong>Share</strong> button <span class="step-icon">⬆️</span> at the bottom of Safari</div>
-                </div>
-                <div class="install-step">
-                    <div class="step-num">2</div>
-                    <div class="step-text">Scroll down and tap <strong>"Add to Home Screen"</strong></div>
-                </div>
-                <div class="install-step">
-                    <div class="step-num">3</div>
-                    <div class="step-text">Tap <strong>"Add"</strong> in the top right — done! 🌿</div>
-                </div>
+                <div class="install-step"><div class="step-num">1</div><div class="step-text">Tap the <strong>Share</strong> button <span class="step-icon">⬆️</span> at the bottom of Safari</div></div>
+                <div class="install-step"><div class="step-num">2</div><div class="step-text">Scroll down and tap <strong>"Add to Home Screen"</strong></div></div>
+                <div class="install-step"><div class="step-num">3</div><div class="step-text">Tap <strong>"Add"</strong> in the top right — done! 🌿</div></div>
             </div>
-
-            <!-- Android steps -->
             <div class="install-steps" id="androidSteps" style="display:none;">
-                <div class="install-step">
-                    <div class="step-num">1</div>
-                    <div class="step-text">Tap the <strong>menu</strong> <span class="step-icon">⋮</span> in the top right of Chrome</div>
-                </div>
-                <div class="install-step">
-                    <div class="step-num">2</div>
-                    <div class="step-text">Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></div>
-                </div>
-                <div class="install-step">
-                    <div class="step-num">3</div>
-                    <div class="step-text">Tap <strong>"Add"</strong> to confirm — you're in! 🌿</div>
-                </div>
+                <div class="install-step"><div class="step-num">1</div><div class="step-text">Tap the <strong>menu</strong> <span class="step-icon">⋮</span> in the top right of Chrome</div></div>
+                <div class="install-step"><div class="step-num">2</div><div class="step-text">Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></div></div>
+                <div class="install-step"><div class="step-num">3</div><div class="step-text">Tap <strong>"Add"</strong> to confirm — you're in! 🌿</div></div>
             </div>
-
-            <!-- Desktop / unknown -->
-            <div class="install-steps" id="desktopSteps" style="display:none;">
-                <div class="install-step">
-                    <div class="step-num">1</div>
-                    <div class="step-text">Open TouchGrass on your <strong>phone</strong> for the best experience</div>
-                </div>
-                <div class="install-step">
-                    <div class="step-num">2</div>
-                    <div class="step-text">On <strong>iPhone</strong>: tap Share <span class="step-icon">⬆️</span> → "Add to Home Screen"</div>
-                </div>
-                <div class="install-step">
-                    <div class="step-num">3</div>
-                    <div class="step-text">On <strong>Android</strong>: tap ⋮ → "Install app"</div>
-                </div>
+            <div class="install-steps" id="desktopSteps" style="display:flex;">
+                <div class="install-step"><div class="step-num">✓</div><div class="step-text">Your profile is ready. Click below to go to your dashboard!</div></div>
             </div>
-
-            <button class="install-close-btn" onclick="closeInstall()">Got it 👍</button>
+            <button class="install-close-btn" onclick="closeInstall()">Go to Dashboard 🌿</button>
             <button class="install-skip" onclick="closeInstall()">Maybe later</button>
         </div>
     </div>
 
+    <!-- ✅ Unregister old service workers -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(r => r.unregister());
+        });
+      }
+    </script>
 </body>
 </html>
