@@ -1,4 +1,4 @@
-const USE_FIREBASE_HOSTING = true; // flip to true when switching to Firebase Hosting
+const USE_FIREBASE_HOSTING = false; // flip to true when switching to Firebase Hosting
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
@@ -25,20 +25,12 @@ const ADMIN_EMAIL = 'mpynn15@gmail.com';
 let currentUser = null;
 let userProfile = null;
 let isAdmin = false;
-let authHandled = false;
-
 const PATH = window.location.pathname;
 const ON_LANDING = PATH.includes('landing.html');
 const ON_SETUP   = PATH.includes('profile-setup.html');
 const ON_APP     = !ON_LANDING && !ON_SETUP;
 
 auth.onAuthStateChanged(async (user) => {
-    if (authHandled) {
-        currentUser = user;
-        updateUIForAuthState();
-        return;
-    }
-    authHandled = true;
     currentUser = user;
 
     if (!user) {
@@ -71,7 +63,7 @@ auth.onAuthStateChanged(async (user) => {
             updateUIForAuthState();
         } else {
             userProfile = null;
-            if (ON_APP) {
+            if (ON_APP || ON_LANDING) {
                 window.location.href = '/task-tracker/profile-setup.html';
             } else {
                 updateUIForAuthState();
