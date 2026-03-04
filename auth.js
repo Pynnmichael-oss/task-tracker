@@ -72,16 +72,40 @@ auth.onAuthStateChanged(async (user) => {
     }
 });
 
-// ✅ FIXED: signInWithPopup (redirect doesn't work on GitHub Pages)
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
         await auth.signInWithPopup(provider);
     } catch (error) {
-        console.error('Sign in error:', error);
-        alert('Sign in failed: ' + error.message);
+        // Mobile browsers (Safari, in-app browsers) can't maintain popup state
+        // Fall back to redirect in those cases
+        if (
+            error.code === 'auth/missing-initial-state' ||
+            error.code === 'auth/redirect-cancelled-by-user' ||
+            error.code === 'auth/web-storage-unsupported' ||
+            error.message?.includes('missing initial state')
+        ) {
+            try {
+                await auth.signInWithRedirect(provider);
+            } catch (redirectError) {
+                console.error('Redirect fallback failed:', redirectError);
+                alert('Sign in failed. Please try opening the site in your default browser (Safari or Chrome).');
+            }
+        } else {
+            console.error('Sign in error:', error);
+            alert('Sign in failed: ' + error.message);
+        }
     }
+}
+
+// Handle redirect result on page load (for mobile fallback)
+if (ON_LANDING) {
+    auth.getRedirectResult().catch((error) => {
+        if (error.code && error.code !== 'auth/no-auth-event') {
+            console.error('Redirect result error:', error);
+        }
+    });
 }
 
 async function signOut() {
