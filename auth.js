@@ -59,8 +59,10 @@ auth.onAuthStateChanged(async (user) => {
             }
             updateUIForAuthState();
         } else {
+            // FIX 1: New users on landing page must be redirected to profile-setup.
+            // Previously ON_LANDING fell through to updateUIForAuthState() and got stuck.
             userProfile = null;
-            if (ON_APP) {
+            if (ON_LANDING || ON_APP) {
                 window.location.href = '/task-tracker/profile-setup.html';
             } else {
                 updateUIForAuthState();
@@ -90,20 +92,32 @@ async function signInWithGoogle() {
                 await auth.signInWithRedirect(provider);
             } catch (redirectError) {
                 console.error('Redirect fallback failed:', redirectError);
-                alert('Sign in failed. Please try opening the site in your default browser (Safari or Chrome).');
+                throw redirectError; // FIX 3: let caller show styled error UI
             }
         } else {
             console.error('Sign in error:', error);
-            alert('Sign in failed: ' + error.message);
+            throw error; // FIX 3: re-throw so landing.html shows #errorMsg instead of raw alert()
         }
     }
 }
 
-// Handle redirect result on page load (for mobile fallback)
+// FIX 2: Handle redirect result properly on page load (for mobile fallback).
+// Previously the result was never handled, causing mobile users to appear logged
+// out momentarily after returning from the Google redirect.
 if (ON_LANDING) {
-    auth.getRedirectResult().catch((error) => {
+    auth.getRedirectResult().then((result) => {
+        if (result && result.user) {
+            // onAuthStateChanged will fire and handle routing automatically
+            console.log('Redirect sign-in successful:', result.user.email);
+        }
+    }).catch((error) => {
         if (error.code && error.code !== 'auth/no-auth-event') {
             console.error('Redirect result error:', error);
+            const errorMsg = document.getElementById('errorMsg');
+            if (errorMsg) {
+                errorMsg.textContent = 'Sign in failed. Please try again.';
+                errorMsg.style.display = 'block';
+            }
         }
     });
 }
