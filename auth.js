@@ -33,7 +33,7 @@ auth.onAuthStateChanged(async (user) => {
     if (!user) {
         userProfile = null;
         if (ON_APP) {
-            window.location.href = '/task-tracker/landing.html';
+            window.location.href = 'landing.html';
         } else {
             updateUIForAuthState();
         }
@@ -54,7 +54,7 @@ auth.onAuthStateChanged(async (user) => {
         if (profileDoc.exists) {
             userProfile = profileDoc.data();
             if (ON_LANDING) {
-                window.location.href = '/task-tracker/index.html';
+                window.location.href = 'index.html';
                 return;
             }
             updateUIForAuthState();
@@ -63,7 +63,7 @@ auth.onAuthStateChanged(async (user) => {
             // Previously ON_LANDING fell through to updateUIForAuthState() and got stuck.
             userProfile = null;
             if (ON_LANDING || ON_APP) {
-                window.location.href = '/task-tracker/profile-setup.html';
+                window.location.href = 'profile-setup.html';
             } else {
                 updateUIForAuthState();
             }
@@ -125,7 +125,7 @@ if (ON_LANDING) {
 async function signOut() {
     try {
         await auth.signOut();
-        window.location.href = '/task-tracker/landing.html';
+        window.location.href = 'landing.html';
     } catch (error) {
         console.error('Sign out error:', error);
     }
@@ -138,7 +138,7 @@ function updateUIForAuthState() {
         if (currentUser && userProfile) {
             authBtn.innerHTML = `
                 <div style="display:flex;align-items:center;gap:12px;">
-                    <a href="/task-tracker/profile.html?user=${currentUser.uid}" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#1a1a1a;">
+                    <a href="profile.html?user=${currentUser.uid}" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#1a1a1a;">
                         <img src="${userProfile.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid #3d9c2f;">
                         <span style="font-weight:600;">${userProfile.displayName}</span>
                     </a>
