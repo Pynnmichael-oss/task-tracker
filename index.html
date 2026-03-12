@@ -316,6 +316,8 @@
             gap: 0;
             max-height: 260px;
             overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         .member-list::-webkit-scrollbar { width: 4px; }
@@ -338,7 +340,6 @@
         .member-card:hover {
             background: #f8fdf8;
             padding-left: 8px;
-            margin: 0 -8px;
             padding-right: 8px;
         }
 
@@ -378,6 +379,8 @@
             gap: 0;
             max-height: 260px;
             overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         .notif-list::-webkit-scrollbar { width: 4px; }
@@ -397,8 +400,7 @@
 
         .notif-item.unread {
             background: #f8f7ff;
-            margin: 0 -16px;
-            padding: 12px 16px;
+            padding: 12px 0;
             border-radius: 8px;
         }
 
