@@ -530,13 +530,7 @@
                         <a href="suggestions.html" class="view-all-link">View all suggestions →</a>
                     </div>
 
-                    <div class="dashboard-card" style="margin-top: 24px;">
-                        <div class="card-header">
-                            <h2 class="card-title">Upcoming Events</h2>
-                        </div>
-                        <ul class="widget-list" id="eventsList"></ul>
-                        <a href="calendar.html" class="view-all-link">View calendar →</a>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -626,7 +620,6 @@
             loadNotifications(user.uid);
             loadMembers(user.uid);
             loadTodayTasks();
-            loadUpcomingEvents();
         });
 
         async function loadSocialLinks() {
@@ -755,57 +748,6 @@
                     tasksList.appendChild(li);
                 });
             } catch (error) { console.error('Error loading tasks:', error); tasksList.innerHTML = '<li class="widget-empty">Could not load tasks</li>'; }
-        }
-
-        async function loadUpcomingEvents() {
-            const eventsList = document.getElementById('eventsList');
-            const token = localStorage.getItem('gcal_access_token');
-            const expiry = localStorage.getItem('gcal_token_expiry');
-            const lastAuth = localStorage.getItem('gcal_last_auth');
-            const tokenValid = token && expiry && Date.now() < expiry - 60000;
-            const recentAuth = lastAuth && Date.now() - lastAuth < 23 * 60 * 60 * 1000;
-
-            if (!tokenValid && !recentAuth) { loadUpcomingGoals(); return; }
-            if (!tokenValid && recentAuth) { eventsList.innerHTML = '<li class="widget-empty">Calendar token expired. <a href="calendar.html" style="color:#3d9c2f;">Refresh →</a></li>'; return; }
-
-            try {
-                const now = new Date().toISOString();
-                const url = `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${now}&maxResults=5&singleEvents=true&orderBy=startTime`;
-                const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
-                if (!response.ok) { localStorage.removeItem('gcal_access_token'); localStorage.removeItem('gcal_token_expiry'); loadUpcomingGoals(); return; }
-                const data = await response.json();
-                const events = data.items || [];
-                if (events.length === 0) { eventsList.innerHTML = '<li class="widget-empty">No upcoming events</li>'; return; }
-                eventsList.innerHTML = '';
-                events.forEach(event => {
-                    const start = event.start.dateTime || event.start.date;
-                    const date = new Date(start);
-                    const isAllDay = !event.start.dateTime;
-                    const li = document.createElement('li');
-                    li.className = 'widget-item';
-                    li.innerHTML = `<span class="widget-text">${event.summary || 'Untitled'}</span><span class="widget-meta">${isAllDay ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric' })}</span>`;
-                    eventsList.appendChild(li);
-                });
-            } catch (error) { console.error('Error loading calendar events:', error); loadUpcomingGoals(); }
-        }
-
-        async function loadUpcomingGoals() {
-            const eventsList = document.getElementById('eventsList');
-            try {
-                const todayStr = new Date().toISOString().split('T')[0];
-                const snapshot = await db.collection('goals').where('dueDate', '>=', todayStr).orderBy('dueDate', 'asc').limit(5).get();
-                if (snapshot.empty) { eventsList.innerHTML = '<li class="widget-empty">No upcoming goals. <a href="calendar.html" style="color:#3d9c2f;">Connect Google Calendar →</a></li>'; return; }
-                eventsList.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const goal = doc.data();
-                    if (goal.status === 'completed') return;
-                    const due = new Date(goal.dueDate);
-                    const li = document.createElement('li');
-                    li.className = 'widget-item';
-                    li.innerHTML = `<span class="widget-text">${goal.title}</span><span class="widget-meta">${due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>`;
-                    eventsList.appendChild(li);
-                });
-            } catch (error) { eventsList.innerHTML = '<li class="widget-empty">Could not load events</li>'; }
         }
 
         function timeAgo(isoString) {
