@@ -528,7 +528,10 @@
                         <div class="card-header">
                             <h2 class="card-title">💡 Suggestions</h2>
                         </div>
-                        <ul class="widget-list" id="tasksList"></ul>
+                        <div class="widget-empty" id="suggestionsWidget" style="padding:20px 0 8px;">
+                            <div style="font-size:32px;margin-bottom:8px;">💡</div>
+                            <p style="font-size:14px;color:#999;">Got an idea to improve TouchGrass?</p>
+                        </div>
                         <a href="suggestions.html" class="view-all-link">View all suggestions →</a>
                     </div>
 
@@ -607,7 +610,7 @@
             }
 
             const mobileTab = document.getElementById('mobileProfileTab');
-            if (mobileTab) mobileTab.href = '/task-tracker/profile.html?user=' + user.uid;
+            if (mobileTab) mobileTab.href = '/profile.html?user=' + user.uid;
 
             document.getElementById('editLinksBtn').addEventListener('click', () => {
                 document.getElementById('instagramInput').value = socialLinks.instagram || '';
@@ -621,7 +624,6 @@
             loadRecentPhotos();
             loadNotifications(user.uid);
             loadMembers(user.uid);
-            loadTodayTasks();
         });
 
         async function loadSocialLinks() {
@@ -667,18 +669,28 @@
         });
 
         document.getElementById('saveLinksBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('saveLinksBtn');
             const newLinks = {
                 instagram: document.getElementById('instagramInput').value.trim(),
                 linkedin: document.getElementById('linkedinInput').value.trim(),
                 twitter: document.getElementById('twitterInput').value.trim(),
                 github: document.getElementById('githubInput').value.trim()
             };
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
             try {
                 await db.collection('users').doc(currentUser.uid).collection('profile').doc('socialLinks').set(newLinks);
                 socialLinks = newLinks;
                 renderSocialLinks();
                 document.getElementById('editLinksModal').classList.remove('active');
-            } catch (error) { console.error('Error saving links:', error); alert('Error saving links'); }
+                showToast('Links saved!', 'success');
+            } catch (error) {
+                console.error('Error saving links:', error);
+                showToast('Error saving links. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Links';
+            }
         });
 
         async function loadRecentPhotos() {
@@ -731,26 +743,6 @@
         window.nextSlide = nextSlide;
         window.prevSlide = prevSlide;
         window.goToSlide = goToSlide;
-
-        async function loadTodayTasks() {
-            const tasksList = document.getElementById('tasksList');
-            try {
-                const todayId = new Date().toISOString().split('T')[0];
-                const doc = await db.collection('dailyTasks').doc(todayId).get();
-                if (!doc.exists || !doc.data().tasks || doc.data().tasks.length === 0) {
-                    tasksList.innerHTML = '<li class="widget-empty">No tasks for today 🎉</li>';
-                    return;
-                }
-                const tasks = doc.data().tasks.sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
-                tasksList.innerHTML = '';
-                tasks.forEach(task => {
-                    const li = document.createElement('li');
-                    li.className = 'widget-item';
-                    li.innerHTML = `<span class="widget-text" style="${task.completed ? 'text-decoration:line-through;color:#999;' : ''}">${task.text}</span><span class="widget-meta">${task.completed ? '✅' : task.time ? task.time : '⏳'}</span>`;
-                    tasksList.appendChild(li);
-                });
-            } catch (error) { console.error('Error loading tasks:', error); tasksList.innerHTML = '<li class="widget-empty">Could not load tasks</li>'; }
-        }
 
         function timeAgo(isoString) {
             const diff = Date.now() - new Date(isoString).getTime();
@@ -810,7 +802,7 @@
                 members.forEach(member => {
                     const isYou = member.uid === currentUid;
                     const card = document.createElement('a');
-                    card.href = `/task-tracker/profile.html?user=${member.uid}`;
+                    card.href = `/profile.html?user=${member.uid}`;
                     card.className = 'member-card' + (isYou ? ' is-you' : '');
                     card.innerHTML = `<img class="member-avatar" src="${member.photoURL || ''}" alt="${member.displayName}"><div class="member-info"><div class="member-name">${member.displayName}</div>${isYou ? '<div class="member-you-badge">✦ You</div>' : ''}</div><span class="member-arrow">›</span>`;
                     container.appendChild(card);

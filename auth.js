@@ -166,8 +166,54 @@ function updateUIForAuthState() {
 }
 
 function requireAdmin(callback) {
-    if (!isAdmin) { alert('Admin only.'); return false; }
+    if (!isAdmin) { showToast('Admin only.', 'error'); return false; }
     return callback();
+}
+
+function showToast(message, type = 'info', duration = 3000) {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+function showConfirm(message, onConfirm, danger = false) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9998;align-items:center;justify-content:center;';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:white;border-radius:16px;padding:32px;max-width:380px;width:90%;';
+    const msg = document.createElement('p');
+    msg.style.cssText = 'font-size:17px;font-weight:600;color:#1a1a1a;margin-bottom:24px;line-height:1.4;';
+    msg.textContent = message;
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:12px;';
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = 'Confirm';
+    confirmBtn.style.cssText = `flex:1;padding:12px;background:${danger ? '#dc3545' : '#3d9c2f'};color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:15px;font-family:inherit;`;
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.style.cssText = 'flex:1;padding:12px;background:#f0f0f0;color:#1a1a1a;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:15px;font-family:inherit;';
+    actions.appendChild(confirmBtn);
+    actions.appendChild(cancelBtn);
+    box.appendChild(msg);
+    box.appendChild(actions);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    confirmBtn.addEventListener('click', () => { overlay.remove(); onConfirm(); });
+    cancelBtn.addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 }
 function getCurrentUserId() { return currentUser ? currentUser.uid : null; }
 function getUserProfile()    { return userProfile; }
@@ -183,3 +229,5 @@ window.signOut          = signOut;
 window.requireAdmin     = requireAdmin;
 window.getCurrentUserId = getCurrentUserId;
 window.getUserProfile   = getUserProfile;
+window.showToast        = showToast;
+window.showConfirm      = showConfirm;

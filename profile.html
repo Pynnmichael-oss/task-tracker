@@ -487,7 +487,7 @@
                 const url = await ref.getDownloadURL();
                 await db.collection('users').doc(user.uid).collection('profile').doc('info').update({ photoURL: url });
                 document.getElementById('profilePic').src = url;
-            } catch(err) { console.error('Avatar upload error:', err); alert('Error uploading photo'); }
+            } catch(err) { console.error('Avatar upload error:', err); showToast('Error uploading photo. Try again.', 'error'); }
         };
 
         const BG_PRESETS = [
@@ -536,7 +536,7 @@
                     selectedBgId = 'photo'; selectedBgCSS = null;
                     document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('selected'));
                     uploadArea.innerHTML = `<img src="${bgPhotoURL}" style="max-height:80px; border-radius:6px; display:block; margin:0 auto;">`;
-                } catch(err) { console.error('Banner upload error:', err); uploadArea.textContent = '📷 Click to upload a background photo'; alert('Error uploading photo'); }
+                } catch(err) { console.error('Banner upload error:', err); uploadArea.textContent = '📷 Click to upload a background photo'; showToast('Error uploading photo. Try again.', 'error'); }
             });
         }
 
@@ -556,7 +556,7 @@
                 await db.collection('users').doc(profileUserId).collection('profile').doc('banner').set(bannerData);
                 applyHeroBg(bannerData);
                 document.getElementById('bgPickerModal').classList.remove('active');
-            } catch(err) { console.error('Error saving banner:', err); alert('Error saving background'); }
+            } catch(err) { console.error('Error saving banner:', err); showToast('Error saving background. Try again.', 'error'); }
             finally { btn.disabled = false; btn.textContent = 'Save'; }
         }
 
@@ -629,7 +629,7 @@
                         timerDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
                         if (editRecordingSeconds >= 60) btn.click();
                     }, 1000);
-                } catch(err) { alert('Could not access microphone. Please allow microphone access.'); }
+                } catch(err) { showToast('Could not access microphone. Please allow microphone access.', 'error'); }
             } else { editMediaRecorder.stop(); clearInterval(editRecordingTimer); document.getElementById('editRecordingTimer').style.display = 'none'; }
         });
 
@@ -668,7 +668,7 @@
 
         createAlbumConfirm.onclick = async () => {
             const name = albumNameInput.value.trim();
-            if (!name || !selectedCoverFile) { alert('Please provide album name and cover photo'); return; }
+            if (!name || !selectedCoverFile) { showToast('Please provide an album name and cover photo.', 'error'); return; }
             try {
                 createAlbumConfirm.disabled = true; createAlbumConfirm.textContent = 'Creating...';
                 const user = auth.currentUser;
@@ -679,7 +679,7 @@
                 await albumsRef.add({ name, coverUrl, coverFileName, photoCount: 0, createdAt: new Date().toISOString() });
                 albumNameInput.value = ''; coverPreview.style.display = 'none'; selectedCoverFile = null;
                 createAlbumModal.classList.remove('active');
-            } catch(error) { console.error('Error creating album:', error); alert('Error creating album'); }
+            } catch(error) { console.error('Error creating album:', error); showToast('Error creating album. Try again.', 'error'); }
             finally { createAlbumConfirm.disabled = false; createAlbumConfirm.textContent = 'Create Album'; }
         };
 
@@ -741,7 +741,9 @@
         }
 
         async function deletePhoto(photoId, fileName) {
-            if (!confirm('Delete this photo?')) return;
+            showConfirm('Delete this photo?', async () => { await _deletePhoto(photoId, fileName); }, true);
+        }
+        async function _deletePhoto(photoId, fileName) {
             try {
                 const photoDoc = await albumsRef.doc(currentAlbumId).collection('photos').doc(photoId).get();
                 const photoURL = photoDoc.exists ? photoDoc.data().url : null;
@@ -753,11 +755,13 @@
                     const feedSnap = await db.collection('feed').where('userId', '==', profileUserId).where('photoURL', '==', photoURL).get();
                     const batch = db.batch(); feedSnap.docs.forEach(d => batch.delete(d.ref)); if (!feedSnap.empty) await batch.commit();
                 }
-            } catch(err) { console.error('Delete error:', err); alert('Error deleting photo'); }
+            } catch(err) { console.error('Delete error:', err); showToast('Error deleting photo. Try again.', 'error'); }
         }
         window.deletePhoto = deletePhoto;
 
-        function confirmDeleteAlbum(albumId, albumName, coverFileName) { if (!confirm(`Delete the album "${albumName}" and all its photos? This cannot be undone.`)) return; deleteAlbum(albumId, coverFileName); }
+        function confirmDeleteAlbum(albumId, albumName, coverFileName) {
+            showConfirm(`Delete "${albumName}" and all its photos? This cannot be undone.`, () => deleteAlbum(albumId, coverFileName), true);
+        }
         window.confirmDeleteAlbum = confirmDeleteAlbum;
 
         async function deleteAlbum(albumId, coverFileName) {
@@ -778,7 +782,7 @@
                     }
                 }
                 if (!albumDetailView.classList.contains('hidden')) { albumDetailView.classList.add('hidden'); albumsView.classList.remove('hidden'); currentAlbumId = null; }
-            } catch(err) { console.error('Delete album error:', err); alert('Error deleting album. Try again.'); }
+            } catch(err) { console.error('Delete album error:', err); showToast('Error deleting album. Try again.', 'error'); }
         }
 
         imageModalClose.onclick = () => imageModal.classList.remove('active');
@@ -811,13 +815,13 @@
                 });
                 document.getElementById('editProfileModal').classList.remove('active');
                 await loadProfile();
-            } catch(err) { console.error('Save error:', err); alert('Error saving. Please try again.'); }
+            } catch(err) { console.error('Save error:', err); showToast('Error saving. Please try again.', 'error'); }
             finally { btn.disabled = false; btn.textContent = 'Save Changes'; }
         };
 
         auth.onAuthStateChanged((user) => {
             const tab = document.getElementById('mobileProfileTab');
-            if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
+            if (tab && user) tab.href = `/profile.html?user=${user.uid}`;
         });
     </script>
 

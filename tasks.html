@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/task-tracker/manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#3d9c2f">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="TouchGrass">
-    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <title>TouchGrass · Tasks</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -712,7 +712,7 @@
         // Auth Gate
         auth.onAuthStateChanged((user) => {
             if (!user) {
-                window.location.href = '/task-tracker/landing.html';
+                window.location.href = '/landing.html';
                 return;
             }
         });
@@ -1120,13 +1120,13 @@
         // Mobile profile tab link
         auth.onAuthStateChanged((user) => {
             const tab = document.getElementById("mobileProfileTab");
-            if (tab && user) tab.href = `/task-tracker/profile.html?user=${user.uid}`;
+            if (tab && user) tab.href = `/profile.html?user=${user.uid}`;
         });
     </script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js')
+                navigator.serviceWorker.register('/sw.js')
                     .then(reg => console.log('SW registered'))
                     .catch(err => console.log('SW error:', err));
             });

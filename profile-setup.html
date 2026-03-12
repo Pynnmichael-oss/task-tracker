@@ -188,7 +188,7 @@
                         recordingTimerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
                         if (recordingSeconds >= 60) recordBtn.click();
                     }, 1000);
-                } catch (error) { alert('Could not access microphone. Please allow microphone access.'); }
+                } catch (error) { showToast('Could not access microphone. Please allow microphone access.', 'error'); }
             } else { mediaRecorder.stop(); clearInterval(recordingTimer); recordingTimerDisplay.style.display = 'none'; }
         });
 

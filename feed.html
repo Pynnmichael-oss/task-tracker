@@ -138,7 +138,8 @@
             <img id="cameraPreview" style="width: 100%; border-radius: 12px; margin-bottom: 16px; display: block;">
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Caption</label>
-                <textarea id="captionInput" style="width: 100%; padding: 12px; border: 2px solid #f0f0f0; border-radius: 8px; min-height: 80px; font-family: inherit; font-size: 16px;" placeholder="What's happening?"></textarea>
+                <textarea id="captionInput" maxlength="300" style="width: 100%; padding: 12px; border: 2px solid #f0f0f0; border-radius: 8px; min-height: 80px; font-family: inherit; font-size: 16px;" placeholder="What's happening?"></textarea>
+                <div id="captionCounter" class="char-counter">0 / 300</div>
             </div>
             <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; color: #666;">
                 <div id="locationInfo">📍 Getting location...</div>
@@ -254,7 +255,7 @@
             const input = document.getElementById(`commentInput-${postId}`);
             const text = input.value.trim();
             if (!text) return;
-            if (!globalUserProfile) { alert('Profile not loaded. Please refresh the page.'); return; }
+            if (!globalUserProfile) { showToast('Profile not loaded. Please refresh.', 'error'); return; }
             try {
                 const postDoc = await db.collection('feed').doc(postId).get();
                 const postOwnerId = postDoc.exists ? postDoc.data().userId : null;
@@ -275,7 +276,7 @@
                         });
                     } catch(e) { console.warn('Notification error:', e); }
                 }
-            } catch (error) { console.error('Error adding comment:', error); alert('Error adding comment'); }
+            } catch (error) { console.error('Error adding comment:', error); showToast('Error adding comment. Try again.', 'error'); }
         }
 
         async function getAllUserIds() {
@@ -340,7 +341,7 @@
                 capturedPhotoFile = file;
                 setTimeout(() => {
                     const reader = new FileReader();
-                    reader.onerror = (error) => { console.error('FileReader error:', error); alert('Error reading file: ' + error); };
+                    reader.onerror = (error) => { console.error('FileReader error:', error); showToast('Could not read the file. Please try again.', 'error'); };
                     reader.onload = (e) => {
                         capturedPhoto = e.target.result;
                         cameraPreview.src = capturedPhoto;
@@ -362,11 +363,23 @@
                 }, 10);
             };
 
-            cancelPhotoBtn.onclick = () => { cameraModal.style.display = 'none'; cameraInput.value = ''; captionInput.value = ''; };
+            captionInput.addEventListener('input', () => {
+                const len = captionInput.value.length;
+                const counter = document.getElementById('captionCounter');
+                counter.textContent = `${len} / 300`;
+                counter.classList.toggle('warning', len > 250);
+            });
+
+            cancelPhotoBtn.onclick = () => {
+                cameraModal.style.display = 'none';
+                cameraInput.value = '';
+                captionInput.value = '';
+                document.getElementById('captionCounter').textContent = '0 / 300';
+            };
 
             postPhotoBtn.onclick = async () => {
-                if (!capturedPhotoFile) { alert('ERROR: No photo selected'); return; }
-                if (!globalUserProfile) { alert('ERROR: Profile not loaded. Please refresh the page.'); return; }
+                if (!capturedPhotoFile) { showToast('No photo selected.', 'error'); return; }
+                if (!globalUserProfile) { showToast('Profile not loaded. Please refresh.', 'error'); return; }
                 postPhotoBtn.disabled = true;
                 postPhotoBtn.textContent = 'Posting...';
                 try {
@@ -394,10 +407,12 @@
                     cameraModal.style.display = 'none';
                     cameraInput.value = '';
                     captionInput.value = '';
+                    document.getElementById('captionCounter').textContent = '0 / 300';
                     postPhotoBtn.disabled = false;
                     postPhotoBtn.textContent = 'Post to Feed';
+                    showToast('Photo posted!', 'success');
                     loadFeed();
-                } catch (error) { console.error('Error posting photo:', error); alert('Error posting photo: ' + error.message); postPhotoBtn.disabled = false; postPhotoBtn.textContent = 'Post to Feed'; }
+                } catch (error) { console.error('Error posting photo:', error); showToast('Error posting photo. Please try again.', 'error'); postPhotoBtn.disabled = false; postPhotoBtn.textContent = 'Post to Feed'; }
             };
         }
     </script>

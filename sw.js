@@ -1,16 +1,16 @@
 const CACHE_NAME = "touchgrass-v2";
 
 const STATIC_ASSETS = [
-  "/task-tracker/index.html",
-  "/task-tracker/landing.html",
-  "/task-tracker/feed.html",
-  "/task-tracker/profile.html",
-  "/task-tracker/profile-setup.html",
-  "/task-tracker/suggestions.html",
-  "/task-tracker/calendar.html",
-  "/task-tracker/style.css",
-  "/task-tracker/auth.js",
-  "/task-tracker/manifest.json",
+  "/index.html",
+  "/landing.html",
+  "/feed.html",
+  "/profile.html",
+  "/profile-setup.html",
+  "/suggestions.html",
+  "/calendar.html",
+  "/style.css",
+  "/auth.js",
+  "/manifest.json",
 ];
 
 self.addEventListener("install", event => {
@@ -51,7 +51,7 @@ self.addEventListener("fetch", event => {
         return response;
       })
       .catch(() => caches.match(event.request)
-        .then(cached => cached || caches.match("/task-tracker/landing.html"))
+        .then(cached => cached || caches.match("/landing.html"))
       )
   );
 });

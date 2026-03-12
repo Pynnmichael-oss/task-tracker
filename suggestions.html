@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="/task-tracker/manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#3d9c2f">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="TouchGrass">
-    <link rel="apple-touch-icon" href="/task-tracker/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <title>TouchGrass · Suggestions</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -312,10 +312,6 @@
                 <span class="bottom-tab-icon">📸</span>
                 <span class="bottom-tab-label">Feed</span>
             </a>
-            <a href="suggestions.html" class="bottom-tab active">
-                <span class="bottom-tab-icon">💡</span>
-                <span class="bottom-tab-label">Ideas</span>
-            </a>
             <a href="#" class="bottom-tab" id="mobileProfileTab">
                 <span class="bottom-tab-icon">👤</span>
                 <span class="bottom-tab-label">Profile</span>
@@ -378,7 +374,7 @@
                 currentUid = user.uid;
                 isAdminUser = user.email === 'mpynn15@gmail.com';
                 const tab = document.getElementById('mobileProfileTab');
-                if (tab) tab.href = '/task-tracker/profile.html?user=' + user.uid;
+                if (tab) tab.href = '/profile.html?user=' + user.uid;
             }
         });
 
@@ -393,7 +389,7 @@
         document.getElementById('submitBtn').addEventListener('click', async () => {
             const text = input.value.trim();
             if (!text) return;
-            if (!currentUid) { alert('Sign in to submit a suggestion'); return; }
+            if (!currentUid) { showToast('Sign in to submit a suggestion.', 'error'); return; }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
@@ -417,9 +413,10 @@
 
                 input.value = '';
                 charCount.textContent = '0';
+                showToast('Idea dropped! 🌿', 'success');
             } catch(e) {
                 console.error(e);
-                alert('Failed to submit. Try again.');
+                showToast('Failed to submit. Try again.', 'error');
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Drop It 🌿';
@@ -528,9 +525,11 @@
                 // Delete
                 const delBtn = card.querySelector('.delete-suggestion-btn');
                 if (delBtn) {
-                    delBtn.addEventListener('click', async () => {
-                        if (!confirm('Delete this suggestion?')) return;
-                        await db.collection('suggestions').doc(s.id).delete();
+                    delBtn.addEventListener('click', () => {
+                        showConfirm('Delete this suggestion?', async () => {
+                            await db.collection('suggestions').doc(s.id).delete();
+                            showToast('Suggestion deleted.', 'info');
+                        }, true);
                     });
                 }
 
@@ -555,7 +554,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/task-tracker/sw.js');
+                navigator.serviceWorker.register('/sw.js');
             });
         }
     </script>
