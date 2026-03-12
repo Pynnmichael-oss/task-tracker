@@ -345,7 +345,7 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const profileUserId = urlParams.get('user');
-        if (!profileUserId) window.location.href = '/task-tracker/index.html';
+        if (!profileUserId) window.location.href = '/index.html';
 
         let isOwnProfile = false;
         let currentAlbumId = null;
@@ -389,7 +389,7 @@
         const avatarInput      = document.getElementById('avatarInput');
 
         auth.onAuthStateChanged(async (user) => {
-            if (!user) { window.location.href = '/task-tracker/landing.html'; return; }
+            if (!user) { window.location.href = '/landing.html'; return; }
             isOwnProfile = user.uid === profileUserId;
             albumsRef = db.collection('users').doc(profileUserId).collection('albums');
             await loadProfile();
@@ -400,12 +400,16 @@
                 const profileDoc = await db.collection('users').doc(profileUserId).collection('profile').doc('info').get();
                 if (!profileDoc.exists) { profileHeader.innerHTML = '<div class="loading">Profile not found</div>'; return; }
                 const profile = profileDoc.data();
-                const albumsSnapshot = await albumsRef.get();
+                let albumCount = 0;
                 let photoCount = 0;
-                for (const albumDoc of albumsSnapshot.docs) {
-                    const ps = await albumsRef.doc(albumDoc.id).collection('photos').get();
-                    photoCount += ps.size;
-                }
+                try {
+                    const albumsSnapshot = await albumsRef.get();
+                    albumCount = albumsSnapshot.size;
+                    for (const albumDoc of albumsSnapshot.docs) {
+                        const ps = await albumsRef.doc(albumDoc.id).collection('photos').get();
+                        photoCount += ps.size;
+                    }
+                } catch(e) { console.warn('Could not load album stats (check Firestore rules):', e); }
                 let socialLinks = {};
                 try { const sd = await db.collection('users').doc(profileUserId).collection('profile').doc('socialLinks').get(); if (sd.exists) socialLinks = sd.data(); } catch(e) {}
                 let extendedAbout = '';
@@ -440,7 +444,7 @@
                         ${socialHTML ? `<div class="social-row">${socialHTML}</div>` : ''}
                     </div>
                     <div class="stats-strip">
-                        <div class="stat-item"><div class="stat-number">${albumsSnapshot.size}</div><div class="stat-label">Albums</div></div>
+                        <div class="stat-item"><div class="stat-number">${albumCount}</div><div class="stat-label">Albums</div></div>
                         <div class="stat-item"><div class="stat-number">${photoCount}</div><div class="stat-label">Photos</div></div>
                     </div>
                     ${extendedAbout ? `
@@ -634,9 +638,10 @@
         });
 
         function loadAlbums() {
-            albumsRef.orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-                renderAlbums(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            });
+            albumsRef.orderBy('createdAt', 'desc').onSnapshot(
+                (snapshot) => { renderAlbums(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); },
+                (error) => { console.warn('Could not load albums (check Firestore rules):', error); albumGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔒</div><p>Albums unavailable</p></div>'; }
+            );
         }
 
         function renderAlbums(albums) {
