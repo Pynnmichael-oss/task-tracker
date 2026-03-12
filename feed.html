@@ -56,7 +56,8 @@
         .post-username:hover { color: #3d9c2f; }
         .post-album { font-size: 13px; color: #666; }
         .post-timestamp { font-size: 12px; color: #999; }
-        .post-image { width: 100%; max-height: 600px; object-fit: contain; background: #000; cursor: pointer; }
+        .post-image { width: 100%; max-height: 600px; object-fit: contain; background: #000; cursor: pointer; opacity: 0; transition: opacity 0.3s ease; }
+        .post-image.loaded { opacity: 1; }
         .post-caption { padding: 16px 20px; color: #1a1a1a; line-height: 1.5; }
         .post-stats { padding: 0 20px; color: #666; font-size: 14px; display: flex; gap: 16px; }
 
@@ -177,10 +178,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="auth.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
-
-    <script>
+<script>
         const feedPosts = document.getElementById('feedPosts');
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
@@ -217,13 +215,13 @@
                     </div>
                     <div class="post-timestamp">${timeAgo}</div>
                 </div>
-                <img src="${post.photoURL}" class="post-image" alt="Post photo" onclick="openImageModal('${post.photoURL}')">
+                <img src="${post.photoURL}" class="post-image" alt="Post photo" onload="this.classList.add('loaded')" onclick="openImageModal('${post.photoURL}')">
                 ${post.caption ? `<div class="post-caption">${post.caption}</div>` : ''}
                 <div class="comments-section">
                     <div class="post-stats"><span id="commentCount-${post.id}">0 comments</span></div>
                     <div id="comments-${post.id}"></div>
                     <div class="add-comment">
-                        <input type="text" class="comment-input" id="commentInput-${post.id}" placeholder="Add a comment...">
+                        <input type="text" class="comment-input" id="commentInput-${post.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addComment('${post.id}')">
                         <button class="comment-btn" onclick="addComment('${post.id}')">Post</button>
                     </div>
                 </div>`;
@@ -316,7 +314,7 @@
             if (!user) { window.location.href = '/task-tracker/landing.html'; return; }
             const profileDoc = await db.collection('users').doc(user.uid).collection('profile').doc('info').get();
             if (profileDoc.exists) globalUserProfile = profileDoc.data();
-            setTimeout(loadFeed, 500);
+            loadFeed();
             setupCamera(user);
         });
 
