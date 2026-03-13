@@ -1,6 +1,6 @@
 const firebaseConfig = {
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
-    authDomain: "michael-new-website.firebaseapp.com",
+    authDomain: "michael-new-website.web.app",
     projectId: "michael-new-website",
     storageBucket: "michael-new-website.firebasestorage.app",
     messagingSenderId: "149129540182",
@@ -91,9 +91,9 @@ async function signInWithGoogle() {
         throw err;
     }
 
-    // Safari + GitHub Pages: Safari's ITP partitions storage between github.io and
-    // firebaseapp.com, breaking the popup auth state handshake. The fix is to use
-    // Firebase Hosting (web.app) where both origins are in Google's First-Party Set.
+    // Safari + GitHub Pages: ITP partitions storage between github.io and web.app,
+    // breaking the popup auth handshake. Redirect to Firebase Hosting where the
+    // auth handler is same-origin and ITP doesn't apply.
     const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
     const isOnGitHubPages = window.location.hostname.includes('github.io');
     if (isSafari && isOnGitHubPages) {

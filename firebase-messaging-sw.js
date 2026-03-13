@@ -6,7 +6,7 @@ importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-comp
 
 firebase.initializeApp({
     apiKey: "AIzaSyB_EmP-qufcH2ZAymdKK_qn_9B_nXjcgwc",
-    authDomain: "michael-new-website.firebaseapp.com",
+    authDomain: "michael-new-website.web.app",
     projectId: "michael-new-website",
     storageBucket: "michael-new-website.firebasestorage.app",
     messagingSenderId: "149129540182",
