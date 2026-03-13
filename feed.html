@@ -186,20 +186,55 @@
         const imageModalClose = document.getElementById('imageModalClose');
         let globalUserProfile = null;
 
+        const PAGE_SIZE = 10;
+        let lastVisible = null;
+        let loadingMore = false;
+        let allLoaded = false;
+
         async function loadFeed() {
+            lastVisible = null;
+            allLoaded = false;
             feedPosts.innerHTML = '<div class="loading-feed"><div class="spinner"></div><p>Loading feed...</p></div>';
             try {
-                const postsSnapshot = await db.collection('feed').orderBy('timestamp', 'desc').limit(50).get();
-                if (postsSnapshot.empty) {
+                const snap = await db.collection('feed').orderBy('timestamp', 'desc').limit(PAGE_SIZE).get();
+                if (snap.empty) {
                     feedPosts.innerHTML = `<div class="empty-feed"><div class="empty-feed-icon">📷</div><div>No posts yet. Be the first to share!</div></div>`;
                     return;
                 }
                 feedPosts.innerHTML = '';
-                for (const doc of postsSnapshot.docs) {
-                    const post = { id: doc.id, ...doc.data() };
-                    await renderPost(post);
-                }
+                for (const doc of snap.docs) await renderPost({ id: doc.id, ...doc.data() });
+                lastVisible = snap.docs[snap.docs.length - 1];
+                if (snap.docs.length < PAGE_SIZE) allLoaded = true;
+                attachScrollSentinel();
             } catch (error) { console.error('Error loading feed:', error); feedPosts.innerHTML = '<div class="empty-feed"><div>Error loading feed. Please refresh.</div></div>'; }
+        }
+
+        async function loadMorePosts() {
+            if (loadingMore || allLoaded || !lastVisible) return;
+            loadingMore = true;
+            const sentinel = document.getElementById('feedSentinel');
+            if (sentinel) sentinel.innerHTML = '<div class="loading-feed" style="padding:20px"><div class="spinner"></div></div>';
+            try {
+                const snap = await db.collection('feed').orderBy('timestamp', 'desc').startAfter(lastVisible).limit(PAGE_SIZE).get();
+                if (sentinel) sentinel.innerHTML = '';
+                if (snap.empty) { allLoaded = true; if (sentinel) sentinel.remove(); return; }
+                for (const doc of snap.docs) await renderPost({ id: doc.id, ...doc.data() });
+                lastVisible = snap.docs[snap.docs.length - 1];
+                if (snap.docs.length < PAGE_SIZE) { allLoaded = true; if (sentinel) sentinel.remove(); }
+            } catch (error) { console.error('Error loading more posts:', error); }
+            loadingMore = false;
+        }
+
+        function attachScrollSentinel() {
+            const existing = document.getElementById('feedSentinel');
+            if (existing) existing.remove();
+            const sentinel = document.createElement('div');
+            sentinel.id = 'feedSentinel';
+            feedPosts.appendChild(sentinel);
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) loadMorePosts();
+            }, { rootMargin: '200px' });
+            observer.observe(sentinel);
         }
 
         async function renderPost(post) {
