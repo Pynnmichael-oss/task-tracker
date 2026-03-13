@@ -284,6 +284,8 @@
                     errorMsg.textContent = 'Please open this page in Chrome or Safari to sign in.';
                 } else if (e.code === 'auth/popup-blocked') {
                     errorMsg.textContent = 'Pop-up was blocked — please allow pop-ups for this site and try again.';
+                } else if (e.code === 'auth/storage-partitioned') {
+                    errorMsg.textContent = e.message;
                 } else {
                     errorMsg.textContent = 'Sign in failed. Please try again.';
                 }

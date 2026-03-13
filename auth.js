@@ -82,9 +82,6 @@ async function signInWithGoogle() {
     provider.setCustomParameters({ prompt: 'select_account' });
 
     // Detect in-app browsers (Instagram, Facebook, etc.) that block popups entirely.
-    // signInWithRedirect is NOT used because modern browsers with storage partitioning
-    // (iOS Safari 17+, Chrome with 3rd-party cookies off) break the redirect flow with
-    // "missing initial state". Popup-only is the reliable cross-browser approach.
     const ua = navigator.userAgent || '';
     const isInAppBrowser = /Instagram|FBAN|FBAV|Twitter|Line|WeChat|MicroMessenger/.test(ua);
     if (isInAppBrowser) {
@@ -97,12 +94,25 @@ async function signInWithGoogle() {
         await auth.signInWithPopup(provider);
     } catch (error) {
         if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
-            // User dismissed the popup — not an error worth showing
             return;
+        }
+        // "missing initial state" can fire from signInWithPopup on mobile browsers with
+        // storage partitioning (iOS Safari, Chrome with 3rd-party cookies restricted).
+        // It also fires when stale redirect state from a previous session is still in storage.
+        if (error.code === 'auth/missing-initial-state' || error.message?.includes('missing initial state')) {
+            const err = new Error('Sign-in blocked by browser privacy settings. Try opening this page in a fresh Chrome or Safari tab and signing in again.');
+            err.code = 'auth/storage-partitioned';
+            throw err;
         }
         console.error('Sign in error:', error);
         throw error;
     }
+}
+
+// Silently drain any stale redirect state left in storage from a previous session.
+// Without this, returning mobile users see "missing initial state" on page load.
+if (ON_LANDING) {
+    auth.getRedirectResult().catch(() => {});
 }
 
 async function signOut() {
