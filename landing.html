@@ -284,8 +284,8 @@
                     errorMsg.textContent = 'Please open this page in Chrome or Safari to sign in.';
                 } else if (e.code === 'auth/popup-blocked') {
                     errorMsg.textContent = 'Pop-up was blocked — please allow pop-ups for this site and try again.';
-                } else if (e.code === 'auth/storage-partitioned') {
-                    errorMsg.textContent = e.message;
+                } else if (e.code === 'auth/safari-itp') {
+                    errorMsg.innerHTML = 'Safari requires our app URL to sign in. <a href="https://michael-new-website.web.app/landing.html" style="color:#3d9c2f;font-weight:700;">Open TouchGrass ↗</a>';
                 } else {
                     errorMsg.textContent = 'Sign in failed. Please try again.';
                 }

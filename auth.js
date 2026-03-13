@@ -81,12 +81,24 @@ async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
-    // Detect in-app browsers (Instagram, Facebook, etc.) that block popups entirely.
     const ua = navigator.userAgent || '';
+
+    // In-app browsers (Instagram, Facebook, etc.) block popups entirely
     const isInAppBrowser = /Instagram|FBAN|FBAV|Twitter|Line|WeChat|MicroMessenger/.test(ua);
     if (isInAppBrowser) {
         const err = new Error('Please open this page in Chrome or Safari to sign in.');
         err.code = 'auth/in-app-browser';
+        throw err;
+    }
+
+    // Safari + GitHub Pages: Safari's ITP partitions storage between github.io and
+    // firebaseapp.com, breaking the popup auth state handshake. The fix is to use
+    // Firebase Hosting (web.app) where both origins are in Google's First-Party Set.
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    const isOnGitHubPages = window.location.hostname.includes('github.io');
+    if (isSafari && isOnGitHubPages) {
+        const err = new Error('safari-itp');
+        err.code = 'auth/safari-itp';
         throw err;
     }
 
@@ -96,12 +108,9 @@ async function signInWithGoogle() {
         if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
             return;
         }
-        // "missing initial state" can fire from signInWithPopup on mobile browsers with
-        // storage partitioning (iOS Safari, Chrome with 3rd-party cookies restricted).
-        // It also fires when stale redirect state from a previous session is still in storage.
         if (error.code === 'auth/missing-initial-state' || error.message?.includes('missing initial state')) {
-            const err = new Error('Sign-in blocked by browser privacy settings. Try opening this page in a fresh Chrome or Safari tab and signing in again.');
-            err.code = 'auth/storage-partitioned';
+            const err = new Error('safari-itp');
+            err.code = 'auth/safari-itp';
             throw err;
         }
         console.error('Sign in error:', error);
