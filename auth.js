@@ -54,10 +54,13 @@ auth.onAuthStateChanged(async (user) => {
         if (profileDoc.exists) {
             userProfile = profileDoc.data();
             if (ON_LANDING) {
-                window.location.href = 'index.html';
+                // Let landing.html handle redirect so it can show the notification prompt
+                window.dispatchEvent(new CustomEvent('touchgrass:signed-in', { detail: { uid: user.uid } }));
                 return;
             }
             updateUIForAuthState();
+            // Silently refresh FCM token on every app page load if already permitted
+            refreshFCMToken(user.uid).catch(() => {});
         } else {
             // FIX 1: New users on landing page must be redirected to profile-setup.
             // Previously ON_LANDING fell through to updateUIForAuthState() and got stuck.
@@ -218,6 +221,69 @@ function showConfirm(message, onConfirm, danger = false) {
 function getCurrentUserId() { return currentUser ? currentUser.uid : null; }
 function getUserProfile()    { return userProfile; }
 
+// ─── FCM Push Notifications ──────────────────────────────────────────────────
+// Replace with your VAPID key from Firebase Console → Project Settings →
+// Cloud Messaging → Web Push certificates → Key pair
+const FCM_VAPID_KEY = 'BPqaRzh3xr0SHNWAKXBBdcFKkwq5RR_Z0HDwNPScNTxP0_cKUcq93vQ07htMLkEJsZzkkxbqveY2vGOYLEXscAM';
+
+function loadMessagingSDK() {
+    return new Promise((resolve) => {
+        if (typeof firebase.messaging === 'function') { resolve(); return; }
+        const s = document.createElement('script');
+        s.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js';
+        s.onload = resolve;
+        s.onerror = resolve; // fail silently if blocked
+        document.head.appendChild(s);
+    });
+}
+
+// Called from the "Enable 🔔" button — requests permission + stores token
+async function initFCM(uid) {
+    if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
+    try {
+        await loadMessagingSDK();
+        if (typeof firebase.messaging !== 'function') return;
+        const messaging = firebase.messaging();
+        const swReg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+        const token = await messaging.getToken({ vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: swReg });
+        if (token) {
+            await db.collection('users').doc(uid).collection('profile').doc('info')
+                .set({ fcmToken: token }, { merge: true });
+        }
+        // Show in-app notifications as a toast when the page is in the foreground
+        messaging.onMessage((payload) => {
+            const body = payload.notification?.body || payload.data?.body || '';
+            if (body) showToast(body, 'info', 5000);
+        });
+    } catch(e) {
+        console.warn('FCM init error:', e);
+    }
+}
+
+// Called silently on every app page load when permission is already granted
+async function refreshFCMToken(uid) {
+    if (!('serviceWorker' in navigator) || !('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+    try {
+        await loadMessagingSDK();
+        if (typeof firebase.messaging !== 'function') return;
+        const messaging = firebase.messaging();
+        const swReg = await navigator.serviceWorker.register('firebase-messaging-sw.js');
+        const token = await messaging.getToken({ vapidKey: FCM_VAPID_KEY, serviceWorkerRegistration: swReg });
+        if (token) {
+            await db.collection('users').doc(uid).collection('profile').doc('info')
+                .set({ fcmToken: token }, { merge: true });
+        }
+        // Show foreground push notifications as toasts on app pages
+        messaging.onMessage((payload) => {
+            const body = payload.notification?.body || payload.data?.body || '';
+            if (body) showToast(body, 'info', 5000);
+        });
+    } catch(e) {
+        console.warn('FCM refresh error:', e);
+    }
+}
+
 window.auth             = auth;
 window.db               = db;
 window.storage          = storage;
@@ -231,3 +297,5 @@ window.getCurrentUserId = getCurrentUserId;
 window.getUserProfile   = getUserProfile;
 window.showToast        = showToast;
 window.showConfirm      = showConfirm;
+window.initFCM          = initFCM;
+window.refreshFCMToken  = refreshFCMToken;

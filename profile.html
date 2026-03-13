@@ -834,7 +834,9 @@
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(regs => {
-          regs.forEach(r => r.unregister());
+          regs.forEach(r => {
+            if (!r.active?.scriptURL.includes('firebase-messaging-sw')) r.unregister();
+          });
         });
       }
     </script>
