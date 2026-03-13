@@ -314,30 +314,35 @@
 
         async function toggleLike(postId, postOwnerId) {
             const user = auth.currentUser;
-            if (!user || !globalUserProfile) return;
+            if (!user) return;
             const likeRef = db.collection('feed').doc(postId).collection('likes').doc(user.uid);
             const feedRef = db.collection('feed').doc(postId);
-            const likeDoc = await likeRef.get();
-            if (likeDoc.exists && likeDoc.data().active) {
-                await likeRef.update({ active: false });
-                await feedRef.update({ likeCount: firebase.firestore.FieldValue.increment(-1) });
-            } else {
-                const isFirstLike = !likeDoc.exists;
-                if (likeDoc.exists) {
-                    await likeRef.update({ active: true, likedAt: new Date().toISOString() });
+            try {
+                const likeDoc = await likeRef.get();
+                if (likeDoc.exists && likeDoc.data().active) {
+                    await likeRef.update({ active: false });
+                    await feedRef.update({ likeCount: firebase.firestore.FieldValue.increment(-1) });
                 } else {
-                    await likeRef.set({ active: true, likedAt: new Date().toISOString(), userId: user.uid });
+                    const isFirstLike = !likeDoc.exists;
+                    if (likeDoc.exists) {
+                        await likeRef.update({ active: true, likedAt: new Date().toISOString() });
+                    } else {
+                        await likeRef.set({ active: true, likedAt: new Date().toISOString(), userId: user.uid });
+                    }
+                    await feedRef.update({ likeCount: firebase.firestore.FieldValue.increment(1) });
+                    if (isFirstLike && postOwnerId && postOwnerId !== user.uid && globalUserProfile) {
+                        try {
+                            await sendNotifToUser(postOwnerId, {
+                                type: 'new_like', icon: '❤️',
+                                message: `${globalUserProfile.displayName} liked your photo`,
+                                actorId: user.uid, actorName: globalUserProfile.displayName, actorPhoto: globalUserProfile.photoURL
+                            });
+                        } catch(e) { console.warn('Like notification error:', e); }
+                    }
                 }
-                await feedRef.update({ likeCount: firebase.firestore.FieldValue.increment(1) });
-                if (isFirstLike && postOwnerId && postOwnerId !== user.uid) {
-                    try {
-                        await sendNotifToUser(postOwnerId, {
-                            type: 'new_like', icon: '❤️',
-                            message: `${globalUserProfile.displayName} liked your photo`,
-                            actorId: user.uid, actorName: globalUserProfile.displayName, actorPhoto: globalUserProfile.photoURL
-                        });
-                    } catch(e) { console.warn('Like notification error:', e); }
-                }
+            } catch(e) {
+                console.error('Like error:', e);
+                showToast('Could not like post. Check your connection.', 'error');
             }
         }
 
