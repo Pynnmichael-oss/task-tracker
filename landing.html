@@ -276,11 +276,17 @@
     <script>
         async function handleSignIn() {
             const errorMsg = document.getElementById('errorMsg');
+            errorMsg.style.display = 'none';
             try {
-                errorMsg.style.display = 'none';
                 await signInWithGoogle();
             } catch(e) {
-                errorMsg.textContent = 'Sign in failed. Please try again.';
+                if (e.code === 'auth/in-app-browser') {
+                    errorMsg.textContent = 'Please open this page in Chrome or Safari to sign in.';
+                } else if (e.code === 'auth/popup-blocked') {
+                    errorMsg.textContent = 'Pop-up was blocked — please allow pop-ups for this site and try again.';
+                } else {
+                    errorMsg.textContent = 'Sign in failed. Please try again.';
+                }
                 errorMsg.style.display = 'block';
             }
         }

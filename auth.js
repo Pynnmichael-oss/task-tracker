@@ -80,49 +80,29 @@ auth.onAuthStateChanged(async (user) => {
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
+
+    // Detect in-app browsers (Instagram, Facebook, etc.) that block popups entirely.
+    // signInWithRedirect is NOT used because modern browsers with storage partitioning
+    // (iOS Safari 17+, Chrome with 3rd-party cookies off) break the redirect flow with
+    // "missing initial state". Popup-only is the reliable cross-browser approach.
+    const ua = navigator.userAgent || '';
+    const isInAppBrowser = /Instagram|FBAN|FBAV|Twitter|Line|WeChat|MicroMessenger/.test(ua);
+    if (isInAppBrowser) {
+        const err = new Error('Please open this page in Chrome or Safari to sign in.');
+        err.code = 'auth/in-app-browser';
+        throw err;
+    }
+
     try {
         await auth.signInWithPopup(provider);
     } catch (error) {
-        // Mobile browsers (Safari, in-app browsers) can't maintain popup state
-        // Fall back to redirect in those cases
-        if (
-            error.code === 'auth/missing-initial-state' ||
-            error.code === 'auth/redirect-cancelled-by-user' ||
-            error.code === 'auth/web-storage-unsupported' ||
-            error.message?.includes('missing initial state')
-        ) {
-            try {
-                await auth.signInWithRedirect(provider);
-            } catch (redirectError) {
-                console.error('Redirect fallback failed:', redirectError);
-                throw redirectError; // FIX 3: let caller show styled error UI
-            }
-        } else {
-            console.error('Sign in error:', error);
-            throw error; // FIX 3: re-throw so landing.html shows #errorMsg instead of raw alert()
+        if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+            // User dismissed the popup — not an error worth showing
+            return;
         }
+        console.error('Sign in error:', error);
+        throw error;
     }
-}
-
-// FIX 2: Handle redirect result properly on page load (for mobile fallback).
-// Previously the result was never handled, causing mobile users to appear logged
-// out momentarily after returning from the Google redirect.
-if (ON_LANDING) {
-    auth.getRedirectResult().then((result) => {
-        if (result && result.user) {
-            // onAuthStateChanged will fire and handle routing automatically
-            console.log('Redirect sign-in successful:', result.user.email);
-        }
-    }).catch((error) => {
-        if (error.code && error.code !== 'auth/no-auth-event') {
-            console.error('Redirect result error:', error);
-            const errorMsg = document.getElementById('errorMsg');
-            if (errorMsg) {
-                errorMsg.textContent = 'Sign in failed. Please try again.';
-                errorMsg.style.display = 'block';
-            }
-        }
-    });
 }
 
 async function signOut() {
