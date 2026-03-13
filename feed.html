@@ -92,6 +92,12 @@
         .image-modal img { max-width: 90%; max-height: 90%; object-fit: contain; }
         .modal-close { position: absolute; top: 20px; right: 40px; color: white; font-size: 40px; cursor: pointer; }
 
+        .post-likes { padding: 4px 12px 8px; display: flex; align-items: center; gap: 6px; }
+        .like-btn { background: none; border: none; font-size: 22px; cursor: pointer; padding: 4px 6px; line-height: 1; transition: transform 0.15s; -webkit-tap-highlight-color: transparent; border-radius: 8px; }
+        .like-btn:active { transform: scale(1.35); }
+        .like-btn:hover { background: #f8f8f8; }
+        .like-count { font-size: 14px; font-weight: 600; color: #666; }
+
         @media (max-width: 768px) {
             .feed-container { padding: 20px 12px; }
             .feed-post { margin-bottom: 24px; }
@@ -253,6 +259,10 @@
                 </div>
                 <img src="${post.photoURL}" class="post-image" alt="Post photo" onload="this.classList.add('loaded')" onclick="openImageModal('${post.photoURL}')">
                 ${post.caption ? `<div class="post-caption">${post.caption}</div>` : ''}
+                <div class="post-likes">
+                    <button class="like-btn" id="likeBtn-${post.id}">🤍</button>
+                    <span class="like-count" id="likeCount-${post.id}">${post.likeCount || 0}</span>
+                </div>
                 <div class="comments-section">
                     <div class="post-stats"><span id="commentCount-${post.id}">0 comments</span></div>
                     <div id="comments-${post.id}"></div>
@@ -263,6 +273,7 @@
                 </div>`;
             feedPosts.appendChild(postDiv);
             loadComments(post.id);
+            setupLikeListener(post.id, post.userId);
         }
 
         function loadComments(postId) {
@@ -284,6 +295,50 @@
                     commentsDiv.appendChild(commentDiv);
                 });
             });
+        }
+
+        function setupLikeListener(postId, postOwnerId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            db.collection('feed').doc(postId).collection('likes').doc(user.uid).onSnapshot(doc => {
+                const btn = document.getElementById(`likeBtn-${postId}`);
+                if (btn) btn.textContent = (doc.exists && doc.data().active) ? '❤️' : '🤍';
+            });
+            db.collection('feed').doc(postId).onSnapshot(doc => {
+                const el = document.getElementById(`likeCount-${postId}`);
+                if (el && doc.exists) el.textContent = doc.data().likeCount || 0;
+            });
+            const btn = document.getElementById(`likeBtn-${postId}`);
+            if (btn) btn.addEventListener('click', () => toggleLike(postId, postOwnerId));
+        }
+
+        async function toggleLike(postId, postOwnerId) {
+            const user = auth.currentUser;
+            if (!user || !globalUserProfile) return;
+            const likeRef = db.collection('feed').doc(postId).collection('likes').doc(user.uid);
+            const feedRef = db.collection('feed').doc(postId);
+            const likeDoc = await likeRef.get();
+            if (likeDoc.exists && likeDoc.data().active) {
+                await likeRef.update({ active: false });
+                await feedRef.update({ likeCount: firebase.firestore.FieldValue.increment(-1) });
+            } else {
+                const isFirstLike = !likeDoc.exists;
+                if (likeDoc.exists) {
+                    await likeRef.update({ active: true, likedAt: new Date().toISOString() });
+                } else {
+                    await likeRef.set({ active: true, likedAt: new Date().toISOString(), userId: user.uid });
+                }
+                await feedRef.update({ likeCount: firebase.firestore.FieldValue.increment(1) });
+                if (isFirstLike && postOwnerId && postOwnerId !== user.uid) {
+                    try {
+                        await sendNotifToUser(postOwnerId, {
+                            type: 'new_like', icon: '❤️',
+                            message: `${globalUserProfile.displayName} liked your photo`,
+                            actorId: user.uid, actorName: globalUserProfile.displayName, actorPhoto: globalUserProfile.photoURL
+                        });
+                    } catch(e) { console.warn('Like notification error:', e); }
+                }
+            }
         }
 
         async function addComment(postId) {
@@ -425,7 +480,7 @@
                     await db.collection('feed').add({
                         userId: user.uid, userName: globalUserProfile.displayName, userPhotoURL: globalUserProfile.photoURL,
                         photoURL: photoURL, caption: captionInput.value.trim(), location: locationInfo.textContent,
-                        timestamp: new Date().toISOString()
+                        timestamp: new Date().toISOString(), likeCount: 0
                     });
                     try { await sendNotifToAll({ type: 'new_post', icon: '📸', message: `${globalUserProfile.displayName} shared a new photo`, actorId: user.uid, actorName: globalUserProfile.displayName, actorPhoto: globalUserProfile.photoURL }); } catch(e) { console.error('Notification error:', e); }
                     const albumsSnapshot = await db.collection('users').doc(user.uid).collection('albums').where('name', '==', 'Feed Moments').get();
