@@ -154,6 +154,8 @@ function updateUIForAuthState() {
         }
     }
 
+    setupMobileProfileSheet();
+
     document.querySelectorAll('.logged-in-only').forEach(el => {
         el.style.display = currentUser && userProfile ? 'block' : 'none';
     });
@@ -165,6 +167,35 @@ function updateUIForAuthState() {
     });
     document.querySelectorAll('.admin-only-inline').forEach(el => {
         el.style.display = isAdmin ? 'inline-block' : 'none';
+    });
+}
+
+function setupMobileProfileSheet() {
+    const profileTab = document.getElementById('mobileProfileTab');
+    if (!profileTab || !currentUser || !userProfile) return;
+    if (document.getElementById('mobileProfileSheet')) return; // already set up
+
+    const wrap = document.createElement('div');
+    wrap.id = 'mobileProfileSheet';
+    wrap.className = 'profile-sheet-wrap';
+    wrap.innerHTML = `
+        <div class="profile-sheet-overlay"></div>
+        <div class="profile-sheet">
+            <div class="profile-sheet-handle"></div>
+            <div class="profile-sheet-user">
+                <img src="${userProfile.photoURL}" class="profile-sheet-avatar" alt="${userProfile.displayName}">
+                <div class="profile-sheet-name">${userProfile.displayName}</div>
+            </div>
+            <a href="profile.html?user=${currentUser.uid}" class="profile-sheet-btn">👤 View Profile</a>
+            <button class="profile-sheet-btn profile-sheet-signout" onclick="signOut()">🚪 Sign Out</button>
+        </div>`;
+    document.body.appendChild(wrap);
+
+    wrap.querySelector('.profile-sheet-overlay').addEventListener('click', () => wrap.classList.remove('active'));
+
+    profileTab.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('mobileProfileSheet').classList.add('active');
     });
 }
 
