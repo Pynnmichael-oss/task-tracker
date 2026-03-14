@@ -79,7 +79,6 @@ auth.onAuthStateChanged(async (user) => {
 
 async function signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
 
     const ua = navigator.userAgent || '';
 
