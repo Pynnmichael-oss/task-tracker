@@ -448,7 +448,26 @@
                         cameraPreview.src = capturedPhoto;
                         const now = new Date();
                         timeInfo.textContent = `🕐 ${now.toLocaleString()}`;
-                        locationInfo.textContent = '📍 Shared from mobile';
+                        locationInfo.textContent = '📍 Getting location...';
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(async (pos) => {
+                                try {
+                                    const { latitude, longitude } = pos.coords;
+                                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+                                    const data = await res.json();
+                                    const addr = data.address || {};
+                                    const place = addr.city || addr.town || addr.village || addr.county || addr.state || 'Unknown';
+                                    const region = addr.state || addr.country || '';
+                                    locationInfo.textContent = `📍 ${place}${region && region !== place ? ', ' + region : ''}`;
+                                } catch(e) {
+                                    locationInfo.textContent = '📍 Location unavailable';
+                                }
+                            }, () => {
+                                locationInfo.textContent = '📍 Location not shared';
+                            }, { timeout: 8000 });
+                        } else {
+                            locationInfo.textContent = '📍 Location not available';
+                        }
                         cameraModal.style.display = 'flex';
                         cameraModal.style.position = 'fixed';
                         cameraModal.style.top = '0';
